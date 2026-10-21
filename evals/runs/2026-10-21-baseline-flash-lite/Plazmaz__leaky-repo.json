@@ -1,0 +1,45 @@
+{
+  "repository": "https://github.com/Plazmaz/leaky-repo",
+  "violations": [
+    {
+      "rule_id": "CI-001",
+      "category": "ci_cd",
+      "severity": "medium",
+      "file": null,
+      "line": null,
+      "description": "Complete absence of CI/CD workflows and automated testing configuration",
+      "evidence": "No GitHub Actions workflows or CI/CD configuration files exist in the repository (.github/workflows is absent).",
+      "recommendation": "Implement CI/CD workflows (e.g., GitHub Actions) to automate linting, testing, and security scanning on pull requests and pushes."
+    },
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "medium",
+      "file": ".leaky-meta/install-test-tools.sh",
+      "line": 11,
+      "description": "Unpinned third-party binary download and pip package installation in installation script",
+      "evidence": "Script installs gitleaks via unpinned latest release download (`wget $latest`) and installs python packages via `pip install detect-secrets truffleHog` without version pinning.",
+      "recommendation": "Pin tool versions and package versions, and verify cryptographic checksums (hashes) of downloaded binaries before execution."
+    },
+    {
+      "rule_id": "DEP-001",
+      "category": "dependency_management",
+      "severity": "low",
+      "file": ".leaky-meta/benchmark.py",
+      "line": 1,
+      "description": "Absence of dependency manifest or package manager configuration",
+      "evidence": "No package manager manifests (package.json, requirements.txt, pyproject.toml, go.mod, etc.) exist in the repository root or subdirectories.",
+      "recommendation": "If the repository requires dependencies for its scripts (such as benchmark.py), declare them in an appropriate dependency manifest file."
+    },
+    {
+      "rule_id": "TEST-001",
+      "category": "testing",
+      "severity": "low",
+      "file": ".leaky-meta/benchmark.py",
+      "line": 1,
+      "description": "Absence of automated tests for codebase or scripts",
+      "evidence": "No unit tests, integration tests, or test suite configuration exist for the repository scripts (e.g., benchmark.py).",
+      "recommendation": "Add unit testing for any automation scripts to ensure reliability and correctness."
+    }
+  ]
+}

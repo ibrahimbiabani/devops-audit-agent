@@ -1,0 +1,15 @@
+{
+  "repository": "https://github.com/Grafter-labs/grafter-lab-injection",
+  "violations": [
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/script-injection.yml",
+      "line": 15,
+      "description": "Direct expression interpolation of untrusted issue title into shell script",
+      "evidence": ".github/workflows/script-injection.yml:15: run: echo \"GRAFTER_MARKER title=${{ github.event.issue.title }}\"",
+      "recommendation": "Pass untrusted input via environment variables instead of direct expression interpolation in run steps."
+    }
+  ]
+}

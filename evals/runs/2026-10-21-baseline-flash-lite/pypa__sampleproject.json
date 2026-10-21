@@ -1,0 +1,45 @@
+{
+  "repository": "https://github.com/pypa/sampleproject",
+  "violations": [
+    {
+      "rule_id": "CI-001",
+      "category": "ci_cd",
+      "severity": "medium",
+      "file": ".github/workflows/release.yml",
+      "line": 19,
+      "description": "GitHub Actions workflows use unpinned mutable refs or mismatched versions",
+      "evidence": ".github/workflows/release.yml uses actions/checkout@v3 and actions/setup-python@v4 while test.yml uses checkout@v4 and setup-python@v5; release.yml also uses pypa/gh-action-pypi-publish@release/v1 (branch reference)",
+      "recommendation": "Pin all GitHub Actions to specific full-length commit SHAs with version tags as comments, and use consistent versions across workflows."
+    },
+    {
+      "rule_id": "HYG-001",
+      "category": "repository_hygiene",
+      "severity": "low",
+      "file": null,
+      "line": null,
+      "description": "Missing standard community health files (SECURITY.md, CONTRIBUTING.md)",
+      "evidence": "Repository lacks SECURITY.md or CONTRIBUTING.md in .github/ or root directory.",
+      "recommendation": "Add SECURITY.md and CONTRIBUTING.md to establish security disclosure policies and contribution guidelines."
+    },
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "low",
+      "file": ".github/workflows/release.yml",
+      "line": 19,
+      "description": "Release workflow checkout action uses outdated major version",
+      "evidence": ".github/workflows/release.yml uses actions/checkout@v3",
+      "recommendation": "Upgrade actions/checkout to @v4 in release.yml."
+    },
+    {
+      "rule_id": "SEC-002",
+      "category": "security",
+      "severity": "low",
+      "file": "pyproject.toml",
+      "line": 148,
+      "description": "Insecure HTTP URL used in project metadata",
+      "evidence": "pyproject.toml uses http://saythanks.io/to/example for 'Say Thanks!' URL",
+      "recommendation": "Use HTTPS for all project URLs in pyproject.toml."
+    }
+  ]
+}

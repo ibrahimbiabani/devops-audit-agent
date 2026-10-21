@@ -1,0 +1,55 @@
+{
+  "repository": "https://github.com/paastha1/cicd-test-repo",
+  "violations": [
+    {
+      "rule_id": "SEC-002",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/ci.yml",
+      "line": 4,
+      "description": "CI workflow triggered on pull_request performs builds, test publications, and secret exposure steps without security hardening",
+      "evidence": "ci.yml triggers on pull_request from fork/branches, prints secrets, runs npm publish, and uploads sensitive files.",
+      "recommendation": "Use pull_request_target carefully or restrict pull_request triggers so that untrusted PRs cannot execute build/publish steps or exfiltrate secrets."
+    },
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/deploy.yml",
+      "line": 11,
+      "description": "Hardcoded secrets in GitHub Actions workflow environment variables",
+      "evidence": "deploy.yml contains hardcoded AWS secret access key, database password, and Slack webhook; release.yml contains hardcoded PyPI API token and Docker Hub token.",
+      "recommendation": "Remove hardcoded secrets from workflow files and use GitHub Actions Secrets (e.g. ${{ secrets.AWS_SECRET_ACCESS_KEY }}) instead."
+    },
+    {
+      "rule_id": "SEC-003",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/ci.yml",
+      "line": 23,
+      "description": "Exposing sensitive environment variables and secrets via debug logs and shell commands",
+      "evidence": "ci.yml prints secrets and printsenv; deploy.yml echoes AWS access key with set -x enabled; release.yml echoes tokens and credentials in debug steps.",
+      "recommendation": "Remove debug logging steps that print or echo secrets and tokens."
+    },
+    {
+      "rule_id": "SEC-004",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/ci.yml",
+      "line": 34,
+      "description": "Uploading sensitive files and private keys as workflow artifacts",
+      "evidence": "ci.yml uploads .env, .env.production, and credentials.json as artifacts; release.yml uploads ~/.ssh/id_rsa, private-key.pem, and .env.local.",
+      "recommendation": "Ensure artifact paths do not include sensitive config files, credential files, or private keys."
+    },
+    {
+      "rule_id": "CI-001",
+      "category": "ci_cd",
+      "severity": "medium",
+      "file": ".github/workflows/ci.yml",
+      "line": 11,
+      "description": "Unpinned third-party GitHub Actions without commit SHA pinning",
+      "evidence": "All workflows use action references pinned only to major versions (e.g. actions/checkout@v4, actions/setup-node@v4, actions/upload-artifact@v4) rather than immutable commit SHAs.",
+      "recommendation": "Pin third-party actions to immutable commit SHAs with version tags as comments for supply chain security."
+    }
+  ]
+}
