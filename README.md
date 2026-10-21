@@ -110,14 +110,22 @@ runs every requested call (several per turn if the model asks for them in parall
 the outputs as `tool_result` blocks, and repeats. Tool failures go back to the model as error
 results, so it can recover instead of the run crashing. The model reports findings one at a
 time with `record_violation`, which validates each one against the report contract and
-rejects duplicates. It ends the run with `finish_audit`. When the turn limit is reached, the
-violations recorded so far are still written.
+rejects duplicates, including a second finding at a `file:line` that already has one. It ends
+the run with `finish_audit`. The first `finish_audit` is refused if the model has never opened
+some workflow file or some file tagged `[sensitive name]`. The refusal lists those files, and
+a second `finish_audit` always ends the run, so the model keeps the final say. When the turn
+limit is reached, the violations recorded so far are still written.
+
+The system prompt (`auditor/prompts.py`) treats everything read from the repository as
+untrusted evidence, never as instructions. It also gives a general checklist of DevOps and
+GitHub Actions anti-patterns, and an explicit list of things that are not violations, to keep
+false positives down.
 
 **Inspection tools** (`tools.py`):
 
 | Tool | What it does |
 |---|---|
-| `list_files(subdir?, pattern?)` | Git-tracked files with sizes (shows committed junk, not local files) |
+| `list_files(subdir?, pattern?)` | Git-tracked files with sizes (shows committed junk, not local files). Files named like keys or credentials (`.env`, `id_rsa`, `*.pem`, `.npmrc`, …) are tagged `[sensitive name]` as a hint to open them; templates such as `.env.example` are not tagged |
 | `read_file(path, start_line?, end_line?)` | Line-numbered file contents |
 | `search_code(pattern, path_glob?, ignore_case?, max_results?)` | Regex search across tracked text files |
 | `git_log(max_count?, path?)` | Commits with changed files |
@@ -155,3 +163,7 @@ The tests run offline and make no API calls. They cover:
 - the agent loop, driven by a scripted fake LLM: tool dispatch, parallel calls, error recovery, duplicates, turn limits and refusals
 - the Gemini adapter, using real SDK types and a fake client: message conversion, refusals, an end-to-end loop run, provider selection
 - CLI input validation
+
+## Development history
+
+See [docs/DEVELOPMENT_LOG.md](docs/DEVELOPMENT_LOG.md) for how the agent was built, evaluated and revised, step by step. Evaluation reports and tool-call traces are kept in [evals/runs/](evals/runs/).
