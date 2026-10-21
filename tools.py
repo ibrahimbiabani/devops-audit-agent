@@ -20,6 +20,60 @@ MAX_OUTPUT_CHARS = 20_000
 MAX_FILE_BYTES = 1_000_000
 MAX_LINE_CHARS = 2_000
 
+# File names that usually hold credentials or private keys. A match is only a
+# hint for the agent to open the file; it is never reported on its own.
+_SENSITIVE_NAMES = {
+    ".env",
+    ".git-credentials",
+    ".netrc",
+    ".npmrc",
+    ".pypirc",
+    ".pgpass",
+    ".htpasswd",
+    ".dockercfg",
+    ".s3cfg",
+    ".boto",
+    "credentials",
+    "credentials.json",
+    "credentials.yml",
+    "credentials.yaml",
+    "secrets.json",
+    "secrets.yml",
+    "secrets.yaml",
+    "shadow",
+    "id_rsa",
+    "id_dsa",
+    "id_ecdsa",
+    "id_ed25519",
+}
+_SENSITIVE_SUFFIXES = (".pem", ".key", ".p12", ".pfx", ".ppk", ".jks", ".keystore", ".kdbx", ".tfstate")
+_SENSITIVE_PATHS = (".docker/config.json", ".aws/credentials", ".kube/config")
+_TEMPLATE_MARKERS = (".example", ".sample", ".template", ".dist", ".tmpl")
+WORKFLOW_DIR = ".github/workflows/"
+
+
+def is_sensitive_name(path: str) -> bool:
+    """True for paths whose name suggests credentials or keys (templates excluded)."""
+    path = path.replace("\\", "/")
+    lower = path.lower()
+    name = lower.rsplit("/", 1)[-1]
+    if any(marker in name for marker in _TEMPLATE_MARKERS) or lower.startswith("docs/"):
+        return False
+    return (
+        name in _SENSITIVE_NAMES
+        or name.startswith(".env.")
+        or name.endswith(_SENSITIVE_SUFFIXES)
+        or any(lower == p or lower.endswith("/" + p) for p in _SENSITIVE_PATHS)
+    )
+
+
+def is_workflow_file(path: str) -> bool:
+    """True for workflow files GitHub actually loads (direct children of .github/workflows)."""
+    if not path.startswith(WORKFLOW_DIR):
+        return False
+    rest = path[len(WORKFLOW_DIR) :]
+    return "/" not in rest and rest.endswith((".yml", ".yaml"))
+
 
 class ToolError(Exception):
     """A tool call failed in a way the agent should be told about."""
@@ -78,6 +132,14 @@ class RepoTools:
     def _finish(self, text: str) -> str:
         return self._truncate(redact_tokens(text))
 
+    def relpath(self, path: str) -> str:
+        """Canonical repo-relative POSIX form of ``path`` (for tracking what was read)."""
+        return self._resolve(path).relative_to(self.root).as_posix()
+
+    def must_read_files(self) -> list[str]:
+        """Tracked files the agent should open before finishing: workflows and sensitive names."""
+        return [f for f in self._tracked_files() if is_workflow_file(f) or is_sensitive_name(f)]
+
     # ------------------------------------------------------------------ tools
 
     def list_files(self, subdir: str = "", pattern: str | None = None) -> str:
@@ -97,7 +159,8 @@ class RepoTools:
             p = self.root / f
             size = p.stat().st_size if p.is_file() else 0
             link = " -> symlink" if p.is_symlink() else ""
-            lines.append(f"{f} ({size} B){link}")
+            tag = " [sensitive name]" if is_sensitive_name(f) else ""
+            lines.append(f"{f} ({size} B){link}{tag}")
         return self._finish(f"{len(files)} tracked file(s):\n" + "\n".join(lines))
 
     def read_file(self, path: str, start_line: int = 1, end_line: int | None = None) -> str:
@@ -166,6 +229,8 @@ TOOL_SCHEMAS: list[dict[str, Any]] = [
         "description": (
             "List files tracked by git in the repository, with sizes. Use it first to learn the layout, "
             "and later to check whether specific files (lockfiles, workflows, tests, .env files) are tracked. "
+            "Files whose names suggest credentials or keys are tagged [sensitive name]; open them with "
+            "read_file before deciding anything about them. "
             "Optional `subdir` limits to a directory; optional `pattern` is a glob "
             "like '*.yml' or '.github/workflows/*'."
         ),

@@ -20,6 +20,7 @@ from auditor.report import ViolationError, dedupe_key, validate_violation
 log = logging.getLogger(__name__)
 
 MAX_NUDGES = 2
+MAX_UNREAD_LISTED = 25
 
 
 class LLM(Protocol):
@@ -47,6 +48,8 @@ class AuditAgent:
         self.finished = False
         self.summary: str | None = None
         self.turn = 0
+        self.read_paths: set[str] = set()
+        self.coverage_checked = False
 
     # ------------------------------------------------------------------ run
 
@@ -107,11 +110,11 @@ class AuditAgent:
             if name == "record_violation":
                 output = self._record(args)
             elif name == "finish_audit":
-                self.finished = True
-                self.summary = str(args.get("summary", ""))
-                output = f"Audit finished with {len(self.violations)} violation(s)."
+                output = self._finish(args)
             else:
                 output = inspection.dispatch(self.repo_tools, name, args)
+                if name == "read_file":
+                    self.read_paths.add(self.repo_tools.relpath(args["path"]))
         except (inspection.ToolError, ViolationError) as e:
             output, is_error = f"Error: {e}", True
         except Exception as e:  # a tool bug must not kill the audit
@@ -124,11 +127,39 @@ class AuditAgent:
             result["is_error"] = True
         return result
 
+    def _finish(self, args: dict[str, Any]) -> str:
+        """End the audit, unless workflows or sensitive-looking files were never opened.
+
+        The check fires once: a second finish_audit always ends the run, so the
+        model keeps the final say and the loop cannot get stuck.
+        """
+        unread = [f for f in self.repo_tools.must_read_files() if f not in self.read_paths]
+        enough_turns = self.max_turns - self.turn >= 2
+        if unread and enough_turns and not self.coverage_checked:
+            self.coverage_checked = True
+            listed = ", ".join(unread[:MAX_UNREAD_LISTED])
+            more = f" and {len(unread) - MAX_UNREAD_LISTED} more" if len(unread) > MAX_UNREAD_LISTED else ""
+            raise inspection.ToolError(
+                f"Not finished: you have not opened these workflow or sensitive-looking files: {listed}{more}. "
+                "Read them (several per turn), record any violations they contain, then call finish_audit again."
+            )
+        self.finished = True
+        self.summary = str(args.get("summary", ""))
+        return f"Audit finished with {len(self.violations)} violation(s)."
+
     def _record(self, args: dict[str, Any]) -> str:
         v = validate_violation(args)
         key = dedupe_key(v)
         if any(dedupe_key(existing) == key for existing in self.violations):
             raise ViolationError(f"duplicate of an already recorded violation {key}")
+        if v["file"] is not None and v["line"] is not None:
+            for existing in self.violations:
+                if (existing["file"], existing["line"]) == (v["file"], v["line"]):
+                    raise ViolationError(
+                        f"{existing['rule_id']} is already recorded at {v['file']}:{v['line']}. If this is the same "
+                        "problem it is already covered; if it is a different problem, record it at the line where "
+                        "that problem occurs."
+                    )
         self.violations.append(v)
         return f"Recorded violation #{len(self.violations)} ({v['rule_id']})."
 

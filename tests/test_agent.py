@@ -76,6 +76,7 @@ def test_parallel_tool_calls_return_in_one_message(sample_repo):
         [
             resp(tool_use("a", "list_files"), tool_use("b", "git_log", max_count=5)),
             resp(tool_use("c", "finish_audit", summary="x")),
+            resp(tool_use("d", "finish_audit", summary="x")),
         ]
     )
     AuditAgent(llm, RepoTools(sample_repo)).run("https://github.com/a/b")
@@ -88,6 +89,7 @@ def test_tool_errors_are_reported_back_not_raised(sample_repo):
             resp(tool_use("t1", "read_file", path="../../etc/passwd"), tool_use("t2", "search_code", pattern="(")),
             resp(tool_use("t3", "record_violation", **{**VIOLATION, "severity": "urgent"})),
             resp(tool_use("t4", "finish_audit", summary="x")),
+            resp(tool_use("t5", "finish_audit", summary="x")),
         ]
     )
     agent = AuditAgent(llm, RepoTools(sample_repo))
@@ -101,6 +103,7 @@ def test_duplicate_violation_rejected(sample_repo):
         [
             resp(tool_use("t1", "record_violation", **VIOLATION), tool_use("t2", "record_violation", **VIOLATION)),
             resp(tool_use("t3", "finish_audit", summary="x")),
+            resp(tool_use("t4", "finish_audit", summary="x")),
         ]
     )
     agent = AuditAgent(llm, RepoTools(sample_repo))
@@ -131,3 +134,48 @@ def test_refusal_raises(sample_repo):
     llm = FakeLLM([resp(stop="refusal")])
     with pytest.raises(AgentError):
         AuditAgent(llm, RepoTools(sample_repo)).run("https://github.com/a/b")
+
+
+def test_same_location_rejected_even_with_new_rule_id(sample_repo):
+    other = {**VIOLATION, "rule_id": "SEC-009", "category": "security", "description": "Another view of it"}
+    llm = FakeLLM(
+        [
+            resp(tool_use("t1", "record_violation", **VIOLATION), tool_use("t2", "record_violation", **other)),
+            resp(tool_use("t3", "read_file", path=".github/workflows/ci.yml")),
+            resp(tool_use("t4", "finish_audit", summary="x")),
+        ]
+    )
+    agent = AuditAgent(llm, RepoTools(sample_repo))
+    assert [v["rule_id"] for v in agent.run("https://github.com/a/b")] == ["CI-001"]
+    rejected = tool_results(llm.calls[1])[1]
+    assert rejected["is_error"] and "already recorded at .github/workflows/ci.yml:1" in rejected["content"]
+
+
+def test_finish_blocked_once_until_must_read_files_opened(sample_repo):
+    llm = FakeLLM(
+        [
+            resp(tool_use("t1", "finish_audit", summary="early")),
+            resp(tool_use("t2", "read_file", path="./.github/workflows/ci.yml")),
+            resp(tool_use("t3", "finish_audit", summary="done")),
+        ]
+    )
+    agent = AuditAgent(llm, RepoTools(sample_repo))
+    agent.run("https://github.com/a/b")
+    blocked = tool_results(llm.calls[1])[0]
+    assert blocked["is_error"] and ".github/workflows/ci.yml" in blocked["content"]
+    assert agent.finished and agent.summary == "done"
+    assert len(llm.calls) == 3
+
+
+def test_second_finish_always_ends_the_run(sample_repo):
+    llm = FakeLLM([resp(tool_use(f"f{i}", "finish_audit", summary=str(i))) for i in range(2)])
+    agent = AuditAgent(llm, RepoTools(sample_repo))
+    agent.run("https://github.com/a/b")
+    assert agent.finished and agent.summary == "1"
+
+
+def test_coverage_check_skipped_on_last_turns(sample_repo):
+    llm = FakeLLM([resp(tool_use("t1", "list_files")), resp(tool_use("t2", "finish_audit", summary="x"))])
+    agent = AuditAgent(llm, RepoTools(sample_repo), max_turns=2)
+    agent.run("https://github.com/a/b")
+    assert agent.finished

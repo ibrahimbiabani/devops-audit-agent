@@ -1,6 +1,6 @@
 import pytest
 
-from tools import RepoTools, ToolError, dispatch
+from tools import RepoTools, ToolError, dispatch, is_sensitive_name, is_workflow_file
 
 
 def test_list_files_shows_only_tracked(sample_repo):
@@ -81,3 +81,48 @@ def test_tools_do_not_modify_repo(sample_repo):
         ["git", "-C", str(sample_repo), "status", "--porcelain"], capture_output=True, text=True, check=True
     ).stdout
     assert status.strip() == "?? untracked.txt"
+
+
+@pytest.mark.parametrize(
+    "path, expected",
+    [
+        (".env", True),
+        ("web/.env.production", True),
+        (".ssh/id_rsa", True),
+        ("certs/server.pem", True),
+        (".docker/config.json", True),
+        ("db/.pgpass", True),
+        (".env.example", False),
+        ("config/credentials.sample.json", False),
+        ("docs/.env", False),
+        (".ssh/id_rsa.pub", False),
+        ("src/keys.py", False),
+    ],
+)
+def test_is_sensitive_name(path, expected):
+    assert is_sensitive_name(path) is expected
+
+
+def test_is_workflow_file_only_direct_children():
+    assert is_workflow_file(".github/workflows/ci.yml")
+    assert is_workflow_file(".github/workflows/release.yaml")
+    assert not is_workflow_file(".github/workflows/controls/nested.yml")
+    assert not is_workflow_file(".github/dependabot.yml")
+
+
+def test_list_files_tags_sensitive_names_and_must_read(sample_repo):
+    import subprocess
+
+    (sample_repo / ".env").write_text("DB_PASSWORD=hunter22\n")
+    (sample_repo / ".env.example").write_text("DB_PASSWORD=\n")
+    subprocess.run(["git", "-C", str(sample_repo), "add", ".env", ".env.example"], check=True)
+    t = RepoTools(sample_repo)
+    lines = {line.split(" (")[0]: line for line in t.list_files().splitlines()[1:]}
+    assert lines[".env"].endswith("[sensitive name]")
+    assert "[sensitive name]" not in lines[".env.example"]
+    assert "[sensitive name]" not in lines["app.py"]
+    assert t.must_read_files() == [".env", ".github/workflows/ci.yml"]
+
+
+def test_relpath_canonicalizes(sample_repo):
+    assert RepoTools(sample_repo).relpath("./.github//workflows/../workflows/ci.yml") == ".github/workflows/ci.yml"
