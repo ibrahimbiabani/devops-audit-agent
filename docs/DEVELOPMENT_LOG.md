@@ -9,6 +9,7 @@ did not work. Each step lists the commits that implement it.
 | 2026-10-20 | 2 | Second LLM provider (Google Gemini) and a live smoke test |
 | 2026-10-21 | 3 | Baseline evaluation on four public repositories with known defects |
 | 2026-10-21 | 4 | Changes made in response to the baseline evaluation |
+| 2026-10-21 | 5 | Second evaluation: held-out repositories plus the baseline set; two bugs found and fixed |
 
 ---
 
@@ -157,9 +158,87 @@ measurement:
 
 ---
 
-## Next steps
+## Step 5: Second evaluation
 
-- Run the held-out set, then rerun the original four, on the same model, and compare with
-  the baseline.
-- Consider an optional `inspect_workflows()` tool if CI recall is still low.
-- Produce `sample_report.json` with the strongest available model.
+### Setup
+
+Same model (`gemini-flash-lite-latest`) and settings as the baseline (`--max-turns 20`).
+The three held-out repositories ran first; their files were read only after the prompt was
+frozen, to build answer keys for scoring. The two vulnerable held-out repos are
+[gary-mello/github-vuln-actions](https://github.com/gary-mello/github-vuln-actions), whose
+README lists 8 planted vulnerabilities, and
+[jpr5/vulnerable-workflows-test](https://github.com/jpr5/vulnerable-workflows-test), which
+has no list, so 6 defects were identified by reading its 5 workflows. The healthy held-out
+repo is [pallets/itsdangerous](https://github.com/pallets/itsdangerous).
+
+Reports and traces are in
+[`evals/runs/2026-10-21-after-changes-flash-lite/`](../evals/runs/2026-10-21-after-changes-flash-lite/).
+
+### Results
+
+| Repository | Set | Baseline | After changes |
+|---|---|---|---|
+| gary-mello/github-vuln-actions | held-out | not run | **0 / 8**. Read all 8 workflows in two parallel turns, then dismissed the repository as "a pure demonstration fixture" |
+| jpr5/vulnerable-workflows-test | held-out | not run | **5 / 6, no false positives.** Missed `curl … \| bash` |
+| pallets/itsdangerous | held-out, healthy | not run | **0 findings (correct).** A real investigation: read all workflows and configuration, and searched for credentials |
+| Plazmaz/leaky-repo | original | 0 / 35 | **14 / 35, no false positives.** The coverage check refused the first `finish_audit`, and the agent then read 7 more files and recorded 6 more findings |
+| paastha1/cicd-test-repo | original* | 4 / 6, 2 weak | **6 / 6** as separate findings, plus 2 valid extras (no `permissions:` block, release without tests) |
+| Grafter-labs/grafter-lab-injection | original | 1 / 6 | **1 / 6**, plus 1 plausible extra. Still missed `runs-on:` injection and the `contains()` allowlist |
+| pypa/sampleproject | original*, healthy | 4 false positives | **0 findings.** The false positives are gone, but the real issue (release without tests) is still missed |
+
+\* Prompt examples were derived from these runs, so their improvement is partly biased (see
+Step 4).
+
+**Summary:**
+- **Improved:** false positives on the healthy repos dropped to zero, the sensitive-file
+  recall on leaky-repo rose from 0 to 14, and the agent now reads files in parallel.
+- **Unchanged:** the model still sometimes dismisses fixture-style repositories (gary-mello)
+  and misses subtle CI patterns (Grafter), even though both are named explicitly in the
+  prompt. The two `intentionally vulnerable` held-out repos gave opposite outcomes on the
+  same model, which suggests model capability and run-to-run variance matter as much as the
+  prompt.
+
+### Bugs found and fixed during this round
+
+Both affect only logging, not agent behaviour, so they were fixed mid-round. The one run
+that crashed was repeated with the fix.
+
+1. **A trace write crashed an audit** (paastha1, exit 1, no report). `_trace` redacted the
+   *serialized* JSON of the tool arguments and parsed it back. When the evidence contained
+   `password="…"`, the redaction consumed an escaped quote, the JSON became invalid, and
+   because the trace writer was outside the tool-error guard, the audit ended.
+   - **Fix:** redact each string value inside the structure (`redact_obj`), and wrap trace
+     writing so a logging failure can never end an audit.
+   - **Regression tests:** `test_trace_survives_quoted_secrets_in_arguments` and
+     `test_trace_failure_does_not_end_audit`.
+2. **Secret material reached the trace.** With leaky-repo's files now actually opened, a
+   scan of the saved traces found a PuTTY private-key header, an Apache `$apr1$` password
+   hash and a hex Rails master key in the output previews. These are fake values, but the
+   agent must never write secrets to its logs.
+   - **Fix:** the redactor masks PuTTY keys and password hashes. Trace previews never store
+     file contents: `read_file` keeps only its header line, and `search_code` only its
+     `file:line` locations.
+   - **Clean-up:** the saved traces for this round were re-processed with the same rule
+     before being committed. The baseline traces were scanned and contain no secrets.
+   - **Tests:** `test_trace_never_stores_file_contents` and
+     `test_redacts_putty_keys_and_password_hashes`.
+
+Test suite: 81 tests, all passing.
+
+### Remaining problems and candidate fixes
+
+1. **Dismissing fixture repositories** (gary-mello). Restate the rule where the decision is
+   made: in the first user message and in the `finish_audit` description ("audit it as if it
+   were production; demo or fixture status is irrelevant").
+2. **Secrets found only by content** (21 of leaky-repo's 35 files have generic names, such as
+   `wp-config.php`, `.bashrc`, `heroku.json` and `settings.py`). Instruct a repository-wide
+   `search_code` for credential assignments, and add a few more unambiguous filenames
+   (`.credentials`, `.bash_history`).
+3. **A rejected finding was dropped** (sampleproject). `record_violation` failed on a
+   malformed `rule_id`, and `finish_audit` in the same batch ended the run before the model
+   could retry. Refuse `finish_audit` in a turn where a `record_violation` failed.
+4. **Subtle CI patterns** (Grafter). Prompting alone did not help Flash-Lite. Options are the
+   optional `inspect_workflows()` tool, or a stronger model.
+5. **Model choice.** All runs so far used Flash-Lite because of free-tier congestion. The
+   final `sample_report.json` and a final evaluation should use the strongest available
+   model.
