@@ -1,0 +1,85 @@
+{
+  "repository": "https://github.com/jpr5/vulnerable-workflows-test",
+  "violations": [
+    {
+      "rule_id": "CI-001",
+      "category": "ci_cd",
+      "severity": "critical",
+      "file": ".github/workflows/auto-label.yml",
+      "line": 12,
+      "description": "Dangerous pull_request_target checkout of untrusted PR head ref",
+      "evidence": "pull_request_target combined with actions/checkout@v4 and ref: ${{ github.event.pull_request.head.ref }}",
+      "recommendation": "Remove pull_request_target or do not check out PR head code with write permissions or untrusted ref checkout. Use pull_request instead if code execution is needed."
+    },
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/setup.yml",
+      "line": 15,
+      "description": "Hardcoded API key credential in workflow env block",
+      "evidence": "API_KEY: \"[REDACTED]\"",
+      "recommendation": "Store sensitive API keys and secrets in GitHub Actions encrypted secrets instead of hardcoding them in workflow files."
+    },
+    {
+      "rule_id": "CI-003",
+      "category": "ci_cd",
+      "severity": "high",
+      "file": ".github/workflows/greet-pr.yml",
+      "line": 12,
+      "description": "Untrusted event input interpolated into shell run script",
+      "evidence": "echo \"Thanks for the PR: ${{ github.event.pull_request.title }}\" and user.login interpolated directly into bash run script",
+      "recommendation": "Pass untrusted inputs via environment variables rather than direct shell interpolation to prevent command injection."
+    },
+    {
+      "rule_id": "CI-002",
+      "category": "ci_cd",
+      "severity": "medium",
+      "file": ".github/workflows/auto-label.yml",
+      "line": 1,
+      "description": "Workflow missing explicit top-level permissions block",
+      "evidence": "No permissions block defined in auto-label.yml",
+      "recommendation": "Add a top-level permissions block (e.g. permissions: contents: read) to follow the principle of least privilege."
+    },
+    {
+      "rule_id": "CI-002",
+      "category": "ci_cd",
+      "severity": "medium",
+      "file": ".github/workflows/ci.yml",
+      "line": 1,
+      "description": "Workflow missing explicit top-level permissions block",
+      "evidence": "No permissions block defined in ci.yml",
+      "recommendation": "Add a top-level permissions block (e.g. permissions: contents: read)."
+    },
+    {
+      "rule_id": "CI-002",
+      "category": "ci_cd",
+      "severity": "medium",
+      "file": ".github/workflows/greet-pr.yml",
+      "line": 1,
+      "description": "Workflow missing explicit top-level permissions block",
+      "evidence": "No permissions block defined in greet-pr.yml",
+      "recommendation": "Add a top-level permissions block (e.g. permissions: contents: read)."
+    },
+    {
+      "rule_id": "CI-002",
+      "category": "ci_cd",
+      "severity": "medium",
+      "file": ".github/workflows/manual-deploy.yml",
+      "line": 1,
+      "description": "Workflow missing explicit top-level permissions block",
+      "evidence": "No permissions block defined in manual-deploy.yml",
+      "recommendation": "Add a top-level permissions block."
+    },
+    {
+      "rule_id": "CI-002",
+      "category": "ci_cd",
+      "severity": "medium",
+      "file": ".github/workflows/setup.yml",
+      "line": 1,
+      "description": "Workflow missing explicit top-level permissions block",
+      "evidence": "No permissions block defined in setup.yml",
+      "recommendation": "Add a top-level permissions block."
+    }
+  ]
+}
