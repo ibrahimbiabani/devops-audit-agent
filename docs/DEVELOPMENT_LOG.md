@@ -10,6 +10,7 @@ did not work. Each step lists the commits that implement it.
 | 2026-10-21 | 3 | Baseline evaluation on four public repositories with known defects |
 | 2026-10-21 | 4 | Changes made in response to the baseline evaluation |
 | 2026-10-21 | 5 | Second evaluation: held-out repositories plus the baseline set; two bugs found and fixed |
+| 2026-10-22 | 6 | Gemini made the default provider; Anthropic made optional |
 
 ---
 
@@ -242,3 +243,36 @@ Test suite: 81 tests, all passing.
 5. **Model choice.** All runs so far used Flash-Lite because of free-tier congestion. The
    final `sample_report.json` and a final evaluation should use the strongest available
    model.
+
+---
+
+## Step 6: Gemini as the default provider
+
+**Why:** every run so far used Gemini, and no Anthropic key is available. Until now, though,
+the code treated Anthropic as the default: it was chosen when no key was set, it won when both
+keys were set, and its SDK was a required dependency. The project should match how it is
+actually run and evaluated.
+
+**What changed:**
+
+| Area | Before | After |
+|---|---|---|
+| Default provider | Anthropic (and Anthropic won if both keys were set) | **Gemini** (Gemini wins if both are set; Anthropic is chosen only when it is the only key, or explicitly) |
+| `auditor/llm.py` | Provider selection plus the Claude client | Provider selection and `LLMError` only; each provider is imported only when selected |
+| Claude client | Inside `auditor/llm.py` | Moved to `auditor/anthropic_llm.py` |
+| `requirements.txt` | `anthropic`, `google-genai`, `python-dotenv` | `google-genai`, `python-dotenv` |
+| Anthropic SDK | Required | Optional, in `requirements-anthropic.txt`; installed by `requirements-dev.txt` so tests and CI still cover it |
+| `.env.example` | Both keys, Anthropic first | `GEMINI_API_KEY` (with where to get a free key); Anthropic settings in a commented-out optional block |
+| README | Both providers side by side | Gemini setup, free-tier notes and Gemini client architecture; Anthropic in one "Optional" section |
+| `.gitignore` | — | Ignores `.vscode/` and `.idea/`, since committed local IDE settings are themselves one of the violations the agent checks for |
+
+The agent's behaviour, prompt and tools are unchanged.
+
+**Verification:**
+- The suite has 83 tests, all passing. The tests now check that:
+  - Gemini is chosen by default, and when both keys are set;
+  - the optional Claude path still works when its SDK is installed;
+  - choosing Anthropic without its SDK gives a clear error (`pip install -r requirements-anthropic.txt`) instead of an `ImportError`.
+- A clean virtual environment with only `requirements.txt` (no `anthropic` package) was
+  created to confirm the default install works. The CLI ran, 82 tests passed, and the one
+  Claude-only test was skipped.

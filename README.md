@@ -3,9 +3,10 @@
 An LLM agent that clones a public GitHub repository, investigates it with read-only inspection
 tools, and writes a JSON report of DevOps best-practice violations with evidence and remediation.
 
-The agent loop, tool dispatch and control flow are hand-written Python. It works with either
-Anthropic (Claude) or Google (Gemini), using only their official SDKs (`anthropic`,
-`google-genai`). No agent frameworks are used.
+The agent loop, tool dispatch and control flow are hand-written Python. The LLM is Google
+Gemini, called through Google's official `google-genai` SDK. No agent frameworks are used.
+(Anthropic Claude is supported as an optional alternative; see
+[Optional: Anthropic Claude](#optional-anthropic-claude).)
 
 ## Installation
 
@@ -25,24 +26,25 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-Put **one** API key in `.env` (or export it in the shell):
+Set your Gemini API key in `.env` (or export it in the shell):
 
-| Provider | Variable | Default model |
+```bash
+GEMINI_API_KEY=your-key-here
+```
+
+A free key is available from [Google AI Studio](https://aistudio.google.com/apikey).
+`GOOGLE_API_KEY` is also accepted.
+
+| Variable | Default | Purpose |
 |---|---|---|
-| Anthropic | `ANTHROPIC_API_KEY` | `claude-opus-5-5` |
-| Google Gemini | `GEMINI_API_KEY` | `gemini-flash-latest` |
+| `GEMINI_API_KEY` | (required) | Gemini API key |
+| `AUDIT_MODEL` | `gemini-flash-latest` | Gemini model to use |
 
-The provider is chosen from whichever key is set (Anthropic if both are). Optional variables:
-
-| Variable | Purpose |
-|---|---|
-| `LLM_PROVIDER` | Force `anthropic` or `gemini` |
-| `AUDIT_MODEL` | Override the model for the chosen provider |
-| `AUDIT_EFFORT` | Anthropic reasoning effort (`low` … `max`, default `high`) |
-
-On the Gemini free tier, per-minute rate limits are absorbed by automatic retries with backoff.
-A full audit takes up to `--max-turns` requests, so the daily request quota limits how many
-audits you can run per day.
+**Free tier.** Per-minute rate limits (HTTP 429) and temporary overload (HTTP 503) are
+retried automatically with exponential backoff. A full audit makes up to `--max-turns`
+requests, so the daily quota limits how many audits you can run per day. If
+`gemini-flash-latest` is congested, `AUDIT_MODEL=gemini-flash-lite-latest` responds much
+faster, at some cost in reasoning quality.
 
 ## Usage
 
@@ -56,8 +58,8 @@ python agent.py --repo https://github.com/<owner>/<repo> --output report.json
 | `--output` | Report path (required) |
 | `--max-turns N` | Maximum agent turns, default 40 |
 | `--trace trace.jsonl` | Write one JSON line per tool call (redacted) |
-| `--provider` | `anthropic` or `gemini` (overrides `LLM_PROVIDER`) |
-| `--model` | Override the model |
+| `--model` | Override the model (e.g. `gemini-flash-lite-latest`) |
+| `--provider` | `gemini` (default) or `anthropic` (optional, see below) |
 | `--keep-clone` | Keep the temporary clone for debugging |
 | `-v` | Log the agent's reasoning and tool calls to stderr |
 
@@ -95,8 +97,9 @@ agent.py              CLI: parse args, clone, run agent, write report, clean up
 tools.py              Read-only inspection tools + their JSON schemas + dispatch
 auditor/
   loop.py             AuditAgent: the observe → reason → act loop
-  llm.py              Provider selection; Anthropic Messages API wrapper and error mapping
-  gemini_llm.py       Gemini adapter: converts history to/from Gemini function calling
+  gemini_llm.py       Gemini client: converts history to/from Gemini function calling
+  llm.py              Provider selection (Gemini by default) and the shared LLMError
+  anthropic_llm.py    Optional Claude provider, loaded only when selected
   prompts.py          System prompt and agent-only tools (record_violation, finish_audit)
   report.py           Violation validation, dedupe, JSON report writer
   repo.py             URL validation, isolated clone, cleanup
@@ -137,17 +140,31 @@ false positives down.
 - Known credential formats (cloud keys, tokens, private keys) are masked before tool output reaches the LLM.
 - Report fields, logs and traces get an extra redaction pass that also masks `password = "..."`-style values.
 
-**Providers.** The loop keeps its conversation in one format. `ClaudeLLM` sends it to the
-Messages API as-is. `GeminiLLM` converts it to Gemini `contents` on each call (tool calls
-become `function_call`/`function_response` parts) and converts replies back. Gemini's own turns
-are replayed unchanged so its thought signatures survive. Both raise `LLMError` with a clear
-message on auth, quota, model or network failures.
+**Gemini client** (`auditor/gemini_llm.py`). The loop keeps its conversation as role/content
+messages with `tool_use` and `tool_result` blocks. On each call, `GeminiLLM` converts that
+history to Gemini `contents`: tool calls become `function_call` parts and their results
+`function_response` parts. It also converts Gemini's reply back. Tool schemas are passed as
+JSON Schema (`parameters_json_schema`), and automatic function calling is disabled so the
+loop stays in control. Gemini's own turns are replayed unchanged, so its thought signatures
+survive. Safety blocks are reported as refusals. Auth, quota, model and network failures
+become an `LLMError` with a clear message.
 
-**Anthropic settings.** The default model is `claude-opus-5-5` with `effort: high`. Requests use
-automatic prompt caching, so the growing conversation is not re-billed in full each turn.
-Requests also opt into server-side refusal fallback (`fallbacks: "default"`), so a
-safety-classifier decline on security-related content is retried on a fallback model instead
-of aborting the audit.
+## Optional: Anthropic Claude
+
+Gemini is the default and needs nothing else. To use Claude instead:
+
+```bash
+pip install -r requirements-anthropic.txt
+```
+
+Then set `LLM_PROVIDER=anthropic` and `ANTHROPIC_API_KEY` in `.env`, or pass
+`--provider anthropic`. If only `ANTHROPIC_API_KEY` is set, Claude is picked automatically;
+if both keys are set, Gemini wins.
+
+The default model is `claude-opus-5-5` with `effort: high` (override with `AUDIT_MODEL` and
+`AUDIT_EFFORT`). Requests use automatic prompt caching. They also opt into server-side
+refusal fallback, so a safety-classifier decline on security content is retried on a
+fallback model instead of ending the audit.
 
 ## Tests
 
@@ -161,7 +178,8 @@ The tests run offline and make no API calls. They cover:
 - the tools against a temporary git repository (including path-escape and read-only checks)
 - report validation and redaction
 - the agent loop, driven by a scripted fake LLM: tool dispatch, parallel calls, error recovery, duplicates, turn limits and refusals
-- the Gemini adapter, using real SDK types and a fake client: message conversion, refusals, an end-to-end loop run, provider selection
+- the Gemini client, using real SDK types and a fake client: message conversion, refusals, an end-to-end loop run
+- provider selection: Gemini by default, the optional Anthropic path, and a clear error when its SDK is missing
 - CLI input validation
 
 ## Development history
