@@ -1,0 +1,95 @@
+{
+  "repository": "https://github.com/paastha1/cicd-test-repo",
+  "violations": [
+    {
+      "rule_id": "SEC-007",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/ci.yml",
+      "line": 35,
+      "description": "Sensitive files and private keys uploaded as CI/CD artifacts",
+      "evidence": "Uploading .env, credentials.json, ~/.ssh/id_rsa, and private keys as workflow artifacts in .github/workflows/ci.yml and release.yml",
+      "recommendation": "Exclude sensitive configuration files, environment files, and private keys from workflow artifacts."
+    },
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/deploy.yml",
+      "line": 12,
+      "description": "Hardcoded production/sensitive credentials in workflow env block",
+      "evidence": "AWS_SECRET_ACCESS_KEY and DATABASE_PASSWORD hardcoded in job env block in .github/workflows/deploy.yml",
+      "recommendation": "Remove hardcoded credentials and inject them securely using GitHub Actions secrets (${{ secrets.AWS_SECRET_ACCESS_KEY }}, etc.)."
+    },
+    {
+      "rule_id": "SEC-002",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/release.yml",
+      "line": 11,
+      "description": "Hardcoded sensitive API tokens in workflow env block",
+      "evidence": "PYPI_API_TOKEN and DOCKER_HUB_TOKEN hardcoded in job env block in .github/workflows/release.yml",
+      "recommendation": "Remove hardcoded tokens and use GitHub Actions encrypted secrets instead."
+    },
+    {
+      "rule_id": "SEC-003",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/ci.yml",
+      "line": 25,
+      "description": "Secrets echoed and printed to workflow logs",
+      "evidence": "echo statements and printenv | grep -i token printing secrets in .github/workflows/ci.yml",
+      "recommendation": "Remove debugging steps that output secrets or tokens to the workflow console logs."
+    },
+    {
+      "rule_id": "SEC-004",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/deploy.yml",
+      "line": 21,
+      "description": "Bash debug mode (set -x / set -ex) expanding secrets in logs",
+      "evidence": "set -x enabled before running commands referencing sensitive environment variables in .github/workflows/deploy.yml",
+      "recommendation": "Remove set -x / set -ex from steps handling sensitive environment variables or secrets."
+    },
+    {
+      "rule_id": "SEC-005",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/deploy.yml",
+      "line": 27,
+      "description": "Verbose HTTP requests (curl -v) exposing authorization headers in logs",
+      "evidence": "curl -v / --verbose used with authorization headers in deploy.yml and release.yml",
+      "recommendation": "Remove --verbose or -v flags from curl commands that include authorization headers or sensitive payloads."
+    },
+    {
+      "rule_id": "CI-001",
+      "category": "ci_cd",
+      "severity": "medium",
+      "file": ".github/workflows/ci.yml",
+      "line": 1,
+      "description": "Missing top-level permissions block in GitHub Actions workflows",
+      "evidence": "None of the workflow files (.github/workflows/*.yml) define a permissions block.",
+      "recommendation": "Define explicit least-privilege permissions blocks at the workflow or job level."
+    },
+    {
+      "rule_id": "SEC-006",
+      "category": "security",
+      "severity": "medium",
+      "file": ".github/workflows/ci.yml",
+      "line": 31,
+      "description": "Secrets passed as command-line arguments",
+      "evidence": "npm publish --token=${{ secrets.NPM_TOKEN }} passes secret as CLI flag in .github/workflows/ci.yml",
+      "recommendation": "Pass secrets via environment variables or configuration files rather than command-line arguments where they can appear in process lists."
+    },
+    {
+      "rule_id": "CI-002",
+      "category": "ci_cd",
+      "severity": "medium",
+      "file": ".github/workflows/release.yml",
+      "line": 7,
+      "description": "Publish/release job running without prerequisite test or build validation jobs",
+      "evidence": "release.yml runs publish job on release published without requiring a test job or dependency check",
+      "recommendation": "Add a 'needs:' dependency on passing test and build jobs before executing release or publish jobs."
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "repository": "https://github.com/jpr5/vulnerable-workflows-test",
+  "violations": [
+    {
+      "rule_id": "CI-002",
+      "category": "ci_cd",
+      "severity": "critical",
+      "file": ".github/workflows/auto-label.yml",
+      "line": 3,
+      "description": "Untrusted PR head ref checked out under pull_request_target with write permissions",
+      "evidence": ".github/workflows/auto-label.yml uses pull_request_target and checks out ref: ${{ github.event.pull_request.head.ref }}",
+      "recommendation": "Avoid checking out untrusted PR head refs on pull_request_target workflows, or use pull_request instead."
+    },
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/setup.yml",
+      "line": 15,
+      "description": "Hardcoded credential in workflow environment variables block",
+      "evidence": ".github/workflows/setup.yml defines API_KEY: \"[REDACTED]\"",
+      "recommendation": "Use GitHub Secrets instead of hardcoding API keys or credentials in workflow files."
+    },
+    {
+      "rule_id": "CI-003",
+      "category": "ci_cd",
+      "severity": "high",
+      "file": ".github/workflows/greet-pr.yml",
+      "line": 12,
+      "description": "Untrusted pull request title interpolated directly into shell run script",
+      "evidence": ".github/workflows/greet-pr.yml interpolates ${{ github.event.pull_request.title }} directly in run:",
+      "recommendation": "Pass untrusted event data via environment variables instead of direct shell interpolation."
+    },
+    {
+      "rule_id": "CI-004",
+      "category": "ci_cd",
+      "severity": "high",
+      "file": ".github/workflows/manual-deploy.yml",
+      "line": 19,
+      "description": "Untrusted workflow dispatch inputs interpolated directly into shell run script",
+      "evidence": ".github/workflows/manual-deploy.yml uses ${{ inputs.version }} and ${{ inputs.environment }} directly in shell run script",
+      "recommendation": "Pass workflow inputs via environment variables instead of direct shell interpolation."
+    },
+    {
+      "rule_id": "CI-001",
+      "category": "ci_cd",
+      "severity": "medium",
+      "file": ".github/workflows/ci.yml",
+      "line": 4,
+      "description": "Missing permissions block in CI workflow",
+      "evidence": ".github/workflows/ci.yml runs without an explicit permissions: block",
+      "recommendation": "Add an explicit permissions block (e.g. contents: read) to all jobs or workflows."
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "repository": "https://github.com/Grafter-labs/grafter-lab-injection",
+  "violations": [
+    {
+      "rule_id": "CI-001",
+      "category": "ci_cd",
+      "severity": "high",
+      "file": ".github/workflows/script-injection.yml",
+      "line": 15,
+      "description": "Direct interpolation of untrusted github.event.issue.title into shell script",
+      "evidence": "run: echo \"GRAFTER_MARKER title=${{ github.event.issue.title }}\"",
+      "recommendation": "Pass untrusted event data into the step via environment variables instead of direct shell expansion."
+    },
+    {
+      "rule_id": "CI-002",
+      "category": "ci_cd",
+      "severity": "medium",
+      "file": ".github/workflows/test.yaml",
+      "line": 5,
+      "description": "Missing permissions block in GitHub Actions workflow",
+      "evidence": "jobs:\\n    test:\\n      runs-on: ubuntu-latest",
+      "recommendation": "Add an explicit top-level or job-level permissions block (e.g. permissions: contents: read) adhering to the principle of least privilege."
+    }
+  ]
+}
