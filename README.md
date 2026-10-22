@@ -38,13 +38,36 @@ A free key is available from [Google AI Studio](https://aistudio.google.com/apik
 | Variable | Default | Purpose |
 |---|---|---|
 | `GEMINI_API_KEY` | (required) | Gemini API key |
-| `AUDIT_MODEL` | `gemini-flash-latest` | Gemini model to use |
+| `AUDIT_MODEL` | `gemini-3.5-flash-lite` | Primary model (`--model` overrides it) |
+| `AUDIT_FALLBACK_MODELS` | `gemini-3.1-flash-lite,gemini-3.6-flash,gemini-3-flash-preview` | Models to switch to if the current one is unavailable; `none` disables |
 
-**Free tier.** Per-minute rate limits (HTTP 429) and temporary overload (HTTP 503) are
-retried automatically with exponential backoff. A full audit makes up to `--max-turns`
-requests, so the daily quota limits how many audits you can run per day. If
-`gemini-flash-latest` is congested, `AUDIT_MODEL=gemini-flash-lite-latest` responds much
-faster, at some cost in reasoning quality.
+### How the model is chosen
+
+The primary model is `--model`, else `AUDIT_MODEL`, else `gemini-3.5-flash-lite`. The default
+is a concrete model rather than a `-latest` alias on purpose: Google repoints aliases without
+notice. During development, `gemini-flash-latest` moved to `gemini-3.8-flash`, whose free tier
+allows 20 requests a day, which is fewer than one audit needs. The model that actually served
+an audit is printed at the end of the run (`model: …`) and written as the last line of the
+`--trace` file.
+
+### Free-tier errors and fallback
+
+Free-tier Gemini models are often overloaded (HTTP 503 "high demand") or out of quota (HTTP
+429). The client handles each case differently:
+
+| Error | What happens |
+|---|---|
+| 503 / 500 / 502 / 504 | Retried twice with backoff (about 2 s, then 4 s), then switch to the next model |
+| 429, per-minute limit | Wait the delay the API asks for (up to 60 s) and retry |
+| 429, daily quota | Switch to the next model immediately; waiting will not help |
+| Request timeout (120 s) | Switch to the next model immediately |
+| 404 (model retired) | Switch to the next model |
+| 401 / 403 / 400 | Stop with a clear error; these are configuration problems |
+
+Each model has its own quota, so when one is busy or used up the audit continues on the next.
+Once switched, the audit stays on the new model. If every model fails, the run exits with
+code 1 and one message listing why each model failed (e.g. `daily free-tier quota used up,
+resets in ~16h`).
 
 ## Usage
 
@@ -58,7 +81,7 @@ python agent.py --repo https://github.com/<owner>/<repo> --output report.json
 | `--output` | Report path (required) |
 | `--max-turns N` | Maximum agent turns, default 40 |
 | `--trace trace.jsonl` | Write one JSON line per tool call (redacted) |
-| `--model` | Override the model (e.g. `gemini-flash-lite-latest`) |
+| `--model` | Primary model (default `gemini-3.5-flash-lite`) |
 | `--provider` | `gemini` (default) or `anthropic` (optional, see below) |
 | `--keep-clone` | Keep the temporary clone for debugging |
 | `-v` | Log the agent's reasoning and tool calls to stderr |
@@ -146,8 +169,10 @@ history to Gemini `contents`: tool calls become `function_call` parts and their 
 `function_response` parts. It also converts Gemini's reply back. Tool schemas are passed as
 JSON Schema (`parameters_json_schema`), and automatic function calling is disabled so the
 loop stays in control. Gemini's own turns are replayed unchanged, so its thought signatures
-survive. Safety blocks are reported as refusals. Auth, quota, model and network failures
-become an `LLMError` with a clear message.
+survive. This replay also makes switching models mid-audit safe; that was checked against the
+live API, while stripping the signatures is rejected with a 400. Retries and fallback are
+handled in the client rather than by the SDK, so each error type gets the handling in the
+table above. Safety blocks are reported as refusals.
 
 ## Optional: Anthropic Claude
 

@@ -11,6 +11,7 @@ did not work. Each step lists the commits that implement it.
 | 2026-10-21 | 4 | Changes made in response to the baseline evaluation |
 | 2026-10-21 | 5 | Second evaluation: held-out repositories plus the baseline set; two bugs found and fixed |
 | 2026-10-22 | 6 | Gemini made the default provider; Anthropic made optional |
+| 2026-10-22 | 7 | Pinned default model, per-error retry handling, automatic model fallback |
 
 ---
 
@@ -276,3 +277,83 @@ The agent's behaviour, prompt and tools are unchanged.
 - A clean virtual environment with only `requirements.txt` (no `anthropic` package) was
   created to confirm the default install works. The CLI ran, 82 tests passed, and the one
   Claude-only test was skipped.
+
+---
+
+## Step 7: Model selection, retries and fallback
+
+### The problem
+
+A run with the default settings (`gemini-flash-latest`) failed after about 6 minutes with
+exit 1, before completing a single turn. Its log showed three separate problems:
+
+| Time | Error | Meaning |
+|---|---|---|
+| +5 s | `503 UNAVAILABLE`, "high demand" | Google's servers for that model were overloaded |
+| +5 min | `504 DEADLINE_EXCEEDED` | The retried request waited in Google's queue until the 300 s timeout ran out |
+| +5 min 20 s | `429 RESOURCE_EXHAUSTED`, quota `GenerateRequestsPerDayPerProjectPerModel-FreeTier`, **limit 20**, model `gemini-3.8-flash`, retry in 16 h | The **daily** free quota was used up |
+
+Two findings came out of this:
+- **The default was a moving alias.** `gemini-flash-latest` is an alias that Google repoints.
+  Its metadata does not say which model it points to; the 429 error revealed it was
+  `gemini-3.8-flash`. A free tier of 20 requests a day is fewer than one audit needs.
+- **The SDK's retries could not tell errors apart.** They retried a daily-quota 429 (which
+  waiting cannot fix) the same way as a brief overload, and waited the full timeout on a
+  stuck request.
+
+### Investigating the available models
+
+One minimal request was sent to each text-capable Flash model on the key (2026-10-22):
+
+| Model | Result |
+|---|---|
+| `gemini-3.5-flash-lite` | OK (but returned 503 at other moments the same day) |
+| `gemini-3.6-flash`, `gemini-3-flash-preview` | OK (`gemini-3.5-flash` silently served as `gemini-3.6-flash`) |
+| `gemini-3.1-flash-lite` | 503 at the time |
+| `gemini-3.7-flash`, `gemini-3.8-flash`, `gemini-flash-latest` | 429 quota |
+| `gemini-2.5-flash`, `gemini-2.5-flash-lite` | 404, "no longer available to new users" |
+
+**Can an audit switch models mid-conversation?** Gemini attaches thought signatures to its
+turns, so this was tested on the live API. A conversation was started on
+`gemini-3.5-flash-lite` (its function call carried a signature) and continued on each other
+model:
+
+| Continued on | Turns replayed unchanged | Signatures stripped |
+|---|---|---|
+| `gemini-3.6-flash` | OK | 400 "Function call is missing a thought_signature" |
+| `gemini-3-flash-preview` | OK | 400 |
+| `gemini-3.1-flash-lite` | OK | 400 |
+
+So switching is safe as long as turns are replayed exactly as received, which the adapter
+already does.
+
+### Changes
+
+| # | Change | Where |
+|---|---|---|
+| 1 | The default model is the concrete `gemini-3.5-flash-lite` instead of the `gemini-flash-latest` alias, so results are reproducible | `auditor/gemini_llm.py` |
+| 2 | Automatic fallback: when a model is unavailable, the audit switches to the next in `AUDIT_FALLBACK_MODELS` (default `gemini-3.1-flash-lite, gemini-3.6-flash, gemini-3-flash-preview`) and stays there. Each model has its own quota. | `auditor/gemini_llm.py` |
+| 3 | Retries moved from the SDK into our client, with handling per error type: 5xx is retried twice with backoff and then fails over; a per-minute 429 waits the delay the API requests (up to 60 s); a daily-quota 429, a timeout or a 404 fails over immediately; 400/401/403 stop with a clear error | `auditor/gemini_llm.py` |
+| 4 | The request timeout is 120 s instead of 300 s, and a timeout fails over instead of retrying the same model | `auditor/gemini_llm.py` |
+| 5 | The concrete model that served the audit (`model_version` from the API) is logged, printed at the end of the run, and written as the last line of the trace | `auditor/gemini_llm.py`, `agent.py` |
+| — | If every model fails, a single error lists each model and why it failed (e.g. `daily free-tier quota used up, resets in ~16h`) | `auditor/gemini_llm.py` |
+
+### Verification
+
+- **Tests:** 11 new offline tests use the SDK's real error classes, with error bodies in the
+  exact shape of the live 429. They cover each error path, staying on the fallback model,
+  the combined error message, and `AUDIT_FALLBACK_MODELS` parsing. The suite has 94 tests,
+  all passing.
+- **Live run** with no model settings, on `jpr5/vulnerable-workflows-test` with
+  `--max-turns 15`: exit 0 in 74 s. On the first turn `gemini-3.5-flash-lite` returned a 503;
+  it was retried once after 3 s and succeeded. The run reported
+  `model: gemini-3.5-flash-lite`. Results are in
+  [`evals/runs/2026-10-22-smoke-defaults/`](../evals/runs/2026-10-22-smoke-defaults/).
+
+### Still open
+
+The same anti-pattern (no `permissions:` block) was recorded once per workflow file, five
+times, under a single reused rule ID. The prompt asks for one finding per anti-pattern, so
+these are duplicates a grader would count against precision. Because the rule ID is reused,
+code can detect it: candidate fix is to merge a repeated rule ID into the first finding's
+evidence.
