@@ -6,6 +6,7 @@ python agent.py --repo https://github.com/<owner>/<repo> --output report.json
 from __future__ import annotations
 
 import argparse
+import json
 import logging
 import sys
 from pathlib import Path
@@ -28,7 +29,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument("--max-turns", type=int, default=40, help="Upper bound on agent turns (default: 40)")
     p.add_argument("--trace", type=Path, help="Write a JSONL tool-call trace to this file")
     p.add_argument("--provider", choices=PROVIDERS, help="LLM provider (default: gemini; or LLM_PROVIDER)")
-    p.add_argument("--model", help="Override the model (default: AUDIT_MODEL, else gemini-flash-latest)")
+    p.add_argument("--model", help="Primary model (default: AUDIT_MODEL, else gemini-3.5-flash-lite)")
     p.add_argument("--keep-clone", action="store_true", help="Do not delete the temporary clone")
     p.add_argument("-v", "--verbose", action="store_true", help="Log agent steps to stderr")
     return p.parse_args(argv)
@@ -56,7 +57,7 @@ def main(argv: list[str] | None = None) -> int:
     workdir = None
     try:
         llm = make_llm(args.provider, args.model)
-        log.info("Using %s model %s", type(llm).__name__, llm.model)
+        log.info("Using %s, models in order: %s", type(llm).__name__, ", ".join(getattr(llm, "models", [llm.model])))
         log.info("Cloning %s", repository)
         workdir = clone(repository)
         agent = AuditAgent(llm, RepoTools(workdir), max_turns=args.max_turns, trace_path=args.trace)
@@ -74,7 +75,11 @@ def main(argv: list[str] | None = None) -> int:
         elif workdir:
             print(f"clone kept at {workdir}", file=sys.stderr)
 
-    print(f"Wrote {len(violations)} violation(s) to {args.output}", file=sys.stderr)
+    used = getattr(llm, "models_used", None) or [llm.model]
+    if args.trace:
+        with args.trace.open("a", encoding="utf-8") as fh:
+            fh.write(json.dumps({"event": "models_used", "models": used}) + "\n")
+    print(f"Wrote {len(violations)} violation(s) to {args.output} (model: {', '.join(used)})", file=sys.stderr)
     return 0
 
 
