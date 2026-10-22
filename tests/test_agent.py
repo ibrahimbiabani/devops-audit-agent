@@ -179,3 +179,52 @@ def test_coverage_check_skipped_on_last_turns(sample_repo):
     agent = AuditAgent(llm, RepoTools(sample_repo), max_turns=2)
     agent.run("https://github.com/a/b")
     assert agent.finished
+
+
+def test_trace_survives_quoted_secrets_in_arguments(sample_repo, tmp_path):
+    # Regression: redacting the serialized JSON broke its quoting and crashed the audit.
+    tricky = {**VIOLATION, "evidence": 'env sets password="hunter22" and token: "abcd1234"'}
+    llm = FakeLLM(
+        [
+            resp(
+                tool_use("t1", "record_violation", **tricky),
+                tool_use("t2", "read_file", path=".github/workflows/ci.yml"),
+            ),
+            resp(tool_use("t3", "finish_audit", summary="x")),
+        ]
+    )
+    trace = tmp_path / "trace.jsonl"
+    AuditAgent(llm, RepoTools(sample_repo), trace_path=trace).run("https://github.com/a/b")
+    entries = [json.loads(line) for line in trace.read_text().splitlines()]
+    assert [e["tool"] for e in entries] == ["record_violation", "read_file", "finish_audit"]
+    assert "hunter22" not in trace.read_text() and "abcd1234" not in trace.read_text()
+
+
+def test_trace_failure_does_not_end_audit(sample_repo, tmp_path):
+    llm = FakeLLM(
+        [
+            resp(
+                tool_use("t1", "record_violation", **VIOLATION),
+                tool_use("t1b", "read_file", path=".github/workflows/ci.yml"),
+            ),
+            resp(tool_use("t2", "finish_audit", summary="x")),
+        ]
+    )
+    agent = AuditAgent(llm, RepoTools(sample_repo), trace_path=tmp_path / "missing-dir" / "trace.jsonl")
+    assert agent.run("https://github.com/a/b") == [VIOLATION]
+
+
+def test_trace_never_stores_file_contents(sample_repo, tmp_path):
+    llm = FakeLLM(
+        [
+            resp(tool_use("t1", "read_file", path="app.py"), tool_use("t2", "search_code", pattern="DB_PATH")),
+            resp(tool_use("t3", "read_file", path=".github/workflows/ci.yml")),
+            resp(tool_use("t4", "finish_audit", summary="x")),
+        ]
+    )
+    trace = tmp_path / "trace.jsonl"
+    AuditAgent(llm, RepoTools(sample_repo), trace_path=trace).run("https://github.com/a/b")
+    entries = {e["tool"] + e["input"].get("path", ""): e for e in map(json.loads, trace.read_text().splitlines())}
+    assert entries["read_fileapp.py"]["output_preview"] == "app.py (lines 1-4 of 4) [contents omitted]"
+    assert entries["search_code"]["output_preview"] == "app.py:3"
+    assert "alice" not in trace.read_text()

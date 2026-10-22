@@ -81,3 +81,21 @@ def test_empty_report_is_valid_json(tmp_path):
     out = tmp_path / "r.json"
     write_report(build_report("https://github.com/a/b", []), out)
     assert json.loads(out.read_text()) == {"repository": "https://github.com/a/b", "violations": []}
+
+
+def test_redact_obj_keeps_structure():
+    from auditor.redact import redact_obj
+
+    out = redact_obj({"evidence": 'password="hunter22"', "line": 3, "tags": ["token: abcd1234", None]})
+    assert out["line"] == 3 and out["tags"][1] is None
+    assert "hunter22" not in out["evidence"] and "abcd1234" not in out["tags"][0]
+
+
+def test_redacts_putty_keys_and_password_hashes():
+    from auditor.redact import redact_tokens
+
+    putty = "PuTTY-User-Key-File-2: ssh-rsa\nEncryption: none\nPrivate-Lines: 1\nAAAAsecret\nPrivate-MAC: abc123\n"
+    assert "AAAAsecret" not in redact_tokens(putty)
+    for h in ("admin:$apr1$tp8glkbm$abcdefghijklmnopqrstuv", "root:$6$saltsalt$hashhashhashhash:19000"):
+        out = redact_tokens(h)
+        assert "[REDACTED:password_hash]" in out and "hash" not in out.split("]")[-1][:4]

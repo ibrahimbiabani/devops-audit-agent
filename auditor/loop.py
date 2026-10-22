@@ -14,13 +14,27 @@ from typing import Any, Protocol
 
 import tools as inspection
 from auditor.prompts import AGENT_TOOL_SCHEMAS, SYSTEM_PROMPT
-from auditor.redact import redact
+from auditor.redact import redact, redact_obj
 from auditor.report import ViolationError, dedupe_key, validate_violation
 
 log = logging.getLogger(__name__)
 
 MAX_NUDGES = 2
 MAX_UNREAD_LISTED = 25
+
+
+def trace_preview(tool: str, output: str, is_error: bool) -> str:
+    """What the trace keeps of a tool's output. File contents are never stored.
+
+    Pattern redaction cannot recognise every secret format, so read_file keeps
+    only its header line and search_code only its file:line locations.
+    """
+    if not is_error and tool == "read_file":
+        return redact(output.split("\n", 1)[0]) + " [contents omitted]"
+    if not is_error and tool == "search_code":
+        locations = [":".join(line.split(":", 2)[:2]) for line in output.splitlines() if line.count(":") >= 2]
+        return redact(", ".join(locations)[:500] if locations else output.split("\n", 1)[0])
+    return redact(output[:500])
 
 
 class LLM(Protocol):
@@ -121,7 +135,10 @@ class AuditAgent:
             log.exception("Tool %s crashed", name)
             output, is_error = f"Error: tool {name} failed unexpectedly ({type(e).__name__})", True
 
-        self._trace(name, args, output, is_error, time.monotonic() - started)
+        try:
+            self._trace(name, args, output, is_error, time.monotonic() - started)
+        except Exception:  # logging must never end an audit
+            log.exception("Could not write trace entry for %s", name)
         result: dict[str, Any] = {"type": "tool_result", "tool_use_id": block.id, "content": output}
         if is_error:
             result["is_error"] = True
@@ -171,16 +188,17 @@ class AuditAgent:
                 log.info("[turn %d] model: %s", self.turn, redact(b.text.strip())[:500])
 
     def _trace(self, name: str, args: dict[str, Any], output: str, is_error: bool, seconds: float) -> None:
-        log.info("[turn %d] %s(%s)%s", self.turn, name, redact(json.dumps(args))[:200], " -> error" if is_error else "")
+        safe_args = redact_obj(args)
+        log.info("[turn %d] %s(%s)%s", self.turn, name, json.dumps(safe_args)[:200], " -> error" if is_error else "")
         if not self.trace_path:
             return
         entry = {
             "turn": self.turn,
             "tool": name,
-            "input": json.loads(redact(json.dumps(args))),
+            "input": safe_args,
             "is_error": is_error,
             "output_chars": len(output),
-            "output_preview": redact(output[:500]),
+            "output_preview": trace_preview(name, output, is_error),
             "seconds": round(seconds, 3),
         }
         with self.trace_path.open("a", encoding="utf-8") as fh:

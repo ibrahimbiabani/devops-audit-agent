@@ -15,6 +15,8 @@ import re
 
 _TOKEN_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
     ("private_key", re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----[\s\S]*?(?:-----END [A-Z ]*PRIVATE KEY-----|\Z)")),
+    ("putty_private_key", re.compile(r"PuTTY-User-Key-File-\d+:[\s\S]*?(?:Private-MAC:[^\n]*|\Z)")),
+    ("password_hash", re.compile(r"\$(?:1|2[abxy]?|5|6|apr1|y)\$[./A-Za-z0-9$]{8,}")),
     ("aws_access_key_id", re.compile(r"\b(?:AKIA|ASIA)[0-9A-Z]{16}\b")),
     ("github_token", re.compile(r"\b(?:gh[pousr]_[A-Za-z0-9]{36,}|github_pat_[A-Za-z0-9_]{22,})\b")),
     ("slack_token", re.compile(r"\bxox[abprs]-[A-Za-z0-9-]{10,}\b")),
@@ -51,3 +53,17 @@ def redact(text: str) -> str:
         return f"{m.group('key')}{m.group('sep')}{q}[REDACTED]{q}"
 
     return _ASSIGNMENT.sub(_mask, text)
+
+
+def redact_obj(obj):
+    """Apply ``redact`` to every string inside a JSON-like structure.
+
+    Redacting a serialized JSON string instead can break its quoting.
+    """
+    if isinstance(obj, str):
+        return redact(obj)
+    if isinstance(obj, dict):
+        return {k: redact_obj(v) for k, v in obj.items()}
+    if isinstance(obj, list | tuple):
+        return [redact_obj(v) for v in obj]
+    return obj
