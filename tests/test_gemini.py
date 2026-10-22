@@ -1,4 +1,4 @@
-"""Gemini adapter tests: real SDK types, fake client, no network."""
+"""Gemini adapter (default provider) and provider selection tests: real SDK types, fake client, no network."""
 
 from types import SimpleNamespace as NS
 
@@ -6,7 +6,7 @@ import pytest
 from google.genai import types
 
 from auditor.gemini_llm import GeminiLLM, normalize, to_contents, to_tools
-from auditor.llm import ClaudeLLM, LLMError, detect_provider, make_llm
+from auditor.llm import LLMError, detect_provider, make_llm
 from auditor.loop import AuditAgent
 from tools import TOOL_SCHEMAS, RepoTools
 
@@ -124,26 +124,44 @@ def test_agent_runs_on_gemini_adapter(sample_repo):
     assert sent.name == "read_file" and "pull_request_target" in sent.response["output"]
 
 
-def test_provider_detection(monkeypatch):
+def test_provider_detection_defaults_to_gemini(monkeypatch):
     for var in ("LLM_PROVIDER", "ANTHROPIC_API_KEY", "GEMINI_API_KEY", "GOOGLE_API_KEY"):
         monkeypatch.delenv(var, raising=False)
-    assert detect_provider() == "anthropic"
-    monkeypatch.setenv("GEMINI_API_KEY", "x")
     assert detect_provider() == "gemini"
     monkeypatch.setenv("ANTHROPIC_API_KEY", "x")
-    assert detect_provider() == "anthropic"
-    monkeypatch.setenv("LLM_PROVIDER", "gemini")
-    assert detect_provider() == "gemini"
-
-
-def test_make_llm(monkeypatch):
-    monkeypatch.delenv("AUDIT_MODEL", raising=False)
+    assert detect_provider() == "anthropic"  # only an Anthropic key present
     monkeypatch.setenv("GEMINI_API_KEY", "x")
-    assert isinstance(make_llm("anthropic"), ClaudeLLM)
-    gem = make_llm("gemini")
+    assert detect_provider() == "gemini"  # Gemini wins when both are set
+    monkeypatch.setenv("LLM_PROVIDER", "anthropic")
+    assert detect_provider() == "anthropic"
+
+
+def test_make_llm_gemini_default(monkeypatch):
+    monkeypatch.delenv("AUDIT_MODEL", raising=False)
+    monkeypatch.delenv("LLM_PROVIDER", raising=False)
+    monkeypatch.setenv("GEMINI_API_KEY", "x")
+    gem = make_llm()
     assert isinstance(gem, GeminiLLM) and gem.model == "gemini-flash-latest"
     with pytest.raises(LLMError, match="Unknown LLM provider"):
         make_llm("openai")
+
+
+def test_make_llm_optional_anthropic(monkeypatch):
+    pytest.importorskip("anthropic")
+    from auditor.anthropic_llm import ClaudeLLM
+
+    monkeypatch.delenv("AUDIT_MODEL", raising=False)
+    claude = make_llm("anthropic")
+    assert isinstance(claude, ClaudeLLM) and claude.model == "claude-opus-5-5"
+
+
+def test_anthropic_without_sdk_is_llm_error(monkeypatch):
+    import sys
+
+    monkeypatch.setitem(sys.modules, "anthropic", None)  # simulate the SDK not being installed
+    monkeypatch.delitem(sys.modules, "auditor.anthropic_llm", raising=False)
+    with pytest.raises(LLMError, match="requirements-anthropic.txt"):
+        make_llm("anthropic")
 
 
 def test_gemini_without_key_is_llm_error(monkeypatch):

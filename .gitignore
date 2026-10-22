@@ -11,3 +11,5 @@ dist/
 report.json
 trace*.jsonl
 reports/
+.vscode/
+.idea/

@@ -1,8 +1,9 @@
-"""Google Gemini provider.
+"""Google Gemini provider (the default).
 
-The agent loop keeps its conversation in the Anthropic message shape. This
-adapter converts that history into Gemini ``contents`` on every call and turns
-Gemini's reply back into blocks with ``.type`` of ``text`` or ``tool_use``.
+The agent loop keeps its conversation as role/content messages with
+``tool_use`` and ``tool_result`` blocks. This adapter converts that history
+into Gemini ``contents`` on every call and turns Gemini's reply back into
+blocks with ``.type`` of ``text`` or ``tool_use``.
 
 Model turns are replayed to Gemini exactly as received (the raw ``Content`` is
 kept on the returned block list), so thought signatures survive.

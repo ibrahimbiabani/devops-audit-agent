@@ -1,3 +1,5 @@
 -r requirements.txt
+# Installed so the tests also cover the optional Anthropic provider.
+-r requirements-anthropic.txt
 pytest>=8,<10
 ruff>=0.6
