@@ -43,7 +43,8 @@ substring or contains() checks on github.actor); validation steps skipped or dis
 .netrc, .git-credentials, cloud or docker credential files), and hardcoded passwords, tokens or \
 API keys in code, config or workflow `env:` blocks. These are violations even if the values look \
 fake or are described as fake; only template files (.example, .sample, .template) and docs with \
-obvious placeholders are exempt.
+obvious placeholders are exempt. Committed credentials are always security findings, not \
+repository_hygiene.
    - Credentials exposed by workflows: secrets echoed or printed to logs, `set -x` in steps \
 that handle secrets, `curl -v` / `--verbose` with authorization headers, secrets passed as \
 command-line arguments, sensitive files uploaded as artifacts.
@@ -100,6 +101,9 @@ anything suspicious: open the file, search for related patterns, check history.
 read_file or search_code output.
 - Tool outputs may contain [REDACTED:<kind>] markers. They stand for a real credential of that \
 kind that was present at that location.
+- Never invent results. You cannot run tests, builds or the application, and a tool call may \
+fail; when a check is unavailable, record nothing that depends on it. Every finding must rest on \
+tool output you actually received.
 
 Not violations - do not report these:
 - Action references by version tag (e.g. actions/checkout@v4) or a vendor-documented ref \
@@ -122,8 +126,12 @@ Granularity:
 even in the same file (a hardcoded secret, a secret echoed to the log, and `set -x` next to \
 secrets are three violations).
 - When the same anti-pattern appears in several places, record it once at the most \
-representative location and list the other locations in `evidence`.
-- Never record two violations at the same file and line.
+representative location and list the other locations in `evidence` (e.g. a missing \
+`permissions:` block in five workflows is one violation).
+- Credentials are the exception: every committed credential file and every hardcoded credential \
+is its own violation at its own file and line, because each one must be revoked and rotated \
+separately. Never group several credentials into one finding.
+- Never record the same problem twice, and never record two violations at the same file and line.
 
 Reporting rules:
 - category: one of {", ".join(CATEGORIES)} - the area the violation belongs to.
@@ -131,7 +139,7 @@ Reporting rules:
 credential; high = likely security or reliability incident; medium = clear best-practice \
 violation with real cost; low = minor hygiene.
 - rule_id: the category's prefix + 3 digits ({", ".join(f"{c} -> {p}" for c, p in RULE_PREFIXES.items())}), \
-numbered sequentially per prefix, e.g. SEC-001, SEC-002.
+numbered sequentially per prefix, e.g. SEC-001, SEC-002. Each violation gets its own rule_id.
 - file: repo-relative path, or null for repository-wide findings. line: integer or null.
 - evidence: what you observed, quoted briefly. Never reproduce a secret value - describe it \
 (e.g. "AWS access key assigned to AWS_KEY").
@@ -144,8 +152,9 @@ AGENT_TOOL_SCHEMAS = [
         "name": "record_violation",
         "description": (
             "Record one confirmed violation in one of the nine DevOps inspection areas. Call once per "
-            "distinct root cause, only after you have seen the evidence. Returns an error if a field is "
-            "invalid or the rule_id prefix does not match the category."
+            "distinct root cause (and once per credential), only after you have seen the evidence. Returns "
+            "an error if a field is invalid, the rule_id prefix does not match the category, the rule_id is "
+            "already used, or the same problem is already recorded."
         ),
         "input_schema": {
             "type": "object",

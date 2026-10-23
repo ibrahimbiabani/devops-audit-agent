@@ -27,7 +27,12 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument("--repo", required=True, help="Public GitHub repository URL")
     p.add_argument("--output", required=True, type=Path, help="Where to write the JSON report")
     p.add_argument("--max-turns", type=int, default=40, help="Upper bound on agent turns (default: 40)")
-    p.add_argument("--trace", type=Path, help="Write a JSONL tool-call trace to this file")
+    p.add_argument(
+        "--trace",
+        type=Path,
+        help="Tool-call trace file (JSONL, redacted; default: <output>.trace.jsonl next to the report)",
+    )
+    p.add_argument("--no-trace", action="store_true", help="Do not write a tool-call trace")
     p.add_argument("--provider", choices=PROVIDERS, help="LLM provider (default: gemini; or LLM_PROVIDER)")
     p.add_argument("--model", help="Try this model first (default: AUDIT_MODEL, else the most capable available)")
     p.add_argument("--keep-clone", action="store_true", help="Do not delete the temporary clone")
@@ -35,8 +40,16 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     return p.parse_args(argv)
 
 
+def trace_path(args: argparse.Namespace) -> Path | None:
+    """Where the tool-call trace goes: --trace, else next to the report (report.json -> report.trace.jsonl)."""
+    if args.no_trace:
+        return None
+    return args.trace or args.output.with_name(f"{args.output.stem}.trace.jsonl")
+
+
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
+    args.trace = trace_path(args)
     logging.basicConfig(
         level=logging.INFO if args.verbose else logging.WARNING,
         format="%(asctime)s %(levelname)s %(message)s",
@@ -50,7 +63,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"error: {e}", file=sys.stderr)
         return 2
 
-    if args.trace:
+    if args.trace:  # started fresh on each run
         args.trace.parent.mkdir(parents=True, exist_ok=True)
         args.trace.write_text("", encoding="utf-8")
 
@@ -80,6 +93,8 @@ def main(argv: list[str] | None = None) -> int:
         with args.trace.open("a", encoding="utf-8") as fh:
             fh.write(json.dumps({"event": "models_used", "models": used}) + "\n")
     print(f"Wrote {len(violations)} violation(s) to {args.output} (model: {', '.join(used)})", file=sys.stderr)
+    if args.trace:
+        print(f"Tool-call trace: {args.trace}", file=sys.stderr)
     return 0
 
 

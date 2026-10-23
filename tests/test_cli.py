@@ -38,6 +38,16 @@ def test_cli_invalid_repo_exits_nonzero(tmp_path, capsys):
     assert not (tmp_path / "r.json").exists()
 
 
+def test_trace_written_next_to_report_by_default(tmp_path):
+    out = tmp_path / "out" / "report.json"
+    assert agent.trace_path(agent.parse_args(["--repo", "x", "--output", str(out)])) == out.with_name(
+        "report.trace.jsonl"
+    )
+    chosen = tmp_path / "t.jsonl"
+    assert agent.trace_path(agent.parse_args(["--repo", "x", "--output", str(out), "--trace", str(chosen)])) == chosen
+    assert agent.trace_path(agent.parse_args(["--repo", "x", "--output", str(out), "--no-trace"])) is None
+
+
 def test_cli_requires_arguments():
     with pytest.raises(SystemExit) as e:
         agent.main([])

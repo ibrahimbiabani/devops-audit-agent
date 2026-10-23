@@ -9,6 +9,7 @@ venv/
 build/
 dist/
 report.json
+report.trace.jsonl
 trace*.jsonl
 reports/
 .vscode/

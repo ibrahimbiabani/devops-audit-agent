@@ -114,7 +114,8 @@ python agent.py --repo https://github.com/<owner>/<repo> --output report.json
 | `--repo` | Public GitHub repository URL (required) |
 | `--output` | Report path (required) |
 | `--max-turns N` | Maximum agent turns, default 40 |
-| `--trace trace.jsonl` | Write one JSON line per tool call (redacted) |
+| `--trace FILE` | Where to write the tool-call trace (default: next to the report, e.g. `report.trace.jsonl`) |
+| `--no-trace` | Do not write a trace |
 | `--model` | Try this model first (default: the most capable available) |
 | `--provider` | `gemini` (default) or `anthropic` (optional, see below) |
 | `--keep-clone` | Keep the temporary clone for debugging |
@@ -147,6 +148,13 @@ The run is unattended and never prompts.
 `ci_cd`, `security`, `configuration`, `collaboration`, `build_release`. `severity` is one of
 `critical`, `high`, `medium`, `low`. `file`/`line` are `null` when not applicable.
 
+**Tool-call trace.** Every run also writes a trace next to the report, e.g. `report.json` gets
+`report.trace.jsonl`. It has one JSON line per tool call: the turn, the tool, its arguments,
+whether it failed, the output size, a short preview and the time taken. The last line names the
+model(s) that served the audit. The trace shows which steps the model chose. Secrets are
+redacted from it, and file contents are never stored in it: `read_file` keeps only its header
+line and `search_code` only its `file:line` locations.
+
 ## Architecture
 
 ```
@@ -170,7 +178,13 @@ runs every requested call (several per turn if the model asks for them in parall
 the outputs as `tool_result` blocks, and repeats. Tool failures go back to the model as error
 results, so it can recover instead of the run crashing. The model reports findings one at a
 time with `record_violation`, which validates each one against the report contract and
-rejects duplicates, including a second finding at a `file:line` that already has one. It ends
+rejects duplicates:
+- a second finding at a `file:line` that already has one
+- the same category and description again, in the same file or with no file
+- a `rule_id` that is already used; the error names the next free one
+
+The same description in two *different* files is accepted, because each committed credential is
+its own violation. It ends
 the run with `finish_audit`. The first `finish_audit` is refused if the model has never opened
 some workflow file or some file tagged `[sensitive name]`. The refusal lists those files, and
 a second `finish_audit` always ends the run, so the model keeps the final say. When the turn

@@ -15,7 +15,7 @@ from typing import Any, Protocol
 import tools as inspection
 from auditor.prompts import AGENT_TOOL_SCHEMAS, SYSTEM_PROMPT
 from auditor.redact import redact, redact_obj
-from auditor.report import ViolationError, dedupe_key, validate_violation
+from auditor.report import ViolationError, dedupe_key, next_rule_id, same_problem, validate_violation
 
 log = logging.getLogger(__name__)
 
@@ -178,6 +178,18 @@ class AuditAgent:
                         "problem it is already covered; if it is a different problem, record it at the line where "
                         "that problem occurs."
                     )
+        for existing in self.violations:
+            if same_problem(existing, v):
+                raise ViolationError(
+                    f"the same problem is already recorded as {existing['rule_id']} ({existing['description']!r}); "
+                    "do not record it again."
+                )
+        if any(existing["rule_id"] == v["rule_id"] for existing in self.violations):
+            prefix = v["rule_id"].split("-")[0]
+            raise ViolationError(
+                f"rule_id {v['rule_id']} is already used by another violation; give this one "
+                f"{next_rule_id(prefix, self.violations)}."
+            )
         self.violations.append(v)
         return f"Recorded violation #{len(self.violations)} ({v['rule_id']})."
 

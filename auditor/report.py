@@ -85,6 +85,26 @@ def dedupe_key(v: dict[str, Any]) -> tuple:
     return (v["rule_id"], v["file"], v["line"])
 
 
+def _normalized(text: str) -> str:
+    return re.sub(r"[^a-z0-9]+", " ", text.lower()).strip()
+
+
+def same_problem(a: dict[str, Any], b: dict[str, Any]) -> bool:
+    """Two findings describing the same problem: same category and description, and the same
+    file or one of them repository-wide (file null). The same description in two different
+    files is allowed, since each committed credential is its own violation."""
+    return (
+        a["category"] == b["category"]
+        and _normalized(a["description"]) == _normalized(b["description"])
+        and (a["file"] == b["file"] or a["file"] is None or b["file"] is None)
+    )
+
+
+def next_rule_id(prefix: str, violations: list[dict[str, Any]]) -> str:
+    used = [int(v["rule_id"].split("-")[1]) for v in violations if v["rule_id"].startswith(prefix + "-")]
+    return f"{prefix}-{max(used, default=0) + 1:03d}"
+
+
 def build_report(repository: str, violations: list[dict[str, Any]]) -> dict[str, Any]:
     order = {s: i for i, s in enumerate(SEVERITIES)}
     ordered = sorted(violations, key=lambda v: (order[v["severity"]], v["file"] or "", v["line"] or 0))

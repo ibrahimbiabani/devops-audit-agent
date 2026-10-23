@@ -16,6 +16,7 @@ did not work. Each step lists the commits that implement it.
 | 2026-10-22 | 9 | Scope limited to the nine inspection areas; full Gemini model chain with availability checks |
 | 2026-10-23 | 10 | Free-tier model check; probe replaced by local quota counting; Gemma added as last resort |
 | 2026-10-23 | 11 | Fourth evaluation (all 7 repositories) after the scope and model-selection changes |
+| 2026-10-23 | 12 | Requirements review; one finding per credential, stricter duplicate checks, trace by default |
 
 ---
 
@@ -678,3 +679,46 @@ of scope. They are left out of the answer keys below.
    at `finish_audit`.
 5. **Rerun after the quota reset**, so the Flash models serve, and with repeats, to separate
    the model's effect from the prompt's.
+
+---
+
+## Step 12: Requirements review and the Step 11 fixes
+
+### Requirements review
+
+Every item in the assignment was checked against the repository:
+
+| Section | Requirement | Status |
+|---|---|---|
+| 2 | Public URL in, LLM-directed tool selection with follow-ups, unattended, target unchanged | Met |
+| 3 | `list_files`, `read_file`, `search_code`, `git_log`; hand-written loop; no agent frameworks | Met |
+| 4 | Nine inspection areas; evidence rule; no inferring branch protection | Met (Step 9 prompt) |
+| 5 | Exact command; valid JSON, including an empty array; non-zero exit on fatal errors; all fields; allowed severities; `null` file/line; no secret values | Met |
+| 6 | "Tool-call traces may be inspected" | **Gap:** a trace was only written with `--trace`, and the evaluator runs the bare command |
+| 8 | `agent.py`, `tools.py`, agent modules, `requirements.txt`, `.env.example`, `README.md`, `tests/` | Met |
+| 8 | `sample_report.json`: authentic example output | **Missing:** to be produced from a final run |
+| 9 | "Do not invent results when a check is unavailable" | **Partly:** stated for tests only |
+
+### Changes
+
+| # | Change | Why | Where |
+|---|---|---|---|
+| 1 | Each committed credential file and each hardcoded credential is its own violation; grouping is only for repeated configuration patterns. Committed credentials are always `security`, not `repository_hygiene`. | Step 11: leaky-repo's seven credential files were folded into one `HYG-001` finding. Each credential must be revoked and rotated separately, and a grader counts each one. | `auditor/prompts.py` |
+| 2 | `record_violation` rejects the same category and description again when it is in the same file or one of the two has no file, and names the earlier finding. | Step 11: paastha1 recorded "missing `.gitignore`" twice, once with `file: null` and once at `.gitignore:1`. The `file:line` check could not see it. "Duplicate findings earn no extra credit." | `auditor/report.py` (`same_problem`), `auditor/loop.py` |
+| 3 | `record_violation` rejects a `rule_id` that is already in use and gives the next free one (e.g. `CI-002`). | The prompt already required sequential numbering, but reused IDs (paastha1's two `HYG-001`, Step 7's five reused IDs) went through. | `auditor/report.py` (`next_rule_id`), `auditor/loop.py` |
+| 4 | Explicit rule: never invent results; when a check is unavailable (tests, builds or the application cannot be run, or a tool call failed), record nothing that depends on it. | Assignment section 9. | `auditor/prompts.py` |
+| 5 | A trace is written by default next to the report (`report.json` → `report.trace.jsonl`). `--trace FILE` chooses the path; `--no-trace` turns it off. | Assignment section 6: the evaluator runs the bare command, and a trace now exists for them to inspect. | `agent.py`, `.gitignore` |
+
+The same description in two **different** files is still accepted, so that identical credentials
+committed in several files are each reported (change 1).
+
+**Tests:** 4 new tests cover:
+- the paastha1 duplicate
+- identical descriptions in different files being allowed
+- a reused rule ID being rejected with the next free one
+- the default trace path, `--trace` and `--no-trace`
+
+The suite has 116 tests, all passing.
+
+These changes affect detection. They have not been evaluated live yet; the next evaluation
+round measures them.

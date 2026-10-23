@@ -151,6 +151,46 @@ def test_same_location_rejected_even_with_new_rule_id(sample_repo):
     assert rejected["is_error"] and "already recorded at .github/workflows/ci.yml:1" in rejected["content"]
 
 
+def record_both(sample_repo, first, second):
+    """Record two violations in one turn; return (violations kept, the second call's result)."""
+    llm = FakeLLM(
+        [
+            resp(tool_use("t1", "record_violation", **first), tool_use("t2", "record_violation", **second)),
+            resp(tool_use("t3", "read_file", path=".github/workflows/ci.yml")),
+            resp(tool_use("t4", "finish_audit", summary="x")),
+        ]
+    )
+    kept = AuditAgent(llm, RepoTools(sample_repo)).run("https://github.com/a/b")
+    return kept, tool_results(llm.calls[1])[1]
+
+
+def test_same_problem_at_repository_level_rejected(sample_repo):
+    # Regression (Step 11, paastha1): "Missing .gitignore" recorded once with file null, once at .gitignore:1.
+    hyg = {**VIOLATION, "rule_id": "HYG-001", "category": "repository_hygiene", "description": "Missing .gitignore."}
+    kept, rejected = record_both(sample_repo, {**hyg, "file": None, "line": None}, {**hyg, "file": ".gitignore"})
+    assert len(kept) == 1
+    assert rejected["is_error"] and "same problem is already recorded as HYG-001" in rejected["content"]
+
+
+def test_same_description_in_another_file_is_allowed(sample_repo):
+    # Each committed credential is its own violation, even when described identically.
+    key = {**VIOLATION, "category": "security", "description": "Committed private key", "line": None}
+    kept, _ = record_both(
+        sample_repo,
+        {**key, "rule_id": "SEC-001", "file": ".ssh/id_rsa"},
+        {**key, "rule_id": "SEC-002", "file": "k.pem"},
+    )
+    assert [v["file"] for v in kept] == [".ssh/id_rsa", "k.pem"]
+
+
+def test_reused_rule_id_rejected_with_next_free_id(sample_repo):
+    other = {**VIOLATION, "file": "app.py", "line": 3, "description": "Something else"}
+    kept, rejected = record_both(sample_repo, VIOLATION, other)
+    assert len(kept) == 1
+    assert rejected["is_error"] and "rule_id CI-001 is already used" in rejected["content"]
+    assert "give this one CI-002" in rejected["content"]
+
+
 def test_finish_blocked_once_until_must_read_files_opened(sample_repo):
     llm = FakeLLM(
         [
