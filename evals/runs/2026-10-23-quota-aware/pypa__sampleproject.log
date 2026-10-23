@@ -1,0 +1,50 @@
+2026-10-23 11:21:38,396 INFO HTTP Request: GET https://generativelanguage.googleapis.com/v1beta/models "HTTP/1.1 200 OK"
+2026-10-23 11:21:38,935 INFO HTTP Request: GET https://generativelanguage.googleapis.com/v1beta/models?pageToken=Cgptb2RlbHMvYXFh "HTTP/1.1 200 OK"
+2026-10-23 11:21:38,947 INFO Using GeminiLLM, models in order: gemini-3.1-pro-preview, gemini-2.5-pro, gemini-3.8-flash, gemini-3.7-flash, gemini-3.6-flash, gemini-3.5-flash, gemini-3-flash-preview, gemini-2.5-flash, gemini-3.5-flash-lite, gemini-3.1-flash-lite, gemini-2.5-flash-lite, gemma-4-31b-it, gemma-4-26b-a4b-it
+2026-10-23 11:21:38,947 INFO Cloning https://github.com/pypa/sampleproject
+2026-10-23 11:21:41,274 INFO Skipping Gemini model gemini-3.1-pro-preview: daily free-tier quota used up, resets in ~15h (recorded earlier; retry in ~38min)
+2026-10-23 11:21:41,274 INFO Skipping Gemini model gemini-2.5-pro: model not found or no longer available (recorded earlier; retry in ~153h)
+2026-10-23 11:21:41,274 INFO Skipping Gemini model gemini-3.8-flash: daily free-tier quota used up (20 requests a day), resets in ~49min (recorded earlier; retry in ~38min)
+2026-10-23 11:21:41,274 INFO Skipping Gemini model gemini-3.7-flash: daily free-tier quota used up, resets in ~15h (recorded earlier; retry in ~38min)
+2026-10-23 11:21:41,274 INFO Skipping Gemini model gemini-3.6-flash: daily free-tier quota used up, resets in ~15h (recorded earlier; retry in ~38min)
+2026-10-23 11:21:41,274 INFO Skipping Gemini model gemini-3.5-flash: daily free-tier quota used up, resets in ~15h (recorded earlier; retry in ~38min)
+2026-10-23 11:21:41,274 INFO Skipping Gemini model gemini-3-flash-preview: daily free-tier quota used up (20 requests a day), resets in ~41min (recorded earlier; retry in ~38min)
+2026-10-23 11:21:41,274 INFO Skipping Gemini model gemini-2.5-flash: model not found or no longer available (recorded earlier; retry in ~153h)
+2026-10-23 11:21:41,274 INFO Using Gemini model gemini-3.5-flash-lite
+2026-10-23 11:21:42,124 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:21:42,134 INFO Gemini model gemini-3.5-flash-lite is serving as gemini-3.5-flash-lite
+2026-10-23 11:21:42,152 INFO [turn 1] list_files({})
+2026-10-23 11:21:43,048 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:21:43,056 INFO [turn 2] read_file({"start_line": 1, "path": ".github/workflows/release.yml", "end_line": 100})
+2026-10-23 11:21:43,058 INFO [turn 2] read_file({"path": ".github/workflows/test.yml", "end_line": 100, "start_line": 1})
+2026-10-23 11:21:43,066 INFO [turn 2] read_file({"end_line": 100, "path": "noxfile.py", "start_line": 1})
+2026-10-23 11:21:43,068 INFO [turn 2] read_file({"end_line": 200, "start_line": 1, "path": "pyproject.toml"})
+2026-10-23 11:21:43,935 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:21:43,942 INFO [turn 3] read_file({"path": ".gitignore", "end_line": 100, "start_line": 1})
+2026-10-23 11:21:44,877 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:21:44,942 INFO [turn 4] search_code({"pattern": "permissions"})
+2026-10-23 11:21:46,801 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:21:46,824 INFO [turn 5] search_code({"pattern": "continue-on-error"})
+2026-10-23 11:21:47,805 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:21:47,823 INFO [turn 6] search_code({"pattern": "github\\.actor"})
+2026-10-23 11:21:48,673 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:21:48,691 INFO [turn 7] search_code({"pattern": "github\\.event"})
+2026-10-23 11:21:49,800 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:21:49,818 INFO [turn 8] search_code({"pattern": "pull_request_target"})
+2026-10-23 11:21:50,771 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:21:50,790 INFO [turn 9] search_code({"pattern": "set -x"})
+2026-10-23 11:21:51,984 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:21:52,004 INFO [turn 10] search_code({"pattern": "password|token|secret|key"})
+2026-10-23 11:21:52,910 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:21:52,930 INFO [turn 11] git_log({"max_count": 20})
+2026-10-23 11:21:53,364 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-10-23 11:21:53,365 INFO Gemini gemini-3.5-flash-lite rate limited; retrying in 6s
+2026-10-23 11:22:00,027 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-10-23 11:22:00,028 WARNING Gemini model gemini-3.5-flash-lite unavailable (rate limited); switching to the next model
+2026-10-23 11:22:00,028 INFO Using Gemini model gemini-3.1-flash-lite
+2026-10-23 11:22:01,335 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:22:01,337 INFO Gemini model gemini-3.1-flash-lite is serving as gemini-3.1-flash-lite
+2026-10-23 11:22:01,337 INFO [turn 12] record_violation({"line": 8, "rule_id": "CI-001", "category": "ci_cd", "description": "Missing explicit permissions in test.yml workflow", "file": ".github/workflows/test.yml", "severity": "medium", "evidence": ".gith)
+2026-10-23 11:22:02,479 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:22:02,496 INFO [turn 13] finish_audit({"summary": "The repository was audited for DevOps best practices. The project uses modern packaging tools (`pyproject.toml`, `nox`) and has a configured CI/CD pipeline. One minor violation regarding )
+Wrote 1 violation(s) to evals\runs\2026-10-23-quota-aware\pypa__sampleproject.json (model: gemini-3.5-flash-lite, gemini-3.1-flash-lite)

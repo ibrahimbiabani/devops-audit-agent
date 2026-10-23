@@ -1,0 +1,65 @@
+{
+  "repository": "https://github.com/gary-mello/github-vuln-actions",
+  "violations": [
+    {
+      "rule_id": "COL-002",
+      "category": "collaboration",
+      "severity": "critical",
+      "file": ".github/workflows/prt-dangerous-checkout.yml",
+      "line": 17,
+      "description": "Dangerous pull_request_target checkout of untrusted pull request code",
+      "evidence": "pull_request_target trigger combined with actions/checkout@v3 checking out ref: ${{ github.event.pull_request.head.ref }} on lines 17-20 of prt-dangerous-checkout.yml",
+      "recommendation": "Avoid checking out and executing untrusted PR code in workflows triggered by pull_request_target. Use pull_request instead."
+    },
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/write-all-permissions.yml",
+      "line": 12,
+      "description": "Workflow-level write-all permissions granted",
+      "evidence": "permissions: write-all on line 12 of write-all-permissions.yml",
+      "recommendation": "Follow the principle of least privilege by specifying only the exact permissions needed for the workflow."
+    },
+    {
+      "rule_id": "COL-001",
+      "category": "collaboration",
+      "severity": "high",
+      "file": ".github/workflows/issue-labeler.yml",
+      "line": 18,
+      "description": "Command injection via expression interpolation of untrusted event payloads in run scripts",
+      "evidence": "echo \"New issue opened: ${{ github.event.issue.title }}\" on line 18 of issue-labeler.yml (similar pattern in pr-comment-handler.yml and pr-title-injection.yml)",
+      "recommendation": "Pass untrusted event data via environment variables instead of direct expression interpolation in shell commands."
+    },
+    {
+      "rule_id": "BLD-001",
+      "category": "build_release",
+      "severity": "high",
+      "file": ".github/workflows/self-hosted-runner.yml",
+      "line": 22,
+      "description": "Deployment job running without tests or validation gates",
+      "evidence": "docker push internal-registry.corp/myapp:latest in self-hosted-runner.yml without any preceding test step or job dependency",
+      "recommendation": "Ensure all release and deployment jobs are gated by comprehensive test and validation jobs using needs:."
+    },
+    {
+      "rule_id": "COL-003",
+      "category": "collaboration",
+      "severity": "high",
+      "file": ".github/workflows/write-all-permissions.yml",
+      "line": 21,
+      "description": "Automated PR merging on pull_request_target without review",
+      "evidence": "gh pr merge --auto --squash executed under pull_request_target on line 21 of write-all-permissions.yml",
+      "recommendation": "Do not automate pull request merging or approvals based on untrusted external triggers or pull_request_target."
+    },
+    {
+      "rule_id": "SEC-002",
+      "category": "security",
+      "severity": "medium",
+      "file": null,
+      "line": null,
+      "description": "Missing explicit workflow permissions block",
+      "evidence": "Workflows issue-labeler.yml, no-permissions-declared.yml, pr-comment-handler.yml, pr-title-injection.yml, prt-dangerous-checkout.yml, self-hosted-runner.yml, and unpinned-actions.yml lack a permissions block.",
+      "recommendation": "Add an explicit permissions block (e.g. permissions: contents: read) to all workflow files following the principle of least privilege."
+    }
+  ]
+}

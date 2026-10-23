@@ -1,0 +1,15 @@
+{
+  "repository": "https://github.com/pypa/sampleproject",
+  "violations": [
+    {
+      "rule_id": "CI-001",
+      "category": "ci_cd",
+      "severity": "medium",
+      "file": ".github/workflows/test.yml",
+      "line": 8,
+      "description": "Missing explicit permissions in test.yml workflow",
+      "evidence": ".github/workflows/test.yml lacks a 'permissions:' block, which means it defaults to broad read/write permissions for GITHUB_TOKEN.",
+      "recommendation": "Add a top-level 'permissions:' block with minimal necessary permissions (e.g., 'contents: read')."
+    }
+  ]
+}

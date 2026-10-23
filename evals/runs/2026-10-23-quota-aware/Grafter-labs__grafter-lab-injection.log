@@ -1,0 +1,44 @@
+2026-10-23 11:19:58,151 INFO HTTP Request: GET https://generativelanguage.googleapis.com/v1beta/models "HTTP/1.1 200 OK"
+2026-10-23 11:19:58,705 INFO HTTP Request: GET https://generativelanguage.googleapis.com/v1beta/models?pageToken=Cgptb2RlbHMvYXFh "HTTP/1.1 200 OK"
+2026-10-23 11:19:58,712 INFO Using GeminiLLM, models in order: gemini-3.1-pro-preview, gemini-2.5-pro, gemini-3.8-flash, gemini-3.7-flash, gemini-3.6-flash, gemini-3.5-flash, gemini-3-flash-preview, gemini-2.5-flash, gemini-3.5-flash-lite, gemini-3.1-flash-lite, gemini-2.5-flash-lite, gemma-4-31b-it, gemma-4-26b-a4b-it
+2026-10-23 11:19:58,713 INFO Cloning https://github.com/Grafter-labs/grafter-lab-injection
+2026-10-23 11:20:01,032 INFO Skipping Gemini model gemini-3.1-pro-preview: daily free-tier quota used up, resets in ~15h (recorded earlier; retry in ~40min)
+2026-10-23 11:20:01,032 INFO Skipping Gemini model gemini-2.5-pro: model not found or no longer available (recorded earlier; retry in ~153h)
+2026-10-23 11:20:01,032 INFO Skipping Gemini model gemini-3.8-flash: daily free-tier quota used up (20 requests a day), resets in ~49min (recorded earlier; retry in ~40min)
+2026-10-23 11:20:01,032 INFO Skipping Gemini model gemini-3.7-flash: daily free-tier quota used up, resets in ~15h (recorded earlier; retry in ~40min)
+2026-10-23 11:20:01,032 INFO Skipping Gemini model gemini-3.6-flash: daily free-tier quota used up, resets in ~15h (recorded earlier; retry in ~40min)
+2026-10-23 11:20:01,032 INFO Skipping Gemini model gemini-3.5-flash: daily free-tier quota used up, resets in ~15h (recorded earlier; retry in ~40min)
+2026-10-23 11:20:01,032 INFO Skipping Gemini model gemini-3-flash-preview: daily free-tier quota used up (20 requests a day), resets in ~41min (recorded earlier; retry in ~40min)
+2026-10-23 11:20:01,032 INFO Skipping Gemini model gemini-2.5-flash: model not found or no longer available (recorded earlier; retry in ~153h)
+2026-10-23 11:20:01,032 INFO Using Gemini model gemini-3.5-flash-lite
+2026-10-23 11:20:01,879 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:20:01,890 INFO Gemini model gemini-3.5-flash-lite is serving as gemini-3.5-flash-lite
+2026-10-23 11:20:01,908 INFO [turn 1] list_files({})
+2026-10-23 11:20:02,693 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:20:02,718 INFO [turn 2] list_files({"subdir": ".github/workflows"})
+2026-10-23 11:20:04,150 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:20:04,160 INFO [turn 3] read_file({"path": "README.md"})
+2026-10-23 11:20:04,169 INFO [turn 3] read_file({"path": ".github/workflows/test.yaml"})
+2026-10-23 11:20:04,175 INFO [turn 3] read_file({"path": ".github/workflows/bypassable-actor-allowlist-gate.yml"})
+2026-10-23 11:20:04,183 INFO [turn 3] read_file({"path": ".github/workflows/controls/safe-expression-handling.yml"})
+2026-10-23 11:20:05,094 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:20:05,104 INFO [turn 4] read_file({"path": ".github/workflows/deprecated-commands.yml"})
+2026-10-23 11:20:05,110 INFO [turn 4] read_file({"path": ".github/workflows/filename-collision-download.yml"})
+2026-10-23 11:20:05,116 INFO [turn 4] read_file({"path": ".github/workflows/runner-control-injection.yml"})
+2026-10-23 11:20:05,121 INFO [turn 4] read_file({"path": ".github/workflows/script-injection.yml"})
+2026-10-23 11:20:06,070 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:20:06,077 INFO [turn 5] read_file({"path": ".github/workflows/secret-echoed-to-log.yml"})
+2026-10-23 11:20:06,986 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:20:07,005 INFO [turn 6] search_code({"pattern": "permissions:"})
+2026-10-23 11:20:07,930 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:20:07,956 INFO [turn 7] search_code({"pattern": "github\\.event"})
+2026-10-23 11:20:09,210 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:20:09,237 INFO [turn 8] git_log({})
+2026-10-23 11:20:11,750 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:20:11,754 INFO [turn 9] record_violation({"description": "Untrusted GitHub event data interpolated directly into shell script execution", "severity": "high", "evidence": ".github/workflows/script-injection.yml interpolates github.event.issue)
+2026-10-23 11:20:11,755 INFO [turn 9] record_violation({"recommendation": "Avoid interpolating pull request refs directly into command strings or URLs; validate or pass through environment variables safely.", "rule_id": "COL-002", "category": "collaborati)
+2026-10-23 11:20:11,755 INFO [turn 9] record_violation({"rule_id": "COL-003", "evidence": ".github/workflows/runner-control-injection.yml uses runs-on: ${{ github.event.issue.title }}", "recommendation": "Use static runner labels (e.g. ubuntu-latest) inst)
+2026-10-23 11:20:11,756 INFO [turn 9] record_violation({"line": 8, "recommendation": "Limit permissions to contents: read or remove unnecessary write permissions on untrusted event workflows.", "rule_id": "COL-004", "category": "collaboration", "file": ".)
+2026-10-23 11:20:11,757 INFO [turn 9] record_violation({"description": "Workflow runs npm publish publish command without preceding build or test validation", "severity": "medium", "evidence": ".github/workflows/bypassable-actor-allowlist-gate.yml execute)
+2026-10-23 11:20:11,775 INFO [turn 9] finish_audit({"summary": "Audited the Grafter Lab injection repository against all nine DevOps inspection areas. Identified workflow security and collaboration vulnerabilities including direct interpolation of unt)
+Wrote 5 violation(s) to evals\runs\2026-10-23-quota-aware\Grafter-labs__grafter-lab-injection.json (model: gemini-3.5-flash-lite)

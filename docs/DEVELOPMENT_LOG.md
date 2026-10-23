@@ -15,6 +15,7 @@ did not work. Each step lists the commits that implement it.
 | 2026-10-22 | 8 | Third evaluation (default settings, all 7 repositories) with a reusable runner |
 | 2026-10-22 | 9 | Scope limited to the nine inspection areas; full Gemini model chain with availability checks |
 | 2026-10-23 | 10 | Free-tier model check; probe replaced by local quota counting; Gemma added as last resort |
+| 2026-10-23 | 11 | Fourth evaluation (all 7 repositories) after the scope and model-selection changes |
 
 ---
 
@@ -596,3 +597,84 @@ remains the final word.
 - Gemma receiving history without signatures while Gemini gets it unchanged
 
 The suite has 112 tests, all passing.
+
+---
+
+## Step 11: Fourth evaluation, after the scope and model-selection changes
+
+### Setup
+
+- **Runner and settings:** the same as Step 8. `evals/run_eval.py` ran over the same 7
+  repositories with `--max-turns 20`, a 30 s pause between audits, and no model settings.
+- **Starting state:** the run started about 40 minutes before the midnight-Pacific quota
+  reset. The status file recorded Pro and every Flash model above `3-flash-preview` as spent
+  or retired. This exercised the new selection logic but meant the strongest models were not
+  available.
+- **Results:** reports, traces, logs and the summary are in
+  [`evals/runs/2026-10-23-quota-aware/`](../evals/runs/2026-10-23-quota-aware/). A scan of
+  every file found no secrets and no local paths.
+
+### Reliability
+
+All 7 audits exited 0, in 16–72 s each: **237 s in total, against 664 s in Step 8**. The
+batch used **111 requests: 102 OK, 9 × 429, no 503s**.
+
+- **No requests were sent to known-unavailable models.** Pro, the retired 2.5 models and the
+  spent Flash models were skipped from the status file in every audit.
+- **`gemini-3-flash-preview` was used up during the run.** It served the first two audits'
+  opening turns until a daily-quota 429 stated its limit (20). That limit was recorded, and
+  later audits skipped the model without a request.
+- **Per-minute limits caused three of the four fallbacks.** On `3.5-flash-lite` the API asked
+  for a 3–6 s wait; the retry was also rate-limited, so after 2 attempts the audit moved to
+  `3.1-flash-lite`.
+- **Serving models:** mostly `gemini-3.5-flash-lite` and `gemini-3.1-flash-lite`, the same
+  tier as Steps 5 and 8. So the detection changes below mostly reflect the Step 9 prompt, not
+  a stronger model.
+
+### Detection
+
+Since Step 9, action pinning (gary-mello) and deprecated workflow commands (Grafter) are out
+of scope. They are left out of the answer keys below.
+
+| Repository | Set | Step 8 | Step 11 |
+|---|---|---|---|
+| gary-mello/github-vuln-actions | held-out | 6 / 8 | **6 / 7 in scope**, plus 2 valid extras (auto-merge under `pull_request_target` without review; push-to-main deploy without tests), no false positives. The three expression injections are one finding with the other two files in its evidence. Still misses the self-hosted runner. |
+| jpr5/vulnerable-workflows-test | held-out | 4 / 6 + 4 duplicates | **4 / 6, no duplicates.** "Missing permissions" is reported once, naming all five workflows. Misses the `inputs.*` injection in `manual-deploy.yml` and `curl … \| bash`. |
+| pallets/itsdangerous | held-out, healthy | 0 | **0 (correct)** |
+| paastha1/cicd-test-repo | tuned | 6 / 6 + 2 | **6 / 6**, plus 5 plausible extras (deploy without tests, no `permissions:`, `npm ci` without a lockfile, `npm test` with no tests, no linting). Two duplicates: "missing `.gitignore`" twice under the same rule ID, and the hardcoded production password from SEC-001 again as CFG-001. |
+| Grafter-labs/grafter-lab-injection | tuned | 1 / 6 | **3 / 5 in scope**: script injection; **`runs-on:` injection, missed in every earlier round**; and untrusted `head.ref` in a download URL. Plus 1 valid extra (`contents: write` on an `issue_comment` trigger). One false positive: `npm publish --dry-run` flagged as a release without tests. Still misses the substring `contains()` allowlist and the echoed secret-shaped literal. |
+| Plazmaz/leaky-repo | tuned | 1 / 35 | **3 findings naming 9 / 35 files.** Two are separate (`.ssh/id_rsa`, `etc/shadow`); the third lists 7 credential files in its evidence. |
+| pypa/sampleproject | tuned, healthy | 0 | **1 borderline finding:** `test.yml` has no `permissions:` block (`release.yml` has one). Release-without-tests is still missed. |
+
+### Analysis
+
+- **In-scope recall improved on the subtle CI repositories.** On Grafter it rose from 1 to 3,
+  on the same model tier. Duplicates on jpr5 are gone. Both match the Step 9 prompt changes:
+  each area lists its concrete signs, and missing permissions is reported once per repository.
+- **The healthy repositories stayed clean or nearly clean.** itsdangerous had no findings.
+  sampleproject had one: the missing `permissions:` block, which the prompt treats as a
+  violation. That is defensible, but it costs precision on a "mostly healthy" repository.
+- **Grouping now costs recall on leaky-repo.** The rule "record the same anti-pattern once,
+  with the other locations in the evidence" made the model fold seven different committed
+  credential files into one finding. Each committed credential is its own violation, with its
+  own rotation step, and a grader would most likely count them separately.
+- **Duplicates still slip through** when the location differs: paastha1's "missing
+  `.gitignore`" was recorded once with `file: null` and once at `.gitignore:1`. The duplicate
+  check compares `file:line`, so it did not catch this.
+- **Caveat:** this is one run per repository, and Steps 5 and 8 showed large run-to-run
+  variance.
+
+### Candidate fixes, in priority order
+
+1. **One finding per committed credential file.** State in the granularity rules that each
+   committed secret or credential file is a separate violation, and that grouping applies to
+   repeated configuration patterns (such as missing permissions), not to secrets.
+2. **Reject a second finding with the same rule ID and description**, whatever its location
+   (catches paastha1's double `.gitignore`).
+3. **Per-minute 429s:** when the API asks for only a few seconds, wait it out rather than
+   spending one of the 2 attempts, so a short rate limit does not push the audit onto a weaker
+   model.
+4. Still open from Step 8: a mid-audit coverage reminder, and repeating the no-dismissal rule
+   at `finish_audit`.
+5. **Rerun after the quota reset**, so the Flash models serve, and with repeats, to separate
+   the model's effect from the prompt's.

@@ -1,0 +1,65 @@
+{
+  "repository": "https://github.com/gary-mello/github-vuln-actions",
+  "violations": [
+    {
+      "rule_id": "CI-005",
+      "category": "ci_cd",
+      "severity": "critical",
+      "file": ".github/workflows/prt-dangerous-checkout.yml",
+      "line": 17,
+      "description": "Dangerous pull_request_target checkout of untrusted pull request head ref and repo",
+      "evidence": "uses: actions/checkout@v3 with: ref: ${{ github.event.pull_request.head.ref }} repository: ${{ github.event.pull_request.head.repo.full_name }}",
+      "recommendation": "Avoid checking out untrusted PR head code under pull_request_target. Use pull_request event or safe workflow patterns."
+    },
+    {
+      "rule_id": "CI-006",
+      "category": "ci_cd",
+      "severity": "critical",
+      "file": ".github/workflows/write-all-permissions.yml",
+      "line": 12,
+      "description": "Workflow-level write-all permissions combined with pull_request_target",
+      "evidence": "permissions: write-all under pull_request_target trigger",
+      "recommendation": "Avoid write-all permissions; scope workflow permissions strictly to necessary scopes (e.g. contents: read)."
+    },
+    {
+      "rule_id": "CI-001",
+      "category": "ci_cd",
+      "severity": "high",
+      "file": ".github/workflows/issue-labeler.yml",
+      "line": 18,
+      "description": "Untrusted event data interpolated into shell command in issue-labeler.yml",
+      "evidence": "echo \"New issue opened: ${{ github.event.issue.title }}\"",
+      "recommendation": "Pass untrusted inputs via environment variables instead of direct template interpolation in run scripts."
+    },
+    {
+      "rule_id": "CI-003",
+      "category": "ci_cd",
+      "severity": "high",
+      "file": ".github/workflows/pr-comment-handler.yml",
+      "line": 16,
+      "description": "Untrusted comment body interpolated into shell command in pr-comment-handler.yml",
+      "evidence": "echo \"Comment received: ${{ github.event.comment.body }}\"",
+      "recommendation": "Pass issue_comment body via environment variables instead of direct template interpolation."
+    },
+    {
+      "rule_id": "CI-004",
+      "category": "ci_cd",
+      "severity": "high",
+      "file": ".github/workflows/pr-title-injection.yml",
+      "line": 17,
+      "description": "Untrusted PR title and body interpolated into shell commands in pr-title-injection.yml",
+      "evidence": "echo \"PR Title: ${{ github.event.pull_request.title }}\"",
+      "recommendation": "Pass pull_request fields via environment variables rather than direct shell interpolation."
+    },
+    {
+      "rule_id": "CI-002",
+      "category": "ci_cd",
+      "severity": "medium",
+      "file": ".github/workflows/no-permissions-declared.yml",
+      "line": 5,
+      "description": "Missing permissions block in Build and Test workflow",
+      "evidence": "name: Build and Test on: push: pull_request: (no permissions block defined)",
+      "recommendation": "Explicitly declare a permissions block with minimal required access for jobs in the workflow."
+    }
+  ]
+}

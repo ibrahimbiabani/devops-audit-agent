@@ -1,0 +1,138 @@
+{
+  "results": [
+    {
+      "url": "https://github.com/gary-mello/github-vuln-actions",
+      "type": "B",
+      "set": "heldout",
+      "name": "gary-mello__github-vuln-actions",
+      "exit": 0,
+      "seconds": 72,
+      "http": {
+        "200": 17,
+        "429": 2
+      },
+      "fallbacks": 1,
+      "exhausted": false,
+      "violations": 6,
+      "models": [
+        "gemini-3-flash-preview",
+        "gemini-3.5-flash-lite"
+      ]
+    },
+    {
+      "url": "https://github.com/jpr5/vulnerable-workflows-test",
+      "type": "B",
+      "set": "heldout",
+      "name": "jpr5__vulnerable-workflows-test",
+      "exit": 0,
+      "seconds": 23,
+      "http": {
+        "200": 14,
+        "429": 1
+      },
+      "fallbacks": 0,
+      "exhausted": false,
+      "violations": 4,
+      "models": [
+        "gemini-3.5-flash-lite"
+      ]
+    },
+    {
+      "url": "https://github.com/pallets/itsdangerous",
+      "type": "C",
+      "set": "heldout",
+      "name": "pallets__itsdangerous",
+      "exit": 0,
+      "seconds": 33,
+      "http": {
+        "200": 18,
+        "429": 2
+      },
+      "fallbacks": 1,
+      "exhausted": false,
+      "violations": 0,
+      "models": [
+        "gemini-3.5-flash-lite",
+        "gemini-3.1-flash-lite"
+      ]
+    },
+    {
+      "url": "https://github.com/paastha1/cicd-test-repo",
+      "type": "B",
+      "set": "tuned",
+      "name": "paastha1__cicd-test-repo",
+      "exit": 0,
+      "seconds": 42,
+      "http": {
+        "200": 18,
+        "429": 1
+      },
+      "fallbacks": 1,
+      "exhausted": false,
+      "violations": 14,
+      "models": [
+        "gemini-3-flash-preview",
+        "gemini-3.1-flash-lite"
+      ]
+    },
+    {
+      "url": "https://github.com/Grafter-labs/grafter-lab-injection",
+      "type": "B",
+      "set": "tuned",
+      "name": "Grafter-labs__grafter-lab-injection",
+      "exit": 0,
+      "seconds": 16,
+      "http": {
+        "200": 9
+      },
+      "fallbacks": 0,
+      "exhausted": false,
+      "violations": 5,
+      "models": [
+        "gemini-3.5-flash-lite"
+      ]
+    },
+    {
+      "url": "https://github.com/Plazmaz/leaky-repo",
+      "type": "A",
+      "set": "tuned",
+      "name": "Plazmaz__leaky-repo",
+      "exit": 0,
+      "seconds": 25,
+      "http": {
+        "200": 13,
+        "429": 1
+      },
+      "fallbacks": 0,
+      "exhausted": false,
+      "violations": 3,
+      "models": [
+        "gemini-3.5-flash-lite"
+      ]
+    },
+    {
+      "url": "https://github.com/pypa/sampleproject",
+      "type": "C",
+      "set": "tuned",
+      "name": "pypa__sampleproject",
+      "exit": 0,
+      "seconds": 26,
+      "http": {
+        "200": 13,
+        "429": 2
+      },
+      "fallbacks": 1,
+      "exhausted": false,
+      "violations": 1,
+      "models": [
+        "gemini-3.5-flash-lite",
+        "gemini-3.1-flash-lite"
+      ]
+    }
+  ],
+  "http_totals": {
+    "200": 102,
+    "429": 9
+  },
+  "requests": 111
+}

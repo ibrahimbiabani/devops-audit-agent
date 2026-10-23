@@ -1,0 +1,85 @@
+{
+  "repository": "https://github.com/paastha1/cicd-test-repo",
+  "violations": [
+    {
+      "rule_id": "SEC-006",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/ci.yml",
+      "line": 38,
+      "description": "Sensitive configuration files and private keys uploaded as build artifacts",
+      "evidence": "In `.github/workflows/ci.yml` (lines 38-41) and `.github/workflows/release.yml` (lines 37-40), workflows upload sensitive files (`.env`, `.env.production`, `credentials.json`, `~/.ssh/id_rsa`, `private-key.pem`, `.env.local`) as workflow build artifacts.",
+      "recommendation": "Do not include sensitive environment files (`.env*`), credential files, or SSH/RSA private keys in workflow build artifact paths."
+    },
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/deploy.yml",
+      "line": 11,
+      "description": "Hardcoded secrets in GitHub Actions environment variables",
+      "evidence": "In `.github/workflows/deploy.yml` (lines 11-14) and `.github/workflows/release.yml` (lines 11-13), plaintext credentials including AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, DATABASE_PASSWORD, SLACK_WEBHOOK, PYPI_API_TOKEN, DOCKER_HUB_TOKEN, and GH_TOKEN are hardcoded in workflow env blocks.",
+      "recommendation": "Remove hardcoded secrets from workflow files and store them in GitHub Repository/Environment Secrets accessed via `${{ secrets.SECRET_NAME }}`."
+    },
+    {
+      "rule_id": "SEC-002",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/ci.yml",
+      "line": 25,
+      "description": "Secrets printed to stdout/workflow logs",
+      "evidence": "In `.github/workflows/ci.yml` (lines 25-27) and `.github/workflows/release.yml` (lines 25-26), workflow steps print secrets directly to logs using `echo` and `printenv`: e.g., `echo \"NPM_TOKEN=${{ secrets.NPM_TOKEN }}\"`, `printenv | grep -i token`, and `echo \"Publishing with token: [REDACTED]\"`.",
+      "recommendation": "Do not echo or print secrets in build scripts or workflow steps. Remove commands that print tokens or dump environment variables."
+    },
+    {
+      "rule_id": "SEC-003",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/deploy.yml",
+      "line": 21,
+      "description": "Execution tracing (`set -x`) enabled in steps handling credentials",
+      "evidence": "In `.github/workflows/deploy.yml` (line 21) and `.github/workflows/release.yml` (line 20), bash shell tracing (`set -x` / `set -ex`) is enabled during steps that process environment variables containing credentials ($AWS_ACCESS_KEY_ID, $PYPI_API_TOKEN, etc.), causing shell expansion to expose secret values in step logs.",
+      "recommendation": "Avoid using `set -x` or `set -o xtrace` in workflow steps that reference environment variables containing secrets or tokens."
+    },
+    {
+      "rule_id": "SEC-004",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/deploy.yml",
+      "line": 27,
+      "description": "Verbose HTTP client execution exposing Authorization headers in logs",
+      "evidence": "In `.github/workflows/deploy.yml` (line 27) and `.github/workflows/release.yml` (line 27), `curl -v` / `curl --verbose` is executed with an `Authorization:` header containing a token, causing request headers with bearer/token credentials to be printed into execution logs.",
+      "recommendation": "Remove `-v` / `--verbose` flags when calling `curl` with sensitive authorization headers, or suppress header output."
+    },
+    {
+      "rule_id": "CI-001",
+      "category": "ci_cd",
+      "severity": "medium",
+      "file": ".github/workflows/ci.yml",
+      "line": 1,
+      "description": "Missing explicit workflow permissions block",
+      "evidence": "Workflows `.github/workflows/ci.yml`, `.github/workflows/clean-workflow.yml`, `.github/workflows/deploy.yml`, and `.github/workflows/release.yml` do not define a top-level or job-level `permissions:` block, defaulting to standard read/write permissions depending on repository settings.",
+      "recommendation": "Add explicit `permissions:` blocks (e.g., `permissions: contents: read`) to all workflows to follow the principle of least privilege."
+    },
+    {
+      "rule_id": "SEC-005",
+      "category": "security",
+      "severity": "medium",
+      "file": ".github/workflows/ci.yml",
+      "line": 31,
+      "description": "Secrets passed via CLI flags or arguments",
+      "evidence": "In `.github/workflows/ci.yml` (lines 31-32), secrets are passed directly as command-line arguments: `npm publish --token=${{ secrets.NPM_TOKEN }}` and `docker login -u admin -p ${{ secrets.DOCKER_PASSWORD }}`. Passing secrets on CLI exposes them in system process lists (ps) and command history.",
+      "recommendation": "Pass authentication tokens via standard input or environment variables rather than command-line flags."
+    },
+    {
+      "rule_id": "CI-002",
+      "category": "ci_cd",
+      "severity": "medium",
+      "file": ".github/workflows/deploy.yml",
+      "line": 8,
+      "description": "Publishing / deployment steps executing without prerequisite testing or validation",
+      "evidence": "In `.github/workflows/deploy.yml` and `.github/workflows/release.yml`, deployment and publishing steps (`aws s3 sync`, `twine upload`) run directly without running tests or requiring a separate test job via `needs:`.",
+      "recommendation": "Ensure build, release, and deployment jobs depend on successful test and validation jobs using the `needs:` key."
+    }
+  ]
+}

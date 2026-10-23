@@ -1,0 +1,54 @@
+2026-10-23 11:15:07,342 INFO HTTP Request: GET https://generativelanguage.googleapis.com/v1beta/models "HTTP/1.1 200 OK"
+2026-10-23 11:15:07,927 INFO HTTP Request: GET https://generativelanguage.googleapis.com/v1beta/models?pageToken=Cgptb2RlbHMvYXFh "HTTP/1.1 200 OK"
+2026-10-23 11:15:07,929 INFO Using GeminiLLM, models in order: gemini-3.1-pro-preview, gemini-2.5-pro, gemini-3.8-flash, gemini-3.7-flash, gemini-3.6-flash, gemini-3.5-flash, gemini-3-flash-preview, gemini-2.5-flash, gemini-3.5-flash-lite, gemini-3.1-flash-lite, gemini-2.5-flash-lite, gemma-4-31b-it, gemma-4-26b-a4b-it
+2026-10-23 11:15:07,930 INFO Cloning https://github.com/gary-mello/github-vuln-actions
+2026-10-23 11:15:10,071 INFO Skipping Gemini model gemini-3.1-pro-preview: daily free-tier quota used up, resets in ~15h (recorded earlier; retry in ~45min)
+2026-10-23 11:15:10,071 INFO Skipping Gemini model gemini-2.5-pro: model not found or no longer available (recorded earlier; retry in ~153h)
+2026-10-23 11:15:10,071 INFO Skipping Gemini model gemini-3.8-flash: daily free-tier quota used up (20 requests a day), resets in ~49min (recorded earlier; retry in ~45min)
+2026-10-23 11:15:10,071 INFO Skipping Gemini model gemini-3.7-flash: daily free-tier quota used up, resets in ~15h (recorded earlier; retry in ~45min)
+2026-10-23 11:15:10,071 INFO Skipping Gemini model gemini-3.6-flash: daily free-tier quota used up, resets in ~15h (recorded earlier; retry in ~45min)
+2026-10-23 11:15:10,071 INFO Skipping Gemini model gemini-3.5-flash: daily free-tier quota used up, resets in ~15h (recorded earlier; retry in ~45min)
+2026-10-23 11:15:10,071 INFO Using Gemini model gemini-3-flash-preview
+2026-10-23 11:15:11,647 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:15:11,656 INFO Gemini model gemini-3-flash-preview is serving as gemini-3-flash-preview
+2026-10-23 11:15:11,674 INFO [turn 1] list_files({})
+2026-10-23 11:15:18,708 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:15:18,718 INFO [turn 2] read_file({"path": "README.md"})
+2026-10-23 11:15:21,134 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:15:21,143 INFO [turn 3] read_file({"path": ".github/workflows/issue-labeler.yml"})
+2026-10-23 11:15:23,100 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:15:23,109 INFO [turn 4] read_file({"path": ".github/workflows/pr-comment-handler.yml"})
+2026-10-23 11:15:24,282 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:15:24,292 INFO [turn 5] read_file({"path": ".github/workflows/pr-title-injection.yml"})
+2026-10-23 11:15:25,520 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:15:25,534 INFO [turn 6] read_file({"path": ".github/workflows/prt-dangerous-checkout.yml"})
+2026-10-23 11:15:27,120 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:15:27,128 INFO [turn 7] read_file({"path": ".github/workflows/write-all-permissions.yml"})
+2026-10-23 11:15:28,406 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:15:28,415 INFO [turn 8] read_file({"path": ".github/workflows/no-permissions-declared.yml"})
+2026-10-23 11:15:28,865 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-10-23 11:15:28,872 INFO Gemini gemini-3-flash-preview rate limited; retrying in 31s
+2026-10-23 11:16:00,501 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-10-23 11:16:00,503 WARNING Gemini model gemini-3-flash-preview unavailable (rate limited); switching to the next model
+2026-10-23 11:16:00,503 INFO Skipping Gemini model gemini-2.5-flash: model not found or no longer available (recorded earlier; retry in ~154h)
+2026-10-23 11:16:00,503 INFO Using Gemini model gemini-3.5-flash-lite
+2026-10-23 11:16:01,532 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:16:01,534 INFO Gemini model gemini-3.5-flash-lite is serving as gemini-3.5-flash-lite
+2026-10-23 11:16:01,542 INFO [turn 9] read_file({"path": ".github/workflows/self-hosted-runner.yml"})
+2026-10-23 11:16:02,440 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:16:02,448 INFO [turn 10] read_file({"path": ".github/workflows/unpinned-actions.yml"})
+2026-10-23 11:16:09,516 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:16:09,528 INFO [turn 11] record_violation({"line": 12, "category": "security", "rule_id": "SEC-001", "file": ".github/workflows/write-all-permissions.yml", "evidence": "permissions: write-all on line 12 of write-all-permissions.yml", "severit)
+2026-10-23 11:16:10,782 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:16:10,784 INFO [turn 12] record_violation({"line": null, "evidence": "Workflows issue-labeler.yml, no-permissions-declared.yml, pr-comment-handler.yml, pr-title-injection.yml, prt-dangerous-checkout.yml, self-hosted-runner.yml, and unpinned-a)
+2026-10-23 11:16:12,032 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:16:12,034 INFO [turn 13] record_violation({"category": "collaboration", "rule_id": "COL-001", "description": "Command injection via expression interpolation of untrusted event payloads in run scripts", "evidence": "echo \"New issue opened: ${)
+2026-10-23 11:16:13,187 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:16:13,190 INFO [turn 14] record_violation({"description": "Dangerous pull_request_target checkout of untrusted pull request code", "category": "collaboration", "recommendation": "Avoid checking out and executing untrusted PR code in workflows)
+2026-10-23 11:16:14,434 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:16:14,437 INFO [turn 15] record_violation({"file": ".github/workflows/write-all-permissions.yml", "evidence": "gh pr merge --auto --squash executed under pull_request_target on line 21 of write-all-permissions.yml", "category": "collaboration)
+2026-10-23 11:16:15,644 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:16:15,647 INFO [turn 16] record_violation({"recommendation": "Ensure all release and deployment jobs are gated by comprehensive test and validation jobs using needs:.", "evidence": "docker push internal-registry.corp/myapp:latest in self-host)
+2026-10-23 11:16:17,631 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:16:17,647 INFO [turn 17] finish_audit({"summary": "Audited the repository against the nine DevOps inspection areas. Identified and recorded critical and high severity security, collaboration, and build/release violations including workflo)
+Wrote 6 violation(s) to evals\runs\2026-10-23-quota-aware\gary-mello__github-vuln-actions.json (model: gemini-3-flash-preview, gemini-3.5-flash-lite)

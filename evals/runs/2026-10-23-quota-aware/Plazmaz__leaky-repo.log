@@ -1,0 +1,55 @@
+2026-10-23 11:20:43,228 INFO HTTP Request: GET https://generativelanguage.googleapis.com/v1beta/models "HTTP/1.1 200 OK"
+2026-10-23 11:20:43,783 INFO HTTP Request: GET https://generativelanguage.googleapis.com/v1beta/models?pageToken=Cgptb2RlbHMvYXFh "HTTP/1.1 200 OK"
+2026-10-23 11:20:43,793 INFO Using GeminiLLM, models in order: gemini-3.1-pro-preview, gemini-2.5-pro, gemini-3.8-flash, gemini-3.7-flash, gemini-3.6-flash, gemini-3.5-flash, gemini-3-flash-preview, gemini-2.5-flash, gemini-3.5-flash-lite, gemini-3.1-flash-lite, gemini-2.5-flash-lite, gemma-4-31b-it, gemma-4-26b-a4b-it
+2026-10-23 11:20:43,793 INFO Cloning https://github.com/Plazmaz/leaky-repo
+2026-10-23 11:20:46,135 INFO Skipping Gemini model gemini-3.1-pro-preview: daily free-tier quota used up, resets in ~15h (recorded earlier; retry in ~39min)
+2026-10-23 11:20:46,135 INFO Skipping Gemini model gemini-2.5-pro: model not found or no longer available (recorded earlier; retry in ~153h)
+2026-10-23 11:20:46,135 INFO Skipping Gemini model gemini-3.8-flash: daily free-tier quota used up (20 requests a day), resets in ~49min (recorded earlier; retry in ~39min)
+2026-10-23 11:20:46,135 INFO Skipping Gemini model gemini-3.7-flash: daily free-tier quota used up, resets in ~15h (recorded earlier; retry in ~39min)
+2026-10-23 11:20:46,135 INFO Skipping Gemini model gemini-3.6-flash: daily free-tier quota used up, resets in ~15h (recorded earlier; retry in ~39min)
+2026-10-23 11:20:46,135 INFO Skipping Gemini model gemini-3.5-flash: daily free-tier quota used up, resets in ~15h (recorded earlier; retry in ~39min)
+2026-10-23 11:20:46,135 INFO Skipping Gemini model gemini-3-flash-preview: daily free-tier quota used up (20 requests a day), resets in ~41min (recorded earlier; retry in ~39min)
+2026-10-23 11:20:46,135 INFO Skipping Gemini model gemini-2.5-flash: model not found or no longer available (recorded earlier; retry in ~153h)
+2026-10-23 11:20:46,135 INFO Using Gemini model gemini-3.5-flash-lite
+2026-10-23 11:20:46,791 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:20:46,802 INFO Gemini model gemini-3.5-flash-lite is serving as gemini-3.5-flash-lite
+2026-10-23 11:20:46,824 INFO [turn 1] list_files({})
+2026-10-23 11:20:48,065 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:20:48,093 INFO [turn 2] list_files({"pattern": "*github*"})
+2026-10-23 11:20:48,866 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:20:48,887 INFO [turn 3] git_log({"max_count": 20})
+2026-10-23 11:20:49,910 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:20:49,919 INFO [turn 4] read_file({"end_line": 50, "path": ".ssh/id_rsa", "start_line": 1})
+2026-10-23 11:20:49,925 INFO [turn 4] read_file({"end_line": 50, "start_line": 1, "path": "etc/shadow"})
+2026-10-23 11:20:49,931 INFO [turn 4] read_file({"start_line": 1, "path": "web/var/www/.env", "end_line": 50})
+2026-10-23 11:20:49,936 INFO [turn 4] read_file({"start_line": 1, "path": "web/ruby/config/master.key", "end_line": 50})
+2026-10-23 11:20:51,306 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:20:51,318 INFO [turn 5] read_file({"path": "README.md", "end_line": 50, "start_line": 1})
+2026-10-23 11:20:51,813 INFO [turn 5] search_code({"pattern": "package\\.json|requirements\\.txt|setup\\.py|pyproject\\.toml|Dockerfile|docker-compose"})
+2026-10-23 11:20:53,095 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:20:53,100 INFO [turn 6] record_violation({"evidence": "File .ssh/id_rsa is tracked in git and contains a private key.", "severity": "critical", "line": 1, "file": ".ssh/id_rsa", "rule_id": "SEC-001", "description": "Committed SSH private key)
+2026-10-23 11:20:54,209 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:20:54,212 INFO [turn 7] record_violation({"file": "etc/shadow", "severity": "critical", "evidence": "File etc/shadow is tracked in the repository and contains user password hashes.", "description": "Committed sensitive shadow file containing)
+2026-10-23 11:20:54,611 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-10-23 11:20:54,611 INFO Gemini gemini-3.5-flash-lite rate limited; retrying in 5s
+2026-10-23 11:21:01,196 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:21:01,198 INFO [turn 8] record_violation({"evidence": "Repository tracks numerous credential stores, auth configs, and private keys (.docker/.dockercfg, .netrc, .npmrc, cloud/.s3cfg, db/.pgpass, web/ruby/config/master.key, web/var/www/.env, )
+2026-10-23 11:21:02,468 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:21:02,485 INFO [turn 9] finish_audit({"summary": "Audited the leaky-repo repository against all nine DevOps inspection areas. Discovered multiple committed private keys, sensitive system shadow files, and numerous credential/configuratio) -> error
+2026-10-23 11:21:03,542 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:21:03,545 INFO [turn 10] read_file({"start_line": 1, "end_line": 50, "path": ".docker/.dockercfg"})
+2026-10-23 11:21:03,546 INFO [turn 10] read_file({"end_line": 50, "start_line": 1, "path": ".docker/config.json"})
+2026-10-23 11:21:03,546 INFO [turn 10] read_file({"path": ".git-credentials", "start_line": 1, "end_line": 50})
+2026-10-23 11:21:03,547 INFO [turn 10] read_file({"end_line": 50, "start_line": 1, "path": ".netrc"})
+2026-10-23 11:21:04,678 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:21:04,681 INFO [turn 11] read_file({"start_line": 1, "end_line": 50, "path": ".npmrc"})
+2026-10-23 11:21:04,681 INFO [turn 11] read_file({"start_line": 1, "end_line": 50, "path": "cloud/.s3cfg"})
+2026-10-23 11:21:04,682 INFO [turn 11] read_file({"end_line": 50, "path": "db/.pgpass", "start_line": 1})
+2026-10-23 11:21:04,683 INFO [turn 11] read_file({"path": "misc-keys/cert-key.pem", "end_line": 50, "start_line": 1})
+2026-10-23 11:21:05,724 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:21:05,727 INFO [turn 12] read_file({"start_line": 1, "end_line": 50, "path": "misc-keys/putty-example.ppk"})
+2026-10-23 11:21:05,728 INFO [turn 12] read_file({"end_line": 50, "path": "web/ruby/secrets.yml", "start_line": 1})
+2026-10-23 11:21:05,728 INFO [turn 12] read_file({"start_line": 1, "end_line": 50, "path": "web/var/www/public_html/.htpasswd"})
+2026-10-23 11:21:06,894 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:21:06,910 INFO [turn 13] finish_audit({"summary": "Audited the leaky-repo repository across all nine DevOps inspection areas. Recorded critical security and repository hygiene violations for committed private keys (SSH and PuTTY), system )
+Wrote 3 violation(s) to evals\runs\2026-10-23-quota-aware\Plazmaz__leaky-repo.json (model: gemini-3.5-flash-lite)

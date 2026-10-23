@@ -1,0 +1,15 @@
+{
+  "repository": "https://github.com/Grafter-labs/grafter-lab-injection",
+  "violations": [
+    {
+      "rule_id": "CI-001",
+      "category": "ci_cd",
+      "severity": "high",
+      "file": ".github/workflows/script-injection.yml",
+      "line": 15,
+      "description": "Untrusted github.event.issue.title interpolated directly into shell script",
+      "evidence": "run: echo \"GRAFTER_MARKER title=${{ github.event.issue.title }}\"",
+      "recommendation": "Pass untrusted event data via environment variables instead of direct expression interpolation in run steps."
+    }
+  ]
+}

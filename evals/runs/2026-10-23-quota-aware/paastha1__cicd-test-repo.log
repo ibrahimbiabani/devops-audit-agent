@@ -1,0 +1,76 @@
+2026-10-23 11:18:45,357 INFO HTTP Request: GET https://generativelanguage.googleapis.com/v1beta/models "HTTP/1.1 200 OK"
+2026-10-23 11:18:45,954 INFO HTTP Request: GET https://generativelanguage.googleapis.com/v1beta/models?pageToken=Cgptb2RlbHMvYXFh "HTTP/1.1 200 OK"
+2026-10-23 11:18:45,962 INFO Using GeminiLLM, models in order: gemini-3.1-pro-preview, gemini-2.5-pro, gemini-3.8-flash, gemini-3.7-flash, gemini-3.6-flash, gemini-3.5-flash, gemini-3-flash-preview, gemini-2.5-flash, gemini-3.5-flash-lite, gemini-3.1-flash-lite, gemini-2.5-flash-lite, gemma-4-31b-it, gemma-4-26b-a4b-it
+2026-10-23 11:18:45,962 INFO Cloning https://github.com/paastha1/cicd-test-repo
+2026-10-23 11:18:48,237 INFO Skipping Gemini model gemini-3.1-pro-preview: daily free-tier quota used up, resets in ~15h (recorded earlier; retry in ~41min)
+2026-10-23 11:18:48,237 INFO Skipping Gemini model gemini-2.5-pro: model not found or no longer available (recorded earlier; retry in ~153h)
+2026-10-23 11:18:48,237 INFO Skipping Gemini model gemini-3.8-flash: daily free-tier quota used up (20 requests a day), resets in ~49min (recorded earlier; retry in ~41min)
+2026-10-23 11:18:48,237 INFO Skipping Gemini model gemini-3.7-flash: daily free-tier quota used up, resets in ~15h (recorded earlier; retry in ~41min)
+2026-10-23 11:18:48,237 INFO Skipping Gemini model gemini-3.6-flash: daily free-tier quota used up, resets in ~15h (recorded earlier; retry in ~41min)
+2026-10-23 11:18:48,237 INFO Skipping Gemini model gemini-3.5-flash: daily free-tier quota used up, resets in ~15h (recorded earlier; retry in ~41min)
+2026-10-23 11:18:48,237 INFO Using Gemini model gemini-3-flash-preview
+2026-10-23 11:18:49,667 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:18:49,677 INFO Gemini model gemini-3-flash-preview is serving as gemini-3-flash-preview
+2026-10-23 11:18:49,695 INFO [turn 1] list_files({})
+2026-10-23 11:18:52,236 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:18:52,271 INFO [turn 2] read_file({"path": "README.md"})
+2026-10-23 11:18:52,278 INFO [turn 2] read_file({"path": ".github/workflows/ci.yml"})
+2026-10-23 11:18:52,285 INFO [turn 2] read_file({"path": ".github/workflows/clean-workflow.yml"})
+2026-10-23 11:18:52,291 INFO [turn 2] read_file({"path": ".github/workflows/deploy.yml"})
+2026-10-23 11:18:52,297 INFO [turn 2] read_file({"path": ".github/workflows/release.yml"})
+2026-10-23 11:19:00,221 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:19:00,259 INFO [turn 3] git_log({})
+2026-10-23 11:19:00,670 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-10-23 11:19:00,672 WARNING Gemini model gemini-3-flash-preview unavailable (daily free-tier quota used up (20 requests a day), resets in ~41min); switching to the next model
+2026-10-23 11:19:00,672 INFO Skipping Gemini model gemini-2.5-flash: model not found or no longer available (recorded earlier; retry in ~153h)
+2026-10-23 11:19:00,672 INFO Skipping Gemini model gemini-3.5-flash-lite: rate limited (recorded earlier; retry in ~1min)
+2026-10-23 11:19:00,672 INFO Using Gemini model gemini-3.1-flash-lite
+2026-10-23 11:19:02,855 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:19:02,857 INFO Gemini model gemini-3.1-flash-lite is serving as gemini-3.1-flash-lite
+2026-10-23 11:19:02,858 INFO [turn 4] record_violation({"severity": "medium", "file": ".gitignore", "evidence": "The repository contains 5 files, but no .gitignore file is present.", "line": 1, "rule_id": "HYG-001", "category": "repository_hygiene", "desc)
+2026-10-23 11:19:04,158 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:19:04,160 INFO [turn 5] record_violation({"line": null, "file": null, "category": "repository_hygiene", "evidence": "The repository lacks a .gitignore file, which is standard practice to prevent tracking of build artifacts or temporary files)
+2026-10-23 11:19:06,749 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:19:06,752 INFO [turn 6] record_violation({"evidence": "CI workflows call `npm ci` but there is no `package-lock.json` file tracked in the repository.", "line": 20, "description": "npm ci used without a lockfile.", "severity": "medium", "file)
+2026-10-23 11:19:08,296 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:19:08,298 INFO [turn 7] record_violation({"line": null, "description": "No linting or formatting configuration.", "recommendation": "Configure a linter or formatter appropriate for the project's language to enforce code standards.", "evidenc)
+2026-10-23 11:19:11,022 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:19:11,026 INFO [turn 8] record_violation({"evidence": "CI workflows trigger `npm test` but there is no testing framework or test code in the repository.", "description": "CI calls `npm test` but no tests are present.", "file": ".github/workf)
+2026-10-23 11:19:12,771 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:19:12,773 INFO [turn 9] record_violation({"evidence": "Credentials such as `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, and others are hardcoded in the `env` block. See `deploy.yml` lines 11-14 and `release.yml` lines 11-13.", "recommendati)
+2026-10-23 11:19:14,047 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:19:14,050 INFO [turn 10] record_violation({"line": 25, "file": ".github/workflows/ci.yml", "recommendation": "Remove all echo/print statements that output secret values.", "severity": "critical", "category": "security", "evidence": "Workflow )
+2026-10-23 11:19:15,468 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:19:15,472 INFO [turn 11] record_violation({"line": 21, "rule_id": "SEC-003", "category": "security", "evidence": "`set -x` is used in `deploy.yml` and `release.yml`, which logs expanded commands including variables containing secrets.", "reco)
+2026-10-23 11:19:16,817 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:19:16,819 INFO [turn 12] record_violation({"recommendation": "Remove `--verbose` / `-v` when using secrets in curl commands.", "category": "security", "severity": "high", "rule_id": "SEC-004", "line": 27, "file": ".github/workflows/deploy.yml)
+2026-10-23 11:19:18,114 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:19:18,116 INFO [turn 13] record_violation({"description": "Secrets passed as CLI arguments.", "recommendation": "Use environment variables or stdin to provide secrets to commands.", "evidence": "`npm publish` and `docker login` pass secrets a)
+2026-10-23 11:19:19,480 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:19:19,482 INFO [turn 14] record_violation({"line": 39, "category": "security", "recommendation": "Exclude sensitive files from artifacts. Use GitHub secrets for configuration.", "description": "Sensitive files uploaded as artifacts.", "file":)
+2026-10-23 11:19:20,943 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:19:20,945 INFO [turn 15] record_violation({"evidence": "Workflows use default permissions, which may be too broad. Workflows missing the block: `ci.yml`, `clean-workflow.yml`, `deploy.yml`, `release.yml`.", "rule_id": "SEC-007", "line": 1, "c)
+2026-10-23 11:19:22,294 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:19:22,296 INFO [turn 16] record_violation({"evidence": "`deploy.yml` and `release.yml` run on push/release events but do not have `needs:` dependencies on any test jobs.", "rule_id": "BLD-001", "line": 8, "file": ".github/workflows/deploy.yml)
+2026-10-23 11:19:23,711 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:19:23,716 INFO [turn 17] record_violation({"file": ".github/workflows/deploy.yml", "line": 13, "category": "configuration", "evidence": "`deploy.yml` contains a hardcoded `DATABASE_PASSWORD` for production.", "recommendation": "Use environmen)
+2026-10-23 11:19:26,173 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-23 11:19:26,176 INFO [turn 18] model: Wait, I have recorded:
+1. HYG-001 (Missing .gitignore)
+2. DEP-001 (npm ci no lockfile)
+3. CQ-001 (No linting/formatter)
+4. TEST-001 (No tests)
+5. SEC-001 (Hardcoded secrets)
+6. SEC-002 (Secrets in logs)
+7. SEC-003 (set -x secrets)
+8. SEC-004 (curl -v secrets)
+9. SEC-005 (Secrets as CLI args)
+10. SEC-006 (Sensitive artifacts)
+11. SEC-007 (Missing permissions)
+12. BLD-001 (No gates)
+13. CFG-001 (Hardcoded prod secrets)
+
+I think I've covered the most significant violations.
+The `clean-workflow.yml`
+2026-10-23 11:19:26,192 INFO [turn 18] finish_audit({"summary": "The repository contains multiple critical DevOps security and configuration violations. It lacks basic repository hygiene like .gitignore, dependency management best practices, and testin)
+Wrote 14 violation(s) to evals\runs\2026-10-23-quota-aware\paastha1__cicd-test-repo.json (model: gemini-3-flash-preview, gemini-3.1-flash-lite)

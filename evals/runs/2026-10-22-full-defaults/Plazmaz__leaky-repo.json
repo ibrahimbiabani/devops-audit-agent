@@ -1,0 +1,15 @@
+{
+  "repository": "https://github.com/Plazmaz/leaky-repo",
+  "violations": [
+    {
+      "rule_id": "HYG-001",
+      "category": "repository_hygiene",
+      "severity": "medium",
+      "file": ".gitignore",
+      "line": null,
+      "description": "Missing top-level .gitignore file",
+      "evidence": "No .gitignore file exists in the repository root directory, causing untracked build artifacts, dependencies, or local environment files to be easily committed accidentally.",
+      "recommendation": "Create a comprehensive root-level .gitignore file suited for the project ecosystem to prevent accidental inclusion of sensitive or temporary files."
+    }
+  ]
+}

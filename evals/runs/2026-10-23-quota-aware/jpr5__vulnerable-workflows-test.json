@@ -1,0 +1,45 @@
+{
+  "repository": "https://github.com/jpr5/vulnerable-workflows-test",
+  "violations": [
+    {
+      "rule_id": "COL-001",
+      "category": "collaboration",
+      "severity": "critical",
+      "file": ".github/workflows/auto-label.yml",
+      "line": 12,
+      "description": "pull_request_target checkout of untrusted PR head ref",
+      "evidence": "pull_request_target workflow checks out ref: ${{ github.event.pull_request.head.ref }}",
+      "recommendation": "Avoid using pull_request_target with actions/checkout checking out untrusted head references, or use safe workflows triggered by pull_request without write permissions/checkout of untrusted code."
+    },
+    {
+      "rule_id": "COL-002",
+      "category": "collaboration",
+      "severity": "high",
+      "file": ".github/workflows/greet-pr.yml",
+      "line": 12,
+      "description": "Untrusted pull request inputs interpolated directly into run script",
+      "evidence": "echo \"Thanks for the PR: ${{ github.event.pull_request.title }}\" and echo \"From: ${{ github.event.pull_request.user.login }}\" in run step",
+      "recommendation": "Pass untrusted event data via environment variables rather than direct string interpolation into bash scripts."
+    },
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/setup.yml",
+      "line": 15,
+      "description": "Hardcoded API key in workflow environment block",
+      "evidence": "API_KEY: \"[REDACTED]\" in workflow environment block",
+      "recommendation": "Move sensitive API keys and secrets to GitHub Repository Secrets and reference them using secrets.API_KEY."
+    },
+    {
+      "rule_id": "SEC-002",
+      "category": "security",
+      "severity": "medium",
+      "file": ".github/workflows/auto-label.yml",
+      "line": 1,
+      "description": "Missing permissions block in GitHub Actions workflows",
+      "evidence": "Workflows across .github/workflows/ (auto-label.yml, ci.yml, greet-pr.yml, manual-deploy.yml, setup.yml) omit the permissions: block, leaving default GITHUB_TOKEN privileges.",
+      "recommendation": "Define explicit least-privilege permissions: blocks for all workflows."
+    }
+  ]
+}

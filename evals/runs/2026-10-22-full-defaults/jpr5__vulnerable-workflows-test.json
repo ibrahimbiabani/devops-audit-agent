@@ -1,0 +1,85 @@
+{
+  "repository": "https://github.com/jpr5/vulnerable-workflows-test",
+  "violations": [
+    {
+      "rule_id": "CI-001",
+      "category": "ci_cd",
+      "severity": "critical",
+      "file": ".github/workflows/auto-label.yml",
+      "line": 10,
+      "description": "pull_request_target with checkout of PR branch head ref",
+      "evidence": "pull_request_target trigger checks out github.event.pull_request.head.ref with actions/checkout@v4",
+      "recommendation": "Avoid using pull_request_target with head.ref checkout, or switch to pull_request."
+    },
+    {
+      "rule_id": "CI-003",
+      "category": "ci_cd",
+      "severity": "high",
+      "file": ".github/workflows/greet-pr.yml",
+      "line": 11,
+      "description": "Untrusted github.event event fields interpolated directly into shell run script",
+      "evidence": "github.event.pull_request.title and user.login are interpolated directly into shell run script.",
+      "recommendation": "Pass untrusted event data via environment variables instead of direct shell interpolation."
+    },
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/setup.yml",
+      "line": 14,
+      "description": "Hardcoded credential / API key in workflow environment block",
+      "evidence": "API_KEY assigned a hardcoded string literal in env block",
+      "recommendation": "Store credentials in GitHub Secrets and reference them via secrets.API_KEY."
+    },
+    {
+      "rule_id": "CI-002",
+      "category": "ci_cd",
+      "severity": "medium",
+      "file": ".github/workflows/auto-label.yml",
+      "line": 1,
+      "description": "Missing permissions block in GitHub Actions workflow",
+      "evidence": "Workflow auto-label.yml has no top-level or job-level permissions block.",
+      "recommendation": "Add a restrictive permissions block (e.g. contents: read) to all jobs or workflows."
+    },
+    {
+      "rule_id": "CI-007",
+      "category": "ci_cd",
+      "severity": "medium",
+      "file": ".github/workflows/ci.yml",
+      "line": 1,
+      "description": "Missing permissions block in GitHub Actions workflow",
+      "evidence": "Workflow ci.yml has no top-level or job-level permissions block.",
+      "recommendation": "Add a restrictive permissions block to workflows."
+    },
+    {
+      "rule_id": "CI-004",
+      "category": "ci_cd",
+      "severity": "medium",
+      "file": ".github/workflows/greet-pr.yml",
+      "line": 1,
+      "description": "Missing permissions block in GitHub Actions workflow",
+      "evidence": "Workflow greet-pr.yml has no top-level or job-level permissions block.",
+      "recommendation": "Add a restrictive permissions block to workflows."
+    },
+    {
+      "rule_id": "CI-006",
+      "category": "ci_cd",
+      "severity": "medium",
+      "file": ".github/workflows/manual-deploy.yml",
+      "line": 1,
+      "description": "Missing permissions block in GitHub Actions workflow",
+      "evidence": "Workflow manual-deploy.yml has no top-level or job-level permissions block.",
+      "recommendation": "Add a restrictive permissions block to workflows."
+    },
+    {
+      "rule_id": "CI-005",
+      "category": "ci_cd",
+      "severity": "medium",
+      "file": ".github/workflows/setup.yml",
+      "line": 1,
+      "description": "Missing permissions block in GitHub Actions workflow",
+      "evidence": "Workflow setup.yml has no top-level or job-level permissions block.",
+      "recommendation": "Add a restrictive permissions block to workflows."
+    }
+  ]
+}

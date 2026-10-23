@@ -1,0 +1,55 @@
+{
+  "repository": "https://github.com/Grafter-labs/grafter-lab-injection",
+  "violations": [
+    {
+      "rule_id": "COL-003",
+      "category": "collaboration",
+      "severity": "critical",
+      "file": ".github/workflows/runner-control-injection.yml",
+      "line": 13,
+      "description": "Untrusted issue title used directly to select workflow runner hardware",
+      "evidence": ".github/workflows/runner-control-injection.yml uses runs-on: ${{ github.event.issue.title }}",
+      "recommendation": "Use static runner labels (e.g. ubuntu-latest) instead of dynamic event data for runs-on."
+    },
+    {
+      "rule_id": "COL-001",
+      "category": "collaboration",
+      "severity": "high",
+      "file": ".github/workflows/script-injection.yml",
+      "line": 15,
+      "description": "Untrusted GitHub event data interpolated directly into shell script execution",
+      "evidence": ".github/workflows/script-injection.yml interpolates github.event.issue.title directly into a shell run command",
+      "recommendation": "Pass untrusted event data via environment variables instead of direct expression interpolation in run blocks."
+    },
+    {
+      "rule_id": "COL-004",
+      "category": "collaboration",
+      "severity": "medium",
+      "file": ".github/workflows/bypassable-actor-allowlist-gate.yml",
+      "line": 8,
+      "description": "Pull request/issue event workflow triggered with write permissions on contents",
+      "evidence": ".github/workflows/bypassable-actor-allowlist-gate.yml triggered on issue_comment has contents: write permission",
+      "recommendation": "Limit permissions to contents: read or remove unnecessary write permissions on untrusted event workflows."
+    },
+    {
+      "rule_id": "BLD-001",
+      "category": "build_release",
+      "severity": "medium",
+      "file": ".github/workflows/bypassable-actor-allowlist-gate.yml",
+      "line": 17,
+      "description": "Workflow runs npm publish publish command without preceding build or test validation",
+      "evidence": ".github/workflows/bypassable-actor-allowlist-gate.yml executes npm publish --dry-run without build or test jobs",
+      "recommendation": "Ensure proper testing and build validation steps precede publishing or packaging steps."
+    },
+    {
+      "rule_id": "COL-002",
+      "category": "collaboration",
+      "severity": "medium",
+      "file": ".github/workflows/filename-collision-download.yml",
+      "line": 17,
+      "description": "Untrusted pull request branch reference interpolated into download URL",
+      "evidence": ".github/workflows/filename-collision-download.yml interpolates github.event.pull_request.head.ref into a wget URL",
+      "recommendation": "Avoid interpolating pull request refs directly into command strings or URLs; validate or pass through environment variables safely."
+    }
+  ]
+}

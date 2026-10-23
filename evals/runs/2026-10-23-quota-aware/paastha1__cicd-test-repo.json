@@ -1,0 +1,145 @@
+{
+  "repository": "https://github.com/paastha1/cicd-test-repo",
+  "violations": [
+    {
+      "rule_id": "SEC-002",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/ci.yml",
+      "line": 25,
+      "description": "Secrets echoed or printed to logs.",
+      "evidence": "Workflow steps echo secrets (e.g., `GITHUB_TOKEN`, `NPM_TOKEN`, `AWS_ACCESS_KEY_ID`). Observed in `ci.yml`, `deploy.yml`, and `release.yml`.",
+      "recommendation": "Remove all echo/print statements that output secret values."
+    },
+    {
+      "rule_id": "SEC-006",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/ci.yml",
+      "line": 39,
+      "description": "Sensitive files uploaded as artifacts.",
+      "evidence": "Workflow artifacts include `.env`, `.env.production`, `credentials.json`, `~/.ssh/id_rsa`, and `private-key.pem`. Observed in `ci.yml` and `release.yml`.",
+      "recommendation": "Exclude sensitive files from artifacts. Use GitHub secrets for configuration."
+    },
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/deploy.yml",
+      "line": 11,
+      "description": "Hardcoded secrets in workflow env blocks.",
+      "evidence": "Credentials such as `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, and others are hardcoded in the `env` block. See `deploy.yml` lines 11-14 and `release.yml` lines 11-13.",
+      "recommendation": "Store secrets in GitHub Secrets and use them via `${{ secrets.SECRET_NAME }}`."
+    },
+    {
+      "rule_id": "CFG-001",
+      "category": "configuration",
+      "severity": "critical",
+      "file": ".github/workflows/deploy.yml",
+      "line": 13,
+      "description": "Hardcoded production settings/secrets.",
+      "evidence": "`deploy.yml` contains a hardcoded `DATABASE_PASSWORD` for production.",
+      "recommendation": "Use environment variables or a configuration management system to manage secrets and environment-specific settings."
+    },
+    {
+      "rule_id": "TEST-001",
+      "category": "testing",
+      "severity": "high",
+      "file": ".github/workflows/ci.yml",
+      "line": 21,
+      "description": "CI calls `npm test` but no tests are present.",
+      "evidence": "CI workflows trigger `npm test` but there is no testing framework or test code in the repository.",
+      "recommendation": "Implement tests and remove the dependency on `npm test` until they exist."
+    },
+    {
+      "rule_id": "SEC-005",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/ci.yml",
+      "line": 31,
+      "description": "Secrets passed as CLI arguments.",
+      "evidence": "`npm publish` and `docker login` pass secrets as arguments in `ci.yml`. Argument values are often visible in process lists.",
+      "recommendation": "Use environment variables or stdin to provide secrets to commands."
+    },
+    {
+      "rule_id": "BLD-001",
+      "category": "build_release",
+      "severity": "high",
+      "file": ".github/workflows/deploy.yml",
+      "line": 8,
+      "description": "Deployment/Release workflow triggered without prior test validation.",
+      "evidence": "`deploy.yml` and `release.yml` run on push/release events but do not have `needs:` dependencies on any test jobs.",
+      "recommendation": "Add a `needs:` block to ensure tests pass before deployment or release."
+    },
+    {
+      "rule_id": "SEC-003",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/deploy.yml",
+      "line": 21,
+      "description": "Bash debug mode (set -x) expands and logs secrets.",
+      "evidence": "`set -x` is used in `deploy.yml` and `release.yml`, which logs expanded commands including variables containing secrets.",
+      "recommendation": "Remove `set -x` from steps that handle secrets."
+    },
+    {
+      "rule_id": "SEC-004",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/deploy.yml",
+      "line": 27,
+      "description": "Verbose curl with auth headers leaks secrets.",
+      "evidence": "`curl -v` is used with authorization headers in `deploy.yml` and `release.yml`, leaking tokens in the logs.",
+      "recommendation": "Remove `--verbose` / `-v` when using secrets in curl commands."
+    },
+    {
+      "rule_id": "HYG-001",
+      "category": "repository_hygiene",
+      "severity": "medium",
+      "file": null,
+      "line": null,
+      "description": "Missing .gitignore file in the repository root.",
+      "evidence": "The repository lacks a .gitignore file, which is standard practice to prevent tracking of build artifacts or temporary files.",
+      "recommendation": "Create a .gitignore file."
+    },
+    {
+      "rule_id": "SEC-007",
+      "category": "security",
+      "severity": "medium",
+      "file": ".github/workflows/ci.yml",
+      "line": 1,
+      "description": "Missing explicit `permissions:` block.",
+      "evidence": "Workflows use default permissions, which may be too broad. Workflows missing the block: `ci.yml`, `clean-workflow.yml`, `deploy.yml`, `release.yml`.",
+      "recommendation": "Add a `permissions:` block to restrict the token's scope to only what the workflow needs."
+    },
+    {
+      "rule_id": "DEP-001",
+      "category": "dependency_management",
+      "severity": "medium",
+      "file": ".github/workflows/ci.yml",
+      "line": 20,
+      "description": "npm ci used without a lockfile.",
+      "evidence": "CI workflows call `npm ci` but there is no `package-lock.json` file tracked in the repository.",
+      "recommendation": "Generate and commit a package-lock.json file to ensure consistent dependency versions."
+    },
+    {
+      "rule_id": "HYG-001",
+      "category": "repository_hygiene",
+      "severity": "medium",
+      "file": ".gitignore",
+      "line": 1,
+      "description": "Missing .gitignore file in the repository root.",
+      "evidence": "The repository contains 5 files, but no .gitignore file is present.",
+      "recommendation": "Create a .gitignore file to exclude temporary files, build artifacts, and dependency directories."
+    },
+    {
+      "rule_id": "CQ-001",
+      "category": "code_quality",
+      "severity": "low",
+      "file": null,
+      "line": null,
+      "description": "No linting or formatting configuration.",
+      "evidence": "No configuration files for linting or formatting tools (e.g., eslint, prettier, ruff, black) are present.",
+      "recommendation": "Configure a linter or formatter appropriate for the project's language to enforce code standards."
+    }
+  ]
+}

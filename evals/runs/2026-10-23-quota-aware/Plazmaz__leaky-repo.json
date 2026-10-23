@@ -1,0 +1,35 @@
+{
+  "repository": "https://github.com/Plazmaz/leaky-repo",
+  "violations": [
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "critical",
+      "file": ".ssh/id_rsa",
+      "line": 1,
+      "description": "Committed SSH private key (.ssh/id_rsa)",
+      "evidence": "File .ssh/id_rsa is tracked in git and contains a private key.",
+      "recommendation": "Remove .ssh/id_rsa from the repository and git history, and use an external secrets manager or local SSH key management."
+    },
+    {
+      "rule_id": "SEC-002",
+      "category": "security",
+      "severity": "critical",
+      "file": "etc/shadow",
+      "line": 20,
+      "description": "Committed sensitive shadow file containing password hashes (etc/shadow)",
+      "evidence": "File etc/shadow is tracked in the repository and contains user password hashes.",
+      "recommendation": "Remove system shadow files from version control."
+    },
+    {
+      "rule_id": "HYG-001",
+      "category": "repository_hygiene",
+      "severity": "high",
+      "file": ".docker/.dockercfg",
+      "line": 1,
+      "description": "Tracked sensitive credential and configuration files throughout repository",
+      "evidence": "Repository tracks numerous credential stores, auth configs, and private keys (.docker/.dockercfg, .netrc, .npmrc, cloud/.s3cfg, db/.pgpass, web/ruby/config/master.key, web/var/www/.env, etc.)",
+      "recommendation": "Ensure all credential files, tokens, and private keys are excluded via .gitignore and removed from the repository."
+    }
+  ]
+}
