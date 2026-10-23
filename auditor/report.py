@@ -12,17 +12,19 @@ from typing import Any
 from auditor.redact import redact
 
 SEVERITIES = ("critical", "high", "medium", "low")
-CATEGORIES = (
-    "repository_hygiene",
-    "dependency_management",
-    "code_quality",
-    "testing",
-    "ci_cd",
-    "security",
-    "configuration",
-    "collaboration",
-    "build_release",
-)
+# The nine DevOps inspection areas from the assignment (section 4), each with its rule_id prefix.
+RULE_PREFIXES = {
+    "repository_hygiene": "HYG",
+    "dependency_management": "DEP",
+    "code_quality": "CQ",
+    "testing": "TEST",
+    "ci_cd": "CI",
+    "security": "SEC",
+    "configuration": "CFG",
+    "collaboration": "COL",
+    "build_release": "BLD",
+}
+CATEGORIES = tuple(RULE_PREFIXES)
 FIELDS = ("rule_id", "category", "severity", "file", "line", "description", "evidence", "recommendation")
 RULE_ID = re.compile(r"^[A-Z]{2,5}-\d{3}$")
 TEXT_FIELDS = ("description", "evidence", "recommendation")
@@ -55,6 +57,8 @@ def validate_violation(raw: dict[str, Any]) -> dict[str, Any]:
         problems.append(f"category must be one of {CATEGORIES}")
     if not RULE_ID.match(v["rule_id"]):
         problems.append("rule_id must look like 'SEC-001'")
+    elif v["category"] in RULE_PREFIXES and v["rule_id"].split("-")[0] != RULE_PREFIXES[v["category"]]:
+        problems.append(f"rule_id for category {v['category']} must start with {RULE_PREFIXES[v['category']]}-")
     if v["file"] in ("", "null"):
         v["file"] = None
     if v["file"] is not None and not isinstance(v["file"], str):

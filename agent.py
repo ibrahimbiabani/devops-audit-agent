@@ -29,7 +29,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument("--max-turns", type=int, default=40, help="Upper bound on agent turns (default: 40)")
     p.add_argument("--trace", type=Path, help="Write a JSONL tool-call trace to this file")
     p.add_argument("--provider", choices=PROVIDERS, help="LLM provider (default: gemini; or LLM_PROVIDER)")
-    p.add_argument("--model", help="Primary model (default: AUDIT_MODEL, else gemini-3.5-flash-lite)")
+    p.add_argument("--model", help="Try this model first (default: AUDIT_MODEL, else the most capable available)")
     p.add_argument("--keep-clone", action="store_true", help="Do not delete the temporary clone")
     p.add_argument("-v", "--verbose", action="store_true", help="Log agent steps to stderr")
     return p.parse_args(argv)

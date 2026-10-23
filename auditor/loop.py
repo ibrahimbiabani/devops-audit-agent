@@ -72,7 +72,8 @@ class AuditAgent:
             {
                 "role": "user",
                 "content": (
-                    f"Audit the repository {repository}. It is cloned locally and available through your tools. "
+                    f"Audit the repository {repository} against the nine DevOps inspection areas. "
+                    "It is cloned locally and available through your tools. "
                     f"You have at most {self.max_turns} turns."
                 ),
             }

@@ -1,0 +1,10 @@
+# Evaluation repositories: <url> <type> <set>
+# type: A = obvious defects, B = subtle CI/security, C = mostly healthy
+# set: heldout = not looked at while tuning the prompt; tuned = used during tuning
+https://github.com/gary-mello/github-vuln-actions B heldout
+https://github.com/jpr5/vulnerable-workflows-test B heldout
+https://github.com/pallets/itsdangerous C heldout
+https://github.com/paastha1/cicd-test-repo B tuned
+https://github.com/Grafter-labs/grafter-lab-injection B tuned
+https://github.com/Plazmaz/leaky-repo A tuned
+https://github.com/pypa/sampleproject C tuned

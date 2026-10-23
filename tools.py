@@ -264,7 +264,7 @@ TOOL_SCHEMAS: list[dict[str, Any]] = [
         "name": "search_code",
         "description": (
             "Search tracked text files with a Python regular expression. Returns 'file:line: text'. "
-            "Use for suspicious patterns: credentials, absolute paths, debug flags, risky workflow settings."
+            "Use for suspicious patterns: credentials, machine-specific paths, risky workflow settings."
         ),
         "input_schema": {
             "type": "object",
