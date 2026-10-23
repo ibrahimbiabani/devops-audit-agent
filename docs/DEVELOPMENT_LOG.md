@@ -12,6 +12,9 @@ did not work. Each step lists the commits that implement it.
 | 2026-10-21 | 5 | Second evaluation: held-out repositories plus the baseline set; two bugs found and fixed |
 | 2026-10-22 | 6 | Gemini made the default provider; Anthropic made optional |
 | 2026-10-22 | 7 | Pinned default model, per-error retry handling, automatic model fallback |
+| 2026-10-22 | 8 | Third evaluation (default settings, all 7 repositories) with a reusable runner |
+| 2026-10-22 | 9 | Scope limited to the nine inspection areas; full Gemini model chain with availability checks |
+| 2026-10-23 | 10 | Free-tier model check; probe replaced by local quota counting; Gemma added as last resort |
 
 ---
 
@@ -357,3 +360,239 @@ times, under a single reused rule ID. The prompt asks for one finding per anti-p
 these are duplicates a grader would count against precision. Because the rule ID is reused,
 code can detect it: candidate fix is to merge a repeated rule ID into the first finding's
 evidence.
+
+---
+
+## Step 8: Third evaluation, default settings
+
+### Setup
+
+- **New runner:** [`evals/run_eval.py`](../evals/run_eval.py) runs the agent over
+  [`evals/repos.txt`](../evals/repos.txt) one repository at a time. It pauses 30 s between
+  audits, to stay under the free tier's per-minute limit that caused 429s on Oct 21. It stops
+  the batch if no Gemini model can serve a request, and it records each audit's HTTP status
+  counts, fallbacks and serving model in `summary.json`.
+- **Settings:** the same 7 repositories as Step 5 and `--max-turns 20`. **No model settings
+  were set**, so this measures the out-of-the-box defaults from Step 7.
+- **Usage before the run:** the API dashboard showed about 155 requests on Oct 21 and about
+  65 earlier on Oct 22, most errors being 429s (Oct 21) and 503s (Oct 22).
+- **Results:** reports, traces and the summary are in
+  [`evals/runs/2026-10-22-full-defaults/`](../evals/runs/2026-10-22-full-defaults/).
+
+### Reliability
+
+All 7 audits finished with exit 0, in 38–228 s each. The batch used **76 requests: 62 OK,
+13 × 503, 1 × 429**, and every error was absorbed by retries or fallback.
+
+- **Live fallback:** on paastha1, `gemini-3.5-flash-lite` returned 503 three times and the
+  audit switched to `gemini-3.1-flash-lite`. That returned 503 three times too, so it switched
+  to `gemini-3.6-flash`, which served the rest of the audit. A per-minute 429 there asked for
+  a 52 s wait, which was honoured.
+- **Switching models mid-audit** caused no errors, as the live test in Step 7 predicted.
+
+### Detection
+
+| Repository | Set | Step 5 | Step 8 |
+|---|---|---|---|
+| gary-mello/github-vuln-actions | held-out | 0 / 8 | **6 / 8**, no false positives (missed `@main`/`@latest` refs and the self-hosted runner) |
+| jpr5/vulnerable-workflows-test | held-out | 5 / 6 | 4 / 6, plus the same "missing permissions" finding 4 extra times |
+| pallets/itsdangerous | held-out, healthy | 0 findings | 0 findings (correct) |
+| paastha1/cicd-test-repo | tuned | 6 / 6 + 2 valid | 6 / 6 + 2 valid |
+| Grafter-labs/grafter-lab-injection | tuned | 1 / 6 | 1 / 6 |
+| Plazmaz/leaky-repo | tuned | 14 / 35 | **1 / 35** (one valid hygiene finding) |
+| pypa/sampleproject | tuned, healthy | 0 findings | 0 findings (the real release-without-tests issue is still missed) |
+
+### Analysis
+
+- **Healthy repositories:** precision held. Both produced zero findings in both rounds.
+- **Run-to-run variance is large.** The same code and model gave 0 → 6 on gary-mello but
+  14 → 1 on leaky-repo. A single run per repository is not a reliable measurement.
+- **Why leaky-repo regressed** (from its trace):
+  - Turns 2–17 were spent one call at a time on `list_files` pattern searches (`*Cargo.*`,
+    `*go.*`, `*pom.xml`…) instead of opening the files tagged `[sensitive name]`.
+  - The model again called the repository "a test fixture and benchmark".
+  - The coverage check refused the first `finish_audit`, but only at turn 18 of 20, too late
+    to act on: the model opened one file and finished.
+- **Duplicates:** jpr5 repeated "missing permissions block" in 5 findings with *different*
+  rule IDs but identical descriptions. Merging by rule ID (proposed in Step 7) would not
+  catch this; merging by identical description would.
+- **Grafter's subtle patterns** (`runs-on:` injection, the `contains()` allowlist, deprecated
+  commands) were missed in all three rounds.
+
+### Candidate fixes, in priority order
+
+1. **Mid-audit coverage reminder.** When half the turns are used and tagged or workflow files
+   are still unread, append the list to the next tool result, instead of only checking at
+   `finish_audit`.
+2. **Merge duplicate findings.** A finding with the same category and description as an
+   existing one is folded into it, with its location added to the evidence.
+3. **Repeat the no-dismissal rule where the decision is made**, in the first user message and
+   in the `finish_audit` description.
+4. **Grafter-style CI patterns:** an `inspect_workflows()` tool, or a stronger model.
+5. **Measure with repeats:** run each repository two or three times and compare averages,
+   within the free-tier quota.
+
+---
+
+## Step 9: Assignment scope and the full model chain
+
+### 1. Audit scope limited to the nine inspection areas
+
+**Why:** the prompt's checklist had grown beyond the assignment and also left parts of it out:
+- **Beyond the assignment:** deprecated workflow commands, action pinning (supply-chain
+  hardening) and debug-mode flags. None of these is among the nine DevOps inspection areas
+  in section 4.
+- **Missing:** a missing README, linting/formatting, incorrect CI triggers, inconsistent or
+  weakly pinned dependencies, absent lockfiles and review guidance.
+
+**Changes:**
+- **Prompt** (`auditor/prompts.py`): the system prompt is now organised by the nine areas.
+  Each area states the assignment's example violations word for word, then the concrete signs
+  to check. An explicit out-of-scope rule forbids reporting anything outside the nine areas,
+  naming general bugs, style, licensing, action pinning, deprecated syntax and ML concerns.
+  The assignment's evidence rule is included as written. Tension between the "not a
+  violation" list and the assignment was resolved in the assignment's favour: review guidance
+  is a finding only "where relevant".
+- **Validation** (`auditor/report.py`): every category maps to one rule-ID prefix
+  (`security` → `SEC`, `collaboration` → `COL`, …). `record_violation` rejects a finding whose
+  prefix doesn't match its category, so every finding is filed under exactly one of the nine
+  areas.
+- **Tools** (`tools.py`): the "debug flags" hint was removed from the `search_code` description.
+
+**Tests:** one test checks that the prompt contains each area's example violations from the
+assignment and each category-to-prefix mapping. Another checks that mismatched prefixes are
+rejected.
+
+### 2. A full model chain, most capable first, with availability checks
+
+**Why:** the fallback list was a hand-picked set of four models, and it started with a
+Flash-Lite model. Models were only found to be unusable by sending them real requests.
+
+**Changes** (`auditor/gemini_llm.py`):
+
+| Change | Detail |
+|---|---|
+| Chain built automatically | The API's model list (a metadata call that uses no quota) is filtered to concrete general-purpose text models and ranked **from most to least capable**: Pro, then Flash, then Flash-Lite; newest version first; stable before preview. On the development key that is 12 models, from `gemini-3.1-pro-preview` to `gemini-2.5-flash-lite`. A built-in copy is used if listing fails. |
+| Check before use: free | Daily-quota exhaustion, retirement and recent overloads are recorded with an expiry time in a small JSON file (`~/.cache/devops-audit-agent/gemini-model-status.json`, configurable with `AUDIT_MODEL_STATUS_FILE`). A recorded model is skipped **without sending any request**. |
+| Check before use: one request | Otherwise a tiny probe (`ping`, at most 16 output tokens) is sent before the model's first real request in an audit. |
+| Attempts | 2 attempts per model instead of 3. |
+| 504 handling | A 504 (server deadline expired, about 2 minutes) moves on at once instead of retrying. This was found in the live run below, where two retried 504s cost about 4 minutes. |
+| Configuration | `AUDIT_MODEL` puts one model first; `AUDIT_FALLBACK_MODELS` replaces the discovered chain. |
+
+**Live run** (`jpr5/vulnerable-workflows-test`, default settings, `--max-turns 15`): exit 0.
+The chain behaved as designed. The two Pro models were unavailable (daily quota; retired) and
+were recorded. `gemini-3.8-flash` timed out, and `gemini-3.7-flash` was out of quota.
+`gemini-3.6-flash` passed its check and served until its daily quota ran out mid-audit.
+`gemini-3-flash-preview` timed out, `gemini-2.5-flash` was retired, and
+`gemini-3.5-flash-lite` served the rest. The run took 507 s, of which about 4 minutes were
+the two retried 504s that led to the 504 change above; that change has not yet been run live.
+The report used the new categories (e.g. `COL-` for unsafe PR automation) and recorded
+"missing permissions" once instead of once per workflow.
+
+**Tests:** new tests cover:
+- the ranking (against the real model list from the development key)
+- discovery, and its fallback to the built-in chain
+- skipping a recorded model without any request
+- the record persisting between runs and expiring
+- probing each model once
+- a rejected probe
+- a 504 moving on without a retry
+
+The suite has 103 tests, all passing.
+
+---
+
+## Step 10: What the free tier offers, and choosing a model without test requests
+
+**Why:** the Step 9 probe had two problems:
+- **It cost quota and saved nothing.** If the model worked, the probe was an extra request;
+  if it did not, the real request would have failed just as quickly. On Flash models, with
+  about 20 requests a day, each probe used 5% of the day's quota.
+- **It could not prevent mid-audit failures.** An audit could start on a model with two
+  requests left and be forced to switch partway through.
+
+Nothing reachable with an API key reports remaining quota, and 503 overloads cannot be
+predicted. So the aim was to predict what can be predicted (quota) and make the rest cheap.
+
+### 1. Free-tier model check (2026-10-23, about 23:00 Pacific)
+
+**Method:** a scratch script sent one request with one tool declaration to each of the 20
+general-purpose text models the key lists. It recorded the status, the served
+`model_version`, whether the model called the tool, and the quota details of any 429.
+
+Skipped:
+- image, speech, music, embedding, live and deep-research models, which cannot run the agent
+- the `-latest` aliases, which point to models already checked
+
+Raw results: `evals/model-checks/2026-10-23.json`.
+
+| Result | Models | Interpretation |
+|---|---|---|
+| Served, tool call made | `gemini-3.8-flash`, `3.6-flash`, `3-flash-preview`, `3.5-flash-lite`, `3.1-flash-lite`, `gemma-4-26b-a4b-it`, `gemini-robotics-er-2-preview` | Usable (robotics model excluded as specialised) |
+| Served as another model | `gemini-3.1-flash-lite-preview` → `gemini-3.1-flash-lite` | Not a separate fallback |
+| 429, daily quota, limit 20 | `gemini-3.7-flash`, `3.5-flash` | Spent today; usable after the reset |
+| 429, every quota exceeded on the first request, no limit stated | `gemini-4-argon`, `3.1-pro-preview`, `3.1-pro-preview-customtools`, `omni-1.1-flash`, `omni-flash-preview` | Not on the free tier (Google's pricing page agrees) |
+| 404 "no longer available to new users" | `gemini-2.5-pro`, `2.5-flash`, `2.5-flash-lite` | Free only for projects that already used them |
+| 500, twice | `gemma-4-31b-it` | Broken at the time of the check |
+| 400 "Function calling is not enabled" | `antigravity-preview-09-2026` | Cannot run the agent |
+
+**Research:**
+- Google's rate-limit documentation gives no free-tier figures. It refers to the AI Studio
+  rate-limit page and states that daily quotas reset at midnight Pacific.
+- Third-party trackers disagree. The most recent ones report about 20 requests a day for the
+  3.5–3.8 Flash models (matching the check) and about 500 for Flash-Lite. Older figures of
+  1,500 a day predate cuts made around December 2025.
+- Gemma's free limits are reported to be much higher, but no current source confirms them.
+
+**Two observations not fully explained:**
+- The daily-quota error for `gemini-3.7-flash` names `gemini-3.8-flash` in its quota
+  dimension, and the one for `3.5-flash` names `3.6-flash`. Yet `3.8-flash` and `3.6-flash`
+  kept serving afterwards, so they are not a shared pool.
+- Step 9's run recorded `3.6-flash` as out of daily quota on the same Pacific day on which it
+  then served twice.
+
+So quota errors cannot be fully predicted from the agent's own records. A real quota error
+remains the final word.
+
+**Gemma compatibility:**
+- A fresh request with a system prompt and tools worked, and Gemma called the tool.
+- A conversation started on Gemini and handed to Gemma failed with
+  `400 Request contains an invalid argument`.
+- The same turns without Gemini's thought signatures were accepted.
+
+### 2. Changes
+
+**Changes** (`auditor/gemini_llm.py`):
+
+| Change | Detail |
+|---|---|
+| Probe removed | The first real request is the check. A failed request moves to the next model with the same conversation, so nothing is lost. |
+| Local request counting | Successful requests are counted per model per quota day (midnight Pacific; `tzdata` added for Windows). A model's daily limit is learned from the `quotaValue` of the daily-quota error that states it. Together these show how much quota a model has left **without sending a request**. Stored in the same status file, whose old format is still read. |
+| Quota reserve | A model is chosen only if it has at least 10 requests left today (or an unknown amount). If no model has that many, the most capable one with any quota left is used. Once a model serves an audit it is kept while it works, even below the reserve. Audits in the Step 8 evaluation made 5–20 successful requests (median 6). |
+| Not on the free tier | A 429 that reports every free-tier quota exceeded, with no limit stated, is recorded as "not available on the free tier" for 7 days. Detection is by error shape, not model name, so Pro returns automatically if billing is enabled. |
+| Previews that redirect | A preview is dropped from the chain when its stable release is listed. |
+| Gemma added | `gemma-<version>-<size>b-it` models are ranked after Flash-Lite, larger first. When Gemma serves, model turns are replayed without thought parts and signatures. Gemini still gets them unchanged. |
+| Unsupported features | A 400 saying a feature is "not enabled" or "not supported" moves to the next model; other 400s still stop the audit. |
+| Built-in chain | Used only if listing fails. It now holds the 9 models that served on the free tier in the check, instead of 12 including unusable ones. |
+
+**Effect on the discovered chain:**
+- Pro and the 2.5 series are still in the chain.
+- Pro is recorded for 7 days after its first error, as are the retired 2.5 models, so each
+  costs one request a week instead of one a day.
+- `3.1-flash-lite-preview` is gone.
+- `gemma-4-31b-it` and `gemma-4-26b-a4b-it` are the last resort.
+- Gemma's audit quality is untested.
+
+**Tests:** the probe tests were replaced with tests covering:
+- the ranking against the 2026-10-23 model list, including Gemma and the dropped preview
+- no extra requests beyond the real ones
+- free-tier detection and its 7-day record
+- learning a limit and counting locally
+- passing over a model below the reserve, but using it when nothing better remains
+- staying on the serving model below the reserve
+- the midnight-Pacific reset
+- reading the old status file
+- unsupported features moving on
+- Gemma receiving history without signatures while Gemini gets it unchanged
+
+The suite has 112 tests, all passing.

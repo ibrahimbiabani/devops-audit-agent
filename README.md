@@ -38,36 +38,70 @@ A free key is available from [Google AI Studio](https://aistudio.google.com/apik
 | Variable | Default | Purpose |
 |---|---|---|
 | `GEMINI_API_KEY` | (required) | Gemini API key |
-| `AUDIT_MODEL` | `gemini-3.5-flash-lite` | Primary model (`--model` overrides it) |
-| `AUDIT_FALLBACK_MODELS` | `gemini-3.1-flash-lite,gemini-3.6-flash,gemini-3-flash-preview` | Models to switch to if the current one is unavailable; `none` disables |
+| `AUDIT_MODEL` | (none) | Try this model first, before the chain (`--model` overrides it) |
+| `AUDIT_FALLBACK_MODELS` | discovered | Use this exact comma-separated chain instead; `none` = only `AUDIT_MODEL` |
+| `AUDIT_MODEL_STATUS_FILE` | `~/.cache/devops-audit-agent/gemini-model-status.json` | Where unavailable models, daily limits and today's request counts are kept between runs; `none` disables |
 
 ### How the model is chosen
 
-The primary model is `--model`, else `AUDIT_MODEL`, else `gemini-3.5-flash-lite`. The default
-is a concrete model rather than a `-latest` alias on purpose: Google repoints aliases without
-notice. During development, `gemini-flash-latest` moved to `gemini-3.8-flash`, whose free tier
-allows 20 requests a day, which is fewer than one audit needs. The model that actually served
-an audit is printed at the end of the run (`model: …`) and written as the last line of the
-`--trace` file.
+At start-up the agent lists the models the API key can use; listing costs no quota. It keeps
+every general-purpose text model and orders them **from most to least capable**:
+1. every Pro model
+2. every Flash model
+3. every Flash-Lite model
+4. Google's open-weight Gemma models, which are a last resort
+
+Within each group the newest version comes first and stable comes before preview. A preview
+is left out when its stable release is listed, because it is served by that release. Aliases
+(`-latest`) and specialised variants (image, speech, transcription, robotics, …) are left out,
+so every entry is a concrete model. If the list cannot be fetched, a built-in chain is used:
+the 9 models that served on the free tier when last checked
+([evals/model-checks/](evals/model-checks/)).
+
+The model is chosen **without sending any request**, using what earlier runs recorded in
+`AUDIT_MODEL_STATUS_FILE`:
+
+1. **Known unavailable?** Models that hit their daily quota, were retired, are not on the free
+   tier, or were overloaded recently are skipped until the recorded time.
+2. **Enough quota left?** Successful requests are counted per model per day. Daily quotas reset
+   at midnight Pacific, and the count resets with them. A model's daily limit is learned from
+   the first quota error that states it. A model with fewer than 10 requests left today is
+   passed over, so an audit doesn't start on a model about to run out. If every model is that
+   low, the most capable one with any quota left is used.
+
+The first real request then shows whether the model works. If it fails, the same request goes
+to the next model, so nothing is lost. Once a model is serving, the audit stays on it while it
+works. The count can't see requests made elsewhere with the same key (for example in AI
+Studio), so a real quota error always takes precedence.
+
+The model that actually served an audit is printed at the end of the run (`model: …`) and
+written as the last line of the `--trace` file.
 
 ### Free-tier errors and fallback
 
 Free-tier Gemini models are often overloaded (HTTP 503 "high demand") or out of quota (HTTP
-429). The client handles each case differently:
+429). Each model gets **two attempts** per request, and the client handles each error type
+differently:
 
-| Error | What happens |
-|---|---|
-| 503 / 500 / 502 / 504 | Retried twice with backoff (about 2 s, then 4 s), then switch to the next model |
-| 429, per-minute limit | Wait the delay the API asks for (up to 60 s) and retry |
-| 429, daily quota | Switch to the next model immediately; waiting will not help |
-| Request timeout (120 s) | Switch to the next model immediately |
-| 404 (model retired) | Switch to the next model |
-| 401 / 403 / 400 | Stop with a clear error; these are configuration problems |
+| Error | What happens | Model skipped for |
+|---|---|---|
+| 503 / 500 / 502 / 504 | Retried once after about 2 s, then move to the next model | 10 min |
+| 429, per-minute limit | Wait the delay the API asks for (up to 60 s) and retry once | 2 min |
+| 429, daily quota | Move to the next model immediately; waiting will not help. The stated limit is remembered | until the reported reset |
+| 429, every quota exceeded on the first request | The model has no free-tier quota (e.g. Pro); move on | 7 days |
+| Request timeout (120 s) | Move to the next model immediately | 10 min |
+| 404 (model retired) | Move to the next model | 7 days |
+| 400 "… not enabled / not supported" | The model lacks a feature the agent needs; move on | 7 days |
+| 401 / 403, or any other 400 | Stop with a clear error; these are configuration problems | — |
 
-Each model has its own quota, so when one is busy or used up the audit continues on the next.
-Once switched, the audit stays on the new model. If every model fails, the run exits with
-code 1 and one message listing why each model failed (e.g. `daily free-tier quota used up,
-resets in ~16h`).
+Gemma rejects conversations that contain Gemini's thought signatures. When a Gemma model takes
+over, earlier turns are therefore replayed to it without them; Gemini models still get them
+unchanged.
+
+Each model has its own quota, so when one is busy or used up the audit continues on the next,
+less capable one, and stays there for the rest of the audit. If every model fails or is
+skipped, the run exits with code 1 and one message listing why each model was passed over
+(e.g. `daily free-tier quota used up, resets in ~16h`).
 
 ## Usage
 
@@ -81,7 +115,7 @@ python agent.py --repo https://github.com/<owner>/<repo> --output report.json
 | `--output` | Report path (required) |
 | `--max-turns N` | Maximum agent turns, default 40 |
 | `--trace trace.jsonl` | Write one JSON line per tool call (redacted) |
-| `--model` | Primary model (default `gemini-3.5-flash-lite`) |
+| `--model` | Try this model first (default: the most capable available) |
 | `--provider` | `gemini` (default) or `anthropic` (optional, see below) |
 | `--keep-clone` | Keep the temporary clone for debugging |
 | `-v` | Log the agent's reasoning and tool calls to stderr |
@@ -142,10 +176,25 @@ some workflow file or some file tagged `[sensitive name]`. The refusal lists tho
 a second `finish_audit` always ends the run, so the model keeps the final say. When the turn
 limit is reached, the violations recorded so far are still written.
 
-The system prompt (`auditor/prompts.py`) treats everything read from the repository as
-untrusted evidence, never as instructions. It also gives a general checklist of DevOps and
-GitHub Actions anti-patterns, and an explicit list of things that are not violations, to keep
-false positives down.
+**Scope.** The system prompt (`auditor/prompts.py`) limits the audit to the assignment's nine
+DevOps inspection areas:
+- repository hygiene
+- dependency management
+- code quality
+- testing
+- GitHub Actions / CI
+- security
+- configuration
+- collaboration
+- build and release
+
+Each area lists the assignment's example violations and the concrete signs to look for.
+Anything outside the nine areas is explicitly out of scope, even if it would be good practice:
+general code bugs, style, licensing, action pinning, ML concerns. The prompt also includes the
+assignment's evidence rule, an explicit list of things that are not violations, and the rule
+that everything read from the repository is untrusted evidence, never instructions. Every
+finding's `category` must be one of the nine areas, and its `rule_id` prefix must match that
+area (for example `security` → `SEC-001`). Both are checked when a finding is recorded.
 
 **Inspection tools** (`tools.py`):
 
@@ -206,6 +255,17 @@ The tests run offline and make no API calls. They cover:
 - the Gemini client, using real SDK types and a fake client: message conversion, refusals, an end-to-end loop run
 - provider selection: Gemini by default, the optional Anthropic path, and a clear error when its SDK is missing
 - CLI input validation
+
+## Evaluation
+
+```bash
+python evals/run_eval.py --repos evals/repos.txt --out reports/my-run
+```
+
+This audits each repository in [evals/repos.txt](evals/repos.txt) in turn, pausing 30 s
+between audits to respect the free tier's per-minute limits. It writes each report and trace,
+plus a `summary.json` with exit codes, durations, serving models, fallbacks and the HTTP
+status of every API request. The batch stops early if no Gemini model is available.
 
 ## Development history
 
