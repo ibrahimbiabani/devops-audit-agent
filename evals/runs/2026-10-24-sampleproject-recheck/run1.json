@@ -1,0 +1,15 @@
+{
+  "repository": "https://github.com/pypa/sampleproject",
+  "violations": [
+    {
+      "rule_id": "DEP-001",
+      "category": "dependency_management",
+      "severity": "medium",
+      "file": "pyproject.toml",
+      "line": 119,
+      "description": "Unpinned application dependency 'peppercorn'",
+      "evidence": "dependencies = [\"peppercorn\"] in pyproject.toml",
+      "recommendation": "Pin dependency versions with appropriate version constraints (e.g., 'peppercorn>=0.6')."
+    }
+  ]
+}

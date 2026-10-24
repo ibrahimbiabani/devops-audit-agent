@@ -20,6 +20,7 @@ did not work. Each step lists the commits that implement it.
 | 2026-10-23/24 | 13 | Fifth evaluation, after the quota reset and the Step 12 fixes |
 | 2026-10-24 | 14 | Fixes from Step 13: rejected findings can't be lost, network retries, narrower permissions and testing rules |
 | 2026-10-24 | 15 | `sample_report.json`; sixth evaluation measuring Steps 12–14; redaction fix |
+| 2026-10-24 | 16 | Final requirements check; sampleproject false positives investigated and three prompt rules added |
 
 ---
 
@@ -973,3 +974,60 @@ Notes on the scores:
 - **Tests:** 6 new tests. One of them caught a gap in the first version of the fix: keeping
   `Bearer` would have left a literal bearer token unmasked. The final version masks it.
 - The suite has 132 tests, all passing.
+
+---
+
+## Step 16: Final requirements check and the sampleproject false positives
+
+### Final requirements check
+
+Every section of the assignment was re-checked against the repository itself:
+
+- **The repository was private.** The assignment requires a public repository, so it has to be
+  made public before submission. Before that, the full git history was scanned:
+  - no key-shaped strings in any version of any file;
+  - the development API key does not appear;
+  - `.env` was never committed.
+- **A fresh install was tested the way an evaluator would do it:**
+  1. clone;
+  2. `pip install -r requirements.txt` (this installed `google-genai` 2.33, newer than the
+     2.31 used in development);
+  3. put the key in `.env`;
+  4. run the exact command.
+
+  The audit exited 0 and wrote a report and a trace. An invalid URL exited 2, and a missing
+  key exited 1 with a clear message.
+- **The clone first failed on Windows with "Filename too long."** The six
+  `*.attempt1-network-failure.*` evaluation files were renamed to `*.attempt1.*`. The longest
+  tracked path is now 96 characters.
+
+### sampleproject: two false positives checked against the repository
+
+| Report | Claim | What the repository shows | Verdict |
+|---|---|---|---|
+| A manual run (`report.json`) | CQ-001: no linter configured; flake8 only "installed ad hoc" in nox | `noxfile.py` defines a `lint` session running `flake8 --select E,W,F`, and it is nox's default session. `test.yml` runs `nox -s lint` on every push and PR. flake8 cannot be configured in `pyproject.toml` at all. | False positive. The model had read both files (trace). |
+| Step 15 round | CI-001: `release.yml` lacks least-privilege permissions | A job-level block with only `id-token: write`: every other scope is none, as PyPI's trusted-publishing documentation prescribes | False positive |
+| Missed in every round | — | `release.yml` publishes to PyPI on every push to `main`, with no test step and no `needs:`. `test.yml` runs separately on the same push and gates nothing. | Real issue (medium; `skip-existing: true` limits it to new versions) |
+
+**Changes to `auditor/prompts.py`.** These are general rules, not rules about this repository:
+1. **Code quality:** a linter or formatter run through a task runner (nox, tox, make,
+   pre-commit) or directly in a CI step counts as configured. Its settings may live in that
+   file or in the command's flags.
+2. **Not violations:** a job-level `permissions:` block that grants only what the job needs
+   (e.g. only `id-token: write`) is already least privilege.
+3. **Build and release:** a test workflow running separately on the same push does not gate a
+   publish or deploy job.
+
+**Rerun:** sampleproject twice, both on `gemini-3.5-flash-lite` (`3.8-flash` returned 503 and
+`3.7-flash` 504). Results are in
+[`evals/runs/2026-10-24-sampleproject-recheck/`](../evals/runs/2026-10-24-sampleproject-recheck/).
+
+| Run | Finding | Verdict |
+|---|---|---|
+| 1 | DEP-001: `dependencies = ["peppercorn"]` has no version constraint (`pyproject.toml:119`, verified) | **Borderline.** sampleproject is a library, and PyPA's guidance (linked in that very file) is that libraries declare loose dependencies. The model also called a non-existent tool `build_release` (it returned an error) and then finished without recording the release issue. |
+| 2 | BLD-001: release on push to `main` is not gated on tests | **Correct: the real issue, found for the first time.** Severity "high" is one level too strict. |
+
+Neither false positive recurred in either run. Run-to-run variance on Flash-Lite remains large:
+one run found the real issue, the other did not.
+
+The suite has 132 tests, all passing.

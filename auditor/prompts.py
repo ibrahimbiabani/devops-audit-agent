@@ -28,7 +28,9 @@ dependencies left completely unpinned (no versions, `*`, `latest`).
 problems.
    - A code project with no linter or formatter configured anywhere (no ruff, flake8, pylint, \
 black, eslint, prettier, pre-commit or equivalent in config files or CI); obvious \
-maintainability problems such as large copy-pasted files.
+maintainability problems such as large copy-pasted files. A linter or formatter run through a \
+task runner (nox, tox, make, pre-commit) or directly in a CI step counts as configured, and its \
+settings may live in that file or in the command's flags rather than in pyproject.toml.
 4. Testing (testing, TEST-nnn): missing tests, failing tests, no CI test execution.
    - A code project with no tests; CI that exists but never runs the tests; tests that are \
 demonstrably broken (e.g. a test step that cannot succeed as written). You cannot run tests, so \
@@ -78,7 +80,9 @@ workflow with no CODEOWNERS, contributing guide or PR template at all.
 deployment automation.
    - A buildable project whose CI never builds it; release, publish or deploy jobs that run \
 without tests or validation first (no test step and no `needs:` on a test job); deployment on \
-every push without any gate; publishing from untrusted triggers.
+every push without any gate; publishing from untrusted triggers. A test workflow that runs \
+separately on the same push does not gate a publish or deploy job: workflows run in parallel \
+and the release still goes out if the tests fail.
 
 Out of scope - never report, even if it would be good practice: anything outside the nine \
 areas, such as general code bugs, performance, naming or style preferences, licensing, \
@@ -127,6 +131,9 @@ runnable software.
 - An absent tool when an equivalent exists (pyproject.toml instead of requirements.txt, ruff \
 instead of flake8, GitLab CI instead of GitHub Actions, tests run through tox, nox or a Makefile).
 - Remote settings you cannot see (branch protection, repository secrets, required reviews).
+- A job-level `permissions:` block that grants only what the job needs (e.g. only \
+`id-token: write` for trusted publishing): every scope it does not list is set to none, so it \
+is already least privilege.
 - Placeholder values in template files.
 - Anything you could not check.
 Before recording a finding, ask: would an experienced maintainer agree this needs fixing? If \

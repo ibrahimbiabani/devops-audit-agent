@@ -1,0 +1,40 @@
+2026-10-24 12:50:34,293 INFO HTTP Request: GET https://generativelanguage.googleapis.com/v1beta/models "HTTP/1.1 200 OK"
+2026-10-24 12:50:34,862 INFO HTTP Request: GET https://generativelanguage.googleapis.com/v1beta/models?pageToken=Cgptb2RlbHMvYXFh "HTTP/1.1 200 OK"
+2026-10-24 12:50:34,863 INFO Using GeminiLLM, models in order: gemini-3.1-pro-preview, gemini-2.5-pro, gemini-3.8-flash, gemini-3.7-flash, gemini-3.6-flash, gemini-3.5-flash, gemini-3-flash-preview, gemini-2.5-flash, gemini-3.5-flash-lite, gemini-3.1-flash-lite, gemini-2.5-flash-lite, gemma-4-31b-it, gemma-4-26b-a4b-it
+2026-10-24 12:50:34,864 INFO Cloning https://github.com/pypa/sampleproject
+2026-10-24 12:50:38,672 INFO Skipping Gemini model gemini-3.1-pro-preview: not available on the free tier (recorded earlier; retry in ~152h)
+2026-10-24 12:50:38,673 INFO Skipping Gemini model gemini-2.5-pro: model not found or no longer available (recorded earlier; retry in ~128h)
+2026-10-24 12:50:38,673 INFO Using Gemini model gemini-3.8-flash
+2026-10-24 12:50:40,692 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent "HTTP/1.1 503 Service Unavailable"
+2026-10-24 12:50:40,693 INFO Gemini gemini-3.8-flash returned 503 UNAVAILABLE; retrying in 3s
+2026-10-24 12:50:45,726 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent "HTTP/1.1 503 Service Unavailable"
+2026-10-24 12:50:45,728 WARNING Gemini model gemini-3.8-flash unavailable (503 UNAVAILABLE after 2 attempts); switching to the next model
+2026-10-24 12:50:45,728 INFO Using Gemini model gemini-3.7-flash
+2026-10-24 12:52:44,928 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.7-flash:generateContent "HTTP/1.1 504 Gateway Timeout"
+2026-10-24 12:52:44,929 WARNING Gemini model gemini-3.7-flash unavailable (504 DEADLINE_EXCEEDED (server timed out)); switching to the next model
+2026-10-24 12:52:44,929 INFO Skipping Gemini model gemini-3.6-flash: daily free-tier quota used up (20 requests a day), resets in ~24h (recorded earlier; retry in ~23h)
+2026-10-24 12:52:44,929 INFO Skipping Gemini model gemini-3.5-flash: daily free-tier quota used up (20 requests a day), resets in ~24h (recorded earlier; retry in ~23h)
+2026-10-24 12:52:44,929 INFO Passing over Gemini model gemini-3-flash-preview for now: 2 request(s) of today's quota left
+2026-10-24 12:52:44,929 INFO Skipping Gemini model gemini-2.5-flash: model not found or no longer available (recorded earlier; retry in ~128h)
+2026-10-24 12:52:44,929 INFO Using Gemini model gemini-3.5-flash-lite
+2026-10-24 12:52:47,033 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 12:52:47,044 INFO Gemini model gemini-3.5-flash-lite is serving as gemini-3.5-flash-lite
+2026-10-24 12:52:47,062 INFO [turn 1] list_files({})
+2026-10-24 12:52:49,618 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 12:52:49,642 INFO [turn 2] git_log({"max_count": 20})
+2026-10-24 12:52:49,675 INFO [turn 2] search_code({"pattern": "(?i)(secret|token|password|api_key|key|auth)"})
+2026-10-24 12:52:52,260 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 12:52:52,263 INFO [turn 3] read_file({"end_line": 100, "start_line": 1, "path": ".github/workflows/release.yml"})
+2026-10-24 12:52:52,265 INFO [turn 3] read_file({"start_line": 1, "path": ".github/workflows/test.yml", "end_line": 100})
+2026-10-24 12:52:52,266 INFO [turn 3] read_file({"start_line": 1, "end_line": 100, "path": "noxfile.py"})
+2026-10-24 12:52:52,267 INFO [turn 3] read_file({"path": "pyproject.toml", "start_line": 1, "end_line": 100})
+2026-10-24 12:52:54,927 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 12:52:54,932 INFO [turn 4] read_file({"start_line": 101, "end_line": 162, "path": "pyproject.toml"})
+2026-10-24 12:52:54,933 INFO [turn 4] read_file({"start_line": 1, "path": ".gitignore", "end_line": 50})
+2026-10-24 12:52:58,433 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 12:52:58,436 INFO [turn 5] record_violation({"recommendation": "Pin dependency versions with appropriate version constraints (e.g., 'peppercorn>=0.6').", "rule_id": "DEP-001", "category": "dependency_management", "description": "Unpinned applic)
+2026-10-24 12:52:58,436 INFO [turn 5] build_release({}) -> error
+2026-10-24 12:53:02,661 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 12:53:02,678 INFO [turn 6] finish_audit({"summary": "The repository 'pypa/sampleproject' was audited against the nine DevOps inspection areas. A violation was found in dependency management (DEP-001) where the runtime dependency 'peppercorn)
+Wrote 1 violation(s) to evals\runs\2026-10-24-sampleproject-recheck\run1.json (model: gemini-3.5-flash-lite)
+Tool-call trace: evals\runs\2026-10-24-sampleproject-recheck\run1.trace.jsonl
