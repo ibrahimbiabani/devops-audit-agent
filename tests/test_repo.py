@@ -47,11 +47,14 @@ def test_clone_gives_up_after_three_network_failures(monkeypatch):
     assert len(calls) == 3
 
 
-@pytest.mark.parametrize("version", [(3, 11), (3, 13)])
+@pytest.mark.parametrize("version", [None, (3, 11)], ids=["this-python", "3.11-path"])
 def test_cleanup_removes_read_only_clone_on_every_supported_python(monkeypatch, tmp_path, version):
     # Regression: cleanup used rmtree(onexc=...), which only exists on Python 3.12+, so every
-    # audit on 3.11 crashed after writing its report.
-    monkeypatch.setattr(repo.sys, "version_info", version)
+    # audit on 3.11 crashed after writing its report. Only an older version is faked: the
+    # 3.11 path (onerror=) runs on every Python, while faking 3.12+ on 3.11 would call an
+    # rmtree argument that interpreter does not have (CI's 3.11 job runs the real 3.11 path).
+    if version:
+        monkeypatch.setattr(repo.sys, "version_info", version)
     root = tmp_path / "devops-audit-x"
     (root / "repo" / ".git").mkdir(parents=True)
     obj = root / "repo" / ".git" / "pack"

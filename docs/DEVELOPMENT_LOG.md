@@ -862,6 +862,15 @@ The Step 14 push failed CI on Python 3.11. The 3.13 job was cancelled automatica
 
 The suite has 126 tests, all passing locally; CI re-checks on 3.11 and 3.13.
 
+**Follow-up (CI, Step 15 push):**
+- **Result:** on Python 3.11, 131 of 132 tests passed, including the real clone and cleanup
+  tests, so the fix works.
+- **The one failure was the new test itself.** It faked "Python 3.13" on a 3.11 interpreter,
+  which forced the `onexc=` path that 3.11 does not have.
+- **Fix:** the test now runs the interpreter's own path, plus a faked 3.11 path. `onerror=`
+  exists on every supported version, so faking 3.11 is safe anywhere; faking a newer version
+  on an older interpreter is not.
+
 ---
 
 ## Step 15: Sample report and sixth evaluation
