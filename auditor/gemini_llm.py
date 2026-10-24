@@ -38,11 +38,16 @@ TIER_RANK = {"pro": 0, "flash": 1, "flash-lite": 2, "gemma": 3}
 MODEL_NAME = re.compile(r"^gemini-(?P<version>\d+(?:\.\d+)?)-(?P<tier>pro|flash-lite|flash)(?P<preview>-preview)?$")
 # Google's open-weight models, served on the same key with their own quota (e.g. gemma-4-26b-a4b-it).
 GEMMA_NAME = re.compile(r"^gemma-(?P<version>\d+(?:\.\d+)?)-(?P<size>\d+)b(?:-a\d+b)?-it$")
+# Left out of the default chain even when the key lists them. Across the 2026-10-23/24 runs
+# gemini-3.7-flash served 1 of 9 requests and gemini-3.8-flash 12 of 23; the rest were 503
+# (overloaded) or 504 (server timeout after ~2 min), so trying them first cost minutes per
+# audit for little gain. Naming one explicitly (--model, AUDIT_MODEL, AUDIT_FALLBACK_MODELS)
+# still uses it.
+EXCLUDED_MODELS = frozenset({"gemini-3.8-flash", "gemini-3.7-flash"})
 # Used only if the model list cannot be fetched: the models that served a tool call on the
-# free tier in the 2026-10-23 check (evals/model-checks/2026-10-23.json), in rank order.
+# free tier in the 2026-10-23 check (evals/model-checks/2026-10-23.json), in rank order,
+# without EXCLUDED_MODELS.
 STATIC_CHAIN = (
-    "gemini-3.8-flash",
-    "gemini-3.7-flash",
     "gemini-3.6-flash",
     "gemini-3.5-flash",
     "gemini-3-flash-preview",
@@ -58,6 +63,10 @@ ATTEMPTS_PER_MODEL = 2
 # network outage ended two audits on their first "connection forcibly closed" error.
 NETWORK_ATTEMPTS = 5
 MAX_RETRY_WAIT = 60.0
+# When every model in the chain is blocked, wait for the first to free up if that is at most
+# MAX_BLOCK_WAIT seconds away (per-minute limits block for 2 minutes), up to MAX_BLOCK_WAITS times.
+MAX_BLOCK_WAIT = 150.0
+MAX_BLOCK_WAITS = 3
 TRANSIENT_STATUS = {500, 502, 503, 504}
 REFUSAL_REASONS = {"SAFETY", "BLOCKLIST", "PROHIBITED_CONTENT", "SPII"}
 # How long a model is skipped after each kind of failure (seconds). A daily quota uses the
@@ -123,7 +132,7 @@ def discover_models(client: Any) -> list[str]:
             for m in client.models.list()
             if "generateContent" in (m.supported_actions or [])
         ]
-        ranked = rank_models(names)
+        ranked = [m for m in rank_models(names) if m not in EXCLUDED_MODELS]
         if ranked:
             return ranked
     except errors.ClientError as e:
@@ -474,6 +483,7 @@ class GeminiLLM:
             self.models = discover_models(self.client)[:1]
         self.current: str | None = None  # the model serving this audit
         self.dropped: set[str] = set()  # models given up on during this audit
+        self._block_waits = 0  # times this audit waited because every model was briefly blocked
         self.max_tokens = max_tokens
         self.models_used: list[str] = []  # concrete versions the API reported, in order of first use
         self.skipped: list[str] = []  # why models were passed over, for the final error message
@@ -533,7 +543,27 @@ class GeminiLLM:
             return self._use(model)
         if low:
             return self._use(low[0])
+        wait = self._shortest_block()
+        if wait is not None and self._block_waits < MAX_BLOCK_WAITS:
+            # Every model is out only briefly (a per-minute limit, a short overload): waiting beats
+            # failing. Seen on 2026-10-24: 9 audits failed at once while one model sat out a
+            # 2-minute rate-limit cooldown.
+            self._block_waits += 1
+            log.warning("Every Gemini model is briefly unavailable; waiting %.0fs for the first to free up", wait)
+            self._sleep(wait)
+            self.dropped = {m for m in self.dropped if self.status.blocked(m)}
+            return self._select()
         raise LLMError("No Gemini model could serve the request. " + "; ".join(self.skipped))
+
+    def _shortest_block(self) -> float | None:
+        """Seconds until the first briefly blocked model frees up, if that is within MAX_BLOCK_WAIT."""
+        now = self.status.clock()
+        left = [
+            entry["until"] - now
+            for m in self.models
+            if (entry := self.status.entries.get(m)) and 0 < entry["until"] - now <= MAX_BLOCK_WAIT
+        ]
+        return min(left) + 1 if left else None
 
     def _use(self, model: str) -> str:
         if model != self.current:

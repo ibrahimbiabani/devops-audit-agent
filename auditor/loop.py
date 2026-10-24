@@ -23,6 +23,17 @@ MAX_NUDGES = 2
 MAX_UNREAD_LISTED = 25
 # How often finish_audit is refused because a record_violation in the same turn was rejected.
 MAX_REJECTED_FINISH_REFUSALS = 2
+# The final review asked for on the first finish_audit. In Steps 13-16 the model often read the
+# file that showed a violation and still finished without recording it (e.g. a publish job with
+# no test gate); a second, structured pass over the nine areas targets exactly that.
+REVIEW = (
+    "Final review (asked once): go through the nine areas one by one - repository hygiene, dependency "
+    "management, code quality, testing, GitHub Actions/CI, security, configuration, collaboration, build and "
+    "release - and for each decide whether the files and tool output you have seen show a violation as the "
+    "rules define it. Record every such violation you have evidence for and have not recorded yet. Do not add "
+    "findings to fill an area: in a healthy repository most areas have none, and nothing on the 'Not "
+    "violations' list counts. Then call finish_audit again."
+)
 
 
 def trace_preview(tool: str, output: str, is_error: bool) -> str:
@@ -54,6 +65,7 @@ class AuditAgent:
         repo_tools: inspection.RepoTools,
         max_turns: int = 40,
         trace_path: Path | None = None,
+        review: bool = True,
     ):
         self.llm = llm
         self.repo_tools = repo_tools
@@ -65,7 +77,10 @@ class AuditAgent:
         self.summary: str | None = None
         self.turn = 0
         self.read_paths: set[str] = set()
-        self.coverage_checked = False
+        self.review = review
+        self.reviewed = False
+        self.seen_calls: dict[tuple[str, str], int] = {}  # (tool, arguments) -> first turn it was called
+        self.inspected_workflows = False
         self.rejected_this_turn = 0  # record_violation calls rejected in the current turn
         self.rejected_finish_refusals = 0
 
@@ -127,14 +142,26 @@ class AuditAgent:
         started = time.monotonic()
         is_error = False
         try:
+            signature = (name, json.dumps(args, sort_keys=True))
             if name == "record_violation":
                 output = self._record(args)
             elif name == "finish_audit":
                 output = self._finish(args)
+            elif signature in self.seen_calls:
+                # Regression (2026-10-24): a model called list_files with the same arguments for all
+                # 20 turns. A repeated call returns nothing new, so say so instead of re-running it.
+                raise inspection.ToolError(
+                    f"You already called {name} with exactly these arguments in turn {self.seen_calls[signature]}; "
+                    "its output has not changed. Use that result: open specific files, search for a pattern, "
+                    "record violations, or call finish_audit."
+                )
             else:
+                self.seen_calls[signature] = self.turn
                 output = inspection.dispatch(self.repo_tools, name, args)
                 if name == "read_file":
                     self.read_paths.add(self.repo_tools.relpath(args["path"]))
+                elif name == "inspect_workflows":
+                    self.inspected_workflows = True
         except (inspection.ToolError, ViolationError) as e:
             output, is_error = f"Error: {e}", True
             if name == "record_violation":
@@ -153,11 +180,13 @@ class AuditAgent:
         return result
 
     def _finish(self, args: dict[str, Any]) -> str:
-        """End the audit, unless findings were just rejected or required files were never opened.
+        """End the audit, unless findings were just rejected or the final review has not happened.
 
         - A record_violation rejected in this same turn would otherwise be lost: the model
           never sees the error. Refused at most MAX_REJECTED_FINISH_REFUSALS times.
-        - Workflows and sensitive-looking files that were never opened: refused once.
+        - The first finish_audit is answered with one final review (see REVIEW): open any
+          workflow or sensitive-looking file still unread, check the workflow facts, and go
+          through the nine areas once more. Refused once.
         Both checks are bounded, so the model keeps the final say and the loop cannot get stuck.
         """
         has_turn_left = self.turn < self.max_turns
@@ -167,16 +196,20 @@ class AuditAgent:
                 f"Not finished: {self.rejected_this_turn} record_violation call(s) in this turn were rejected "
                 "(see their errors). Correct and resubmit them, then call finish_audit again."
             )
-        unread = [f for f in self.repo_tools.must_read_files() if f not in self.read_paths]
         enough_turns = self.max_turns - self.turn >= 2
-        if unread and enough_turns and not self.coverage_checked:
-            self.coverage_checked = True
-            listed = ", ".join(unread[:MAX_UNREAD_LISTED])
-            more = f" and {len(unread) - MAX_UNREAD_LISTED} more" if len(unread) > MAX_UNREAD_LISTED else ""
-            raise inspection.ToolError(
-                f"Not finished: you have not opened these workflow or sensitive-looking files: {listed}{more}. "
-                "Read them (several per turn), record any violations they contain, then call finish_audit again."
-            )
+        if self.review and enough_turns and not self.reviewed:
+            self.reviewed = True
+            steps = []
+            unread = [f for f in self.repo_tools.must_read_files() if f not in self.read_paths]
+            if unread:
+                listed = ", ".join(unread[:MAX_UNREAD_LISTED])
+                more = f" and {len(unread) - MAX_UNREAD_LISTED} more" if len(unread) > MAX_UNREAD_LISTED else ""
+                steps.append(f"Open these workflow or sensitive-looking files you have not read: {listed}{more}.")
+            if not self.inspected_workflows and any(
+                inspection.is_workflow_file(f) for f in self.read_paths | set(unread)
+            ):
+                steps.append("Run inspect_workflows and check its facts against the rules.")
+            raise inspection.ToolError("Not finished yet. " + " ".join(steps) + " " + REVIEW)
         self.finished = True
         self.summary = str(args.get("summary", ""))
         return f"Audit finished with {len(self.violations)} violation(s)."

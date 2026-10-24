@@ -54,8 +54,16 @@ every general-purpose text model and orders them **from most to least capable**:
 Within each group the newest version comes first and stable comes before preview. A preview
 is left out when its stable release is listed, because it is served by that release. Aliases
 (`-latest`) and specialised variants (image, speech, transcription, robotics, …) are left out,
-so every entry is a concrete model. If the list cannot be fetched, a built-in chain is used:
-the 9 models that served on the free tier when last checked
+so every entry is a concrete model.
+
+**Two models are left out of the default chain:** `gemini-3.8-flash` and `gemini-3.7-flash`.
+Across the Oct 23–24 runs they served only 12 of 23 and 1 of 9 requests. The rest were
+503 "overloaded", or 504 timeouts that took about 2 minutes each, so trying them first cost
+minutes per audit for little gain. Naming one explicitly still uses it, through `--model`,
+`AUDIT_MODEL` or `AUDIT_FALLBACK_MODELS`.
+
+If the list cannot be fetched, a built-in chain is used: the 7 models that served on the free
+tier when last checked, minus those two
 ([evals/model-checks/](evals/model-checks/)).
 
 The model is chosen **without sending any request**, using what earlier runs recorded in
@@ -172,6 +180,7 @@ line and `search_code` only its `file:line` locations.
 agent.py              CLI: parse args, clone, run agent, write report, clean up
 tools.py              Read-only inspection tools + their JSON schemas + dispatch
 auditor/
+  workflows.py        GitHub Actions workflow facts for inspect_workflows (YAML + line scan)
   loop.py             AuditAgent: the observe → reason → act loop
   gemini_llm.py       Gemini client: converts history to/from Gemini function calling
   llm.py              Provider selection (Gemini by default) and the shared LLMError
@@ -200,8 +209,11 @@ its own violation.
 The model ends the run with `finish_audit`, which is refused in two bounded cases:
 - **A finding was rejected in the same turn.** Otherwise the model would never see the error,
   and the finding would be lost. This refusal happens at most twice per audit.
-- **Unopened files.** The model never opened some workflow file, or some file tagged
-  `[sensitive name]`. The refusal lists them, and it happens once.
+- **Final review.** The first `finish_audit` is answered once with a review request: go
+  through the nine areas one by one against what was read, and record any violation that has
+  evidence but was not recorded. The request warns against adding findings just to fill an
+  area. If any workflow or `[sensitive name]` file is still unopened, it lists them, and it
+  reminds the model to run `inspect_workflows` if it hasn't. It is skipped in the last two turns.
 
 After that, `finish_audit` always ends the run, so the model keeps the final say. When the turn
 limit is reached, the violations recorded so far are still written.
@@ -234,6 +246,7 @@ area (for example `security` → `SEC-001`). Both are checked when a finding is 
 | `read_file(path, start_line?, end_line?)` | Line-numbered file contents |
 | `search_code(pattern, path_glob?, ignore_case?, max_results?)` | Regex search across tracked text files |
 | `git_log(max_count?, path?)` | Commits with changed files |
+| `inspect_workflows(path?)` | Facts about each GitHub Actions workflow, with line numbers: triggers, permissions, each job's `runs-on` and `needs`, steps that publish/deploy and steps that run tests. It also lists signals: untrusted `${{ github.event.* }}`/`inputs.*` expressions, secrets used or printed, `set -x`, verbose `curl`, remote scripts piped to a shell, literal values under secret-like names (described, never shown), `contains()` actor checks, artifact uploads. It names nested files under `.github/workflows/` that GitHub never runs. It reports facts only; the model decides what is a violation (`auditor/workflows.py`) |
 
 **Safety.**
 - The target is cloned into a fresh temp directory with prompts and LFS disabled, and deleted afterwards.
@@ -280,6 +293,7 @@ pytest
 
 The tests run offline and make no API calls. They cover:
 - the tools against a temporary git repository (including path-escape and read-only checks)
+- the workflow inspector: facts and line numbers on sample workflows, values never shown, no verdicts
 - report validation and redaction
 - the agent loop, driven by a scripted fake LLM: tool dispatch, parallel calls, error recovery, duplicates, turn limits and refusals
 - the Gemini client, using real SDK types and a fake client: message conversion, refusals, an end-to-end loop run

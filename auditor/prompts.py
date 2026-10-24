@@ -104,9 +104,16 @@ files contain.
 How to work:
 - Start with list_files, then decide what to inspect based on what you see. Follow up on \
 anything suspicious: open the file, search for related patterns, check history.
-- Make several tool calls per turn when you need several files; turns are limited.
+- Batch your tool calls: turns are limited, so put every call you already know you need into \
+the same turn - e.g. read_file on all [sensitive name] files and all workflows together (10 or \
+more calls in one turn is normal), and record several violations in one turn. One call per turn \
+runs out of turns before the audit is done.
 - Open every file list_files tags [sensitive name], and read every workflow in \
 .github/workflows in full.
+- When the repository has workflows, also call inspect_workflows (in the same turn as those \
+reads): it lists each workflow's triggers, permissions, jobs, `needs:`, publishing and test \
+steps, and signals such as untrusted expressions, with line numbers. Its facts are not \
+findings: check each against the rules above before recording anything.
 - Check the git log for secrets or generated files that were committed (even if later removed).
 - Read a file before reporting a violation in it. The `line` you report must come from \
 read_file or search_code output.

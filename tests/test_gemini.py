@@ -48,7 +48,7 @@ class FakeModels:
 def test_tools_convert_to_function_declarations():
     (tool,) = to_tools(TOOL_SCHEMAS)
     names = [d.name for d in tool.function_declarations]
-    assert names == ["list_files", "read_file", "search_code", "git_log"]
+    assert names == ["list_files", "read_file", "search_code", "git_log", "inspect_workflows"]
     assert tool.function_declarations[1].parameters_json_schema["required"] == ["path"]
 
 
@@ -133,7 +133,7 @@ def test_agent_runs_on_gemini_adapter(sample_repo):
         ]
     )
     llm = GeminiLLM(model="gemini-test", client=NS(models=models))
-    assert AuditAgent(llm, RepoTools(sample_repo)).run("https://github.com/a/b") == [violation]
+    assert AuditAgent(llm, RepoTools(sample_repo), review=False).run("https://github.com/a/b") == [violation]
     sent = models.requests[1][-1].parts[0].function_response
     assert sent.name == "read_file" and "pull_request_target" in sent.response["output"]
 
@@ -159,7 +159,7 @@ def test_make_llm_gemini_default(monkeypatch):
     monkeypatch.setattr("auditor.gemini_llm.discover_models", lambda client: list(STATIC_CHAIN))  # no network
     gem = make_llm()
     assert isinstance(gem, GeminiLLM) and gem.models == list(STATIC_CHAIN)
-    assert gem.model == "gemini-3.8-flash"
+    assert gem.model == "gemini-3.6-flash"
     with pytest.raises(LLMError, match="Unknown LLM provider"):
         make_llm("openai")
 
@@ -385,6 +385,16 @@ def test_discover_models_uses_list_and_falls_back_to_static():
     assert discover_models(NS(models=NS())) == list(STATIC_CHAIN)  # listing failed
 
 
+def test_unreliable_models_left_out_of_default_chain_but_usable_by_name():
+    listing = [NS(name=f"models/{n}", supported_actions=["generateContent"]) for n in LIVE_NAMES]
+    chain = discover_models(NS(models=NS(list=lambda: listing)))
+    assert "gemini-3.8-flash" not in chain and "gemini-3.7-flash" not in chain
+    assert chain[:3] == ["gemini-3.1-pro-preview", "gemini-2.5-pro", "gemini-3.6-flash"]
+    assert not set(STATIC_CHAIN) & {"gemini-3.8-flash", "gemini-3.7-flash"}
+    explicit = GeminiLLM(model="gemini-3.8-flash", fallbacks=["gemini-3.7-flash"], client=NS(models=None))
+    assert explicit.models == ["gemini-3.8-flash", "gemini-3.7-flash"]  # an explicit choice is respected
+
+
 class Clock:
     def __init__(self):
         self.now = 1_000_000.0
@@ -551,3 +561,31 @@ def test_network_down_for_good_is_one_clear_error():
     with pytest.raises(LLMError, match="Could not reach the Gemini API after 5 attempts"):
         llm.create(*ASK)
     assert models.calls == ["m-a"] * 5 and len(sleeps) == 4  # no model was blamed for the network
+
+
+def test_waits_when_every_model_is_only_briefly_blocked(tmp_path):
+    # Regression (2026-10-24): one model overloaded (10 min), the other rate limited (2 min),
+    # and audits failed at once instead of waiting two minutes.
+    clock, path = Clock(), tmp_path / "status.json"
+    status = ModelStatus(path, clock)
+    status.block("m-a", "503 UNAVAILABLE after 2 attempts", 600)
+    status.block("m-b", "rate limited", 120)
+    models = ScriptedModels(m_b=[ok("m-b")])
+    waited = []
+
+    def sleep(seconds):
+        waited.append(seconds)
+        clock.now += seconds
+
+    llm = GeminiLLM(model="m-a", fallbacks=["m-b"], client=NS(models=models), sleep=sleep,
+                    status_path=path, clock=clock)  # fmt: skip
+    llm.create(*ASK)
+    assert waited == [121] and models.calls == ["m-b"]  # waited for the shorter block only
+
+
+def test_long_blocks_still_fail_at_once(tmp_path):
+    clock, path = Clock(), tmp_path / "status.json"
+    ModelStatus(path, clock).block("m-a", "daily free-tier quota used up", 6 * 3600)
+    llm = GeminiLLM(model="m-a", fallbacks=[], client=NS(models=None), sleep=pytest.fail, status_path=path, clock=clock)
+    with pytest.raises(LLMError, match="No Gemini model could serve"):
+        llm.create(*ASK)

@@ -57,7 +57,7 @@ def test_agent_follows_llm_tool_choices(sample_repo, tmp_path):
         ]
     )
     trace = tmp_path / "trace.jsonl"
-    agent = AuditAgent(llm, RepoTools(sample_repo), trace_path=trace)
+    agent = AuditAgent(llm, RepoTools(sample_repo), review=False, trace_path=trace)
     violations = agent.run("https://github.com/a/b")
 
     assert violations == [VIOLATION]
@@ -145,7 +145,7 @@ def test_same_location_rejected_even_with_new_rule_id(sample_repo):
             resp(tool_use("t4", "finish_audit", summary="x")),
         ]
     )
-    agent = AuditAgent(llm, RepoTools(sample_repo))
+    agent = AuditAgent(llm, RepoTools(sample_repo), review=False)
     assert [v["rule_id"] for v in agent.run("https://github.com/a/b")] == ["CI-001"]
     rejected = tool_results(llm.calls[1])[1]
     assert rejected["is_error"] and "already recorded at .github/workflows/ci.yml:1" in rejected["content"]
@@ -160,7 +160,7 @@ def record_both(sample_repo, first, second):
             resp(tool_use("t4", "finish_audit", summary="x")),
         ]
     )
-    kept = AuditAgent(llm, RepoTools(sample_repo)).run("https://github.com/a/b")
+    kept = AuditAgent(llm, RepoTools(sample_repo), review=False).run("https://github.com/a/b")
     return kept, tool_results(llm.calls[1])[1]
 
 
@@ -234,7 +234,7 @@ def test_trace_survives_quoted_secrets_in_arguments(sample_repo, tmp_path):
         ]
     )
     trace = tmp_path / "trace.jsonl"
-    AuditAgent(llm, RepoTools(sample_repo), trace_path=trace).run("https://github.com/a/b")
+    AuditAgent(llm, RepoTools(sample_repo), review=False, trace_path=trace).run("https://github.com/a/b")
     entries = [json.loads(line) for line in trace.read_text().splitlines()]
     assert [e["tool"] for e in entries] == ["record_violation", "read_file", "finish_audit"]
     assert "hunter22" not in trace.read_text() and "abcd1234" not in trace.read_text()
@@ -250,7 +250,7 @@ def test_trace_failure_does_not_end_audit(sample_repo, tmp_path):
             resp(tool_use("t2", "finish_audit", summary="x")),
         ]
     )
-    agent = AuditAgent(llm, RepoTools(sample_repo), trace_path=tmp_path / "missing-dir" / "trace.jsonl")
+    agent = AuditAgent(llm, RepoTools(sample_repo), review=False, trace_path=tmp_path / "missing-dir" / "trace.jsonl")
     assert agent.run("https://github.com/a/b") == [VIOLATION]
 
 
@@ -263,7 +263,7 @@ def test_trace_never_stores_file_contents(sample_repo, tmp_path):
         ]
     )
     trace = tmp_path / "trace.jsonl"
-    AuditAgent(llm, RepoTools(sample_repo), trace_path=trace).run("https://github.com/a/b")
+    AuditAgent(llm, RepoTools(sample_repo), review=False, trace_path=trace).run("https://github.com/a/b")
     entries = {e["tool"] + e["input"].get("path", ""): e for e in map(json.loads, trace.read_text().splitlines())}
     assert entries["read_fileapp.py"]["output_preview"] == "app.py (lines 1-4 of 4) [contents omitted]"
     assert entries["search_code"]["output_preview"] == "app.py:3"
@@ -284,7 +284,7 @@ def test_finish_refused_when_a_finding_was_rejected_in_the_same_turn(sample_repo
             resp(tool_use("t3", "record_violation", **VIOLATION), tool_use("t4", "finish_audit", summary="done")),
         ]
     )
-    agent = AuditAgent(llm, RepoTools(sample_repo))
+    agent = AuditAgent(llm, RepoTools(sample_repo), review=False)
     assert agent.run("https://github.com/a/b") == [VIOLATION]
     refused = tool_results(llm.calls[1])[2]
     assert refused["is_error"] and "1 record_violation call(s) in this turn were rejected" in refused["content"]
@@ -295,6 +295,50 @@ def test_rejected_finding_refusal_is_bounded(sample_repo):
     garbled = {**VIOLATION, "rule_id": "bad"}
     turn = [tool_use("t0", "read_file", path=".github/workflows/ci.yml"), tool_use("t1", "record_violation", **garbled)]
     llm = FakeLLM([resp(*turn, tool_use(f"f{i}", "finish_audit", summary=str(i))) for i in range(3)])
-    agent = AuditAgent(llm, RepoTools(sample_repo))
+    agent = AuditAgent(llm, RepoTools(sample_repo), review=False)
     agent.run("https://github.com/a/b")
     assert agent.finished and agent.summary == "2"  # refused twice, then the model has the final say
+
+
+def test_first_finish_asks_for_one_final_review(sample_repo):
+    llm = FakeLLM(
+        [
+            resp(tool_use("t1", "finish_audit", summary="early")),
+            resp(tool_use("t2", "read_file", path=".github/workflows/ci.yml"), tool_use("t3", "inspect_workflows")),
+            resp(tool_use("t4", "finish_audit", summary="done")),
+        ]
+    )
+    agent = AuditAgent(llm, RepoTools(sample_repo))
+    agent.run("https://github.com/a/b")
+    review = tool_results(llm.calls[1])[0]
+    assert review["is_error"] and "Final review" in review["content"]
+    assert ".github/workflows/ci.yml" in review["content"]  # unread workflow listed
+    assert "Run inspect_workflows" in review["content"]
+    assert agent.finished and agent.summary == "done" and len(llm.calls) == 3  # asked once only
+
+
+def test_review_skips_reminders_already_done(sample_repo):
+    llm = FakeLLM(
+        [
+            resp(tool_use("t1", "read_file", path=".github/workflows/ci.yml"), tool_use("t2", "inspect_workflows")),
+            resp(tool_use("t3", "finish_audit", summary="x")),
+            resp(tool_use("t4", "finish_audit", summary="y")),
+        ]
+    )
+    agent = AuditAgent(llm, RepoTools(sample_repo))
+    agent.run("https://github.com/a/b")
+    review = tool_results(llm.calls[2])[0]["content"]
+    assert "Final review" in review and "not read" not in review and "Run inspect_workflows" not in review
+    assert agent.summary == "y"
+
+
+def test_repeated_identical_call_is_not_rerun(sample_repo):
+    # Regression (2026-10-24): list_files with the same arguments for all 20 turns.
+    llm = FakeLLM([resp(tool_use(f"t{i}", "list_files", subdir=".")) for i in range(3)])
+    agent = AuditAgent(llm, RepoTools(sample_repo), max_turns=3, review=False)
+    agent.run("https://github.com/a/b")
+    first, repeat = tool_results(llm.calls[1])[0], tool_results(llm.calls[2])[0]
+    assert not first.get("is_error") and "tracked file" in first["content"]
+    assert (
+        repeat["is_error"] and "already called list_files with exactly these arguments in turn 1" in repeat["content"]
+    )

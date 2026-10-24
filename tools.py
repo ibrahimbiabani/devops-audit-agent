@@ -15,6 +15,7 @@ from typing import Any
 
 from auditor.redact import redact_tokens
 from auditor.repo import git_env
+from auditor.workflows import summarize
 
 MAX_OUTPUT_CHARS = 20_000
 MAX_FILE_BYTES = 1_000_000
@@ -220,6 +221,35 @@ class RepoTools:
         out = self._git(*args).strip()
         return self._finish(out or "No commits.")
 
+    def inspect_workflows(self, path: str | None = None) -> str:
+        """Structured facts about GitHub Actions workflows (all, or the one at ``path``)."""
+        tracked = self._tracked_files()
+        workflows = [f for f in tracked if is_workflow_file(f)]
+        if path:
+            rel = self.relpath(path)
+            if rel not in workflows:
+                raise ToolError(f"Not a workflow file GitHub runs: {path} (only files directly in {WORKFLOW_DIR})")
+            workflows = [rel]
+        if not workflows:
+            return "No workflow files directly in .github/workflows/."
+        parts = []
+        for rel in workflows:
+            p = self.root / rel
+            if p.stat().st_size > MAX_FILE_BYTES:
+                parts.append(f"{rel}\n  too large to inspect")
+                continue
+            parts.append(summarize(rel, p.read_bytes().decode("utf-8", errors="replace")))
+        ignored = [
+            f
+            for f in tracked
+            if f.startswith(WORKFLOW_DIR) and f.endswith((".yml", ".yaml")) and not is_workflow_file(f)
+        ]
+        if ignored and not path:
+            parts.append(
+                f"Not run by GitHub (in subfolders of {WORKFLOW_DIR}, which GitHub ignores): {', '.join(ignored)}"
+            )
+        return self._finish("\n\n".join(parts))
+
 
 # Tool schemas exposed to the LLM. Descriptions say what the tool is good for,
 # so the model can choose between them.
@@ -290,6 +320,22 @@ TOOL_SCHEMAS: list[dict[str, Any]] = [
                 "max_count": {"type": "integer", "minimum": 1, "maximum": 200},
                 "path": {"type": "string", "description": "Limit history to this path."},
             },
+            "additionalProperties": False,
+        },
+    },
+    {
+        "name": "inspect_workflows",
+        "description": (
+            "Structured facts about the GitHub Actions workflows, with line numbers: triggers, workflow- and "
+            "job-level permissions, each job's runs-on and needs, which steps publish/deploy and which run tests, "
+            "and signals such as untrusted ${{ github.event.* }} or inputs.* expressions, secrets used, set -x, "
+            "verbose curl, remote scripts piped to a shell, literal values under secret-like names, contains() "
+            "actor checks and artifact uploads. It reports facts only; you decide what is a violation. Use it "
+            "alongside read_file on each workflow. Optional `path` inspects one workflow."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {"path": {"type": "string", "description": "One workflow file, repo-relative."}},
             "additionalProperties": False,
         },
     },

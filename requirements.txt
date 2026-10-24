@@ -1,3 +1,4 @@
 google-genai>=2.31,<3
 python-dotenv>=1.0,<2
+pyyaml>=6.0,<7
 tzdata>=2024.1; sys_platform == "win32"

@@ -21,6 +21,8 @@ did not work. Each step lists the commits that implement it.
 | 2026-10-24 | 14 | Fixes from Step 13: rejected findings can't be lost, network retries, narrower permissions and testing rules |
 | 2026-10-24 | 15 | `sample_report.json`; sixth evaluation measuring Steps 12–14; redaction fix |
 | 2026-10-24 | 16 | Final requirements check; sampleproject false positives investigated and three prompt rules added |
+| 2026-10-24 | 17 | `gemini-3.8-flash` and `gemini-3.7-flash` removed from the default chain |
+| 2026-10-24 | 18 | `inspect_workflows` tool and final review; answer keys verified; A/B test against Step 16 |
 
 ---
 
@@ -1031,3 +1033,162 @@ Neither false positive recurred in either run. Run-to-run variance on Flash-Lite
 one run found the real issue, the other did not.
 
 The suite has 132 tests, all passing.
+
+---
+
+## Step 17: Two unreliable models removed from the default chain
+
+**Evidence:** every API response in the Oct 23–24 logs was counted per model:
+
+| Model | Requests | OK | 429 (quota) | 503 (overloaded) | 504 (server timeout) | Success |
+|---|---|---|---|---|---|---|
+| gemini-3.7-flash | 9 | 1 | 0 | 3 | 5 | 11% |
+| gemini-3.8-flash | 23 | 12 | 0 | 8 | 3 | 52% |
+| gemini-3.6-flash | 33 | 25 | 7 | 1 | 0 | 76% |
+| gemini-3.5-flash | 19 | 15 | 4 | 0 | 0 | 79% |
+| gemini-3-flash-preview | 46 | 41 | 5 | 0 | 0 | 89% |
+| gemini-3.5-flash-lite | 210 | 201 | 9 | 0 | 0 | 96% |
+| gemini-3.1-flash-lite | 27 | 27 | 0 | 0 | 0 | 100% |
+
+Only `3.7-flash` and `3.8-flash` failed through server overload rather than quota. Each 504
+arrived after about 2 minutes, which accounts for most of the slowest audits (e.g. Grafter's
+887 s in Step 13). Logs from before Oct 23 were not kept. On Oct 22, Flash-Lite also had a
+spell of 503s, so overload does move between models over time.
+
+**Decision:** both models are left out of the default chain. This departs from the "most
+capable first" rule for the two models where that rule cost the most time and gained the
+least.
+
+**Changes:**
+- `EXCLUDED_MODELS` in `auditor/gemini_llm.py` is applied when the chain is discovered, and
+  the built-in chain no longer lists the two models.
+- Naming either model explicitly (`--model`, `AUDIT_MODEL`, `AUDIT_FALLBACK_MODELS`) still
+  uses it.
+- The default chain on the development key now starts with `gemini-3.1-pro-preview` and
+  `gemini-2.5-pro`, both recorded as unavailable, so neither costs a request. Then comes
+  `gemini-3.6-flash`.
+
+**Tests:** one new test. The default chain from the real model list leaves out both models,
+the built-in chain does not contain them, and an explicit choice is still respected. The
+suite has 133 tests, all passing.
+
+---
+
+## Step 18: Workflow inspection tool, final review, verified answer keys and an A/B test
+
+**Why:** across Steps 11–17, false positives on healthy repositories were brought down, but
+recall on subtle CI defects stayed low and varied widely on Flash-Lite (Grafter 0–3 / 5,
+jpr5 3–5). The traces showed the model *reading* the workflow that contained a defect and still
+not recording it. The deadline left no time for a quota reset, so every test below ran on the
+quota left on Oct 24, which meant Flash-Lite only.
+
+### 1. Changes
+
+| Change | Detail | Where |
+|---|---|---|
+| `inspect_workflows(path?)` tool | The assignment lists "GitHub Actions inspection" as an optional tool. This one parses each workflow (PyYAML, with line numbers) and lists **facts**: triggers, workflow- and job-level permissions, each job's `runs-on` and `needs`, the steps that publish/deploy and the steps that run tests, plus signals with line numbers. The signals are untrusted `github.event.*`/`inputs.*` expressions (and where they appear), secrets used or printed, `set -x`, verbose `curl`, remote scripts piped to a shell, literal values under secret-like names (described, never shown), `contains()` actor checks, artifact uploads and PR auto-merge. It also names nested files that GitHub never runs. It never says what is a violation. | `auditor/workflows.py`, `tools.py` |
+| Final review | The first `finish_audit` is answered once with a structured review of the nine areas, warning against adding findings to fill an area. It replaces and includes the Step 4 unread-files check, and reminds the model to run `inspect_workflows`. It is skipped in the last two turns. | `auditor/loop.py` |
+| Repeated identical call guard | A tool call identical to an earlier one is not re-run. The model is told to use the earlier result. | `auditor/loop.py` |
+| Wait out short blocks | If every model is blocked for at most 150 s (e.g. a per-minute limit), the client waits for the first to free up (up to 3 times per audit) instead of failing. | `auditor/gemini_llm.py` |
+| Batching instruction | Rewritten to be explicit (see section 3, item 4). | `auditor/prompts.py` |
+| Dependency | `pyyaml>=6.0,<7` added to `requirements.txt`. | |
+
+**Tests:** 11 new tests:
+- the inspector's facts and line numbers on sample workflows, values never shown, no verdict
+  words, unparseable files, and nested workflows ignored;
+- the review asked once, with its reminders;
+- the repeated-call guard;
+- waiting for a short block, and failing at once for a long one.
+
+The suite has 144 tests, all passing.
+
+### 2. Answer keys verified against the repositories
+
+Every workflow and key file of the seven repositories was read through the GitHub API. The
+result is [`evals/ANSWER_KEYS.md`](../evals/ANSWER_KEYS.md):
+
+- **leaky-repo: 42 secret files, not 35.** The repository's own key
+  (`.leaky-meta/secrets.csv`) lists 42 files with real secrets; "35" in Steps 3–15 was a
+  mistake. Corrected earlier scores: Step 5 14/42, Step 11 9/42, Step 13 16/42, Step 15 15/42.
+- **jpr5: 8 items, not 6.** Two were missed when this key was built by hand: CI runs only on
+  `push`, so pull requests are never validated, and `package.json` has no real tests
+  (`"test": "echo ok"`).
+- **gary-mello: 5 in scope.** The self-hosted runner is not a violation (no severity in the
+  README, push-only trigger). Missing permissions on a build workflow and action pinning are
+  excluded by the agent's rules, which costs recall by design.
+- **paastha1:** each of the 6 patterns appears in two workflow files. Three further real
+  issues were found, e.g. publishing from a `pull_request` job.
+- **Grafter:** 5 in scope, plus a verbose `curl` with an `Authorization` header in `test.yaml`.
+- **sampleproject:** 1 (ungated release). **itsdangerous:** 0, but its tag-triggered
+  `publish.yaml` (built first, protected `environment:`) could be misread as an ungated release.
+
+### 3. A/B test
+
+**Design:**
+- **Arm A:** the committed Step 16 code, exported with `git archive`.
+- **Arm B:** the new code.
+- **Settings:** the same model in both arms (`gemini-3.1-flash-lite`, with `3.5-flash-lite` as
+  fallback), all 7 repositories, 2 runs each, interleaved A, B, A, B per repository,
+  `--max-turns 20`.
+- **Driver:** [`evals/ab_eval.py`](../evals/ab_eval.py). Results are in
+  [`evals/runs/2026-10-24-workflow-tool-ab/`](../evals/runs/2026-10-24-workflow-tool-ab/), with
+  the local project path replaced by `<repo>`.
+
+**What went wrong while testing (kept as evidence):**
+1. **A driver bug.** The first start wrote one report into the wrong folder, because relative
+   output paths were resolved in each arm's folder. It was fixed and restarted.
+2. **9 of 28 audits failed (pass 1).** With only two models pinned,
+   `3.1-flash-lite` had a 503 spell (10-minute block) while `3.5-flash-lite` sat out a 2-minute
+   rate-limit block, so every audit in that window failed at once. This led to the short-block
+   wait above. The affected pairs were rerun (pass 2, both arms), and all 12 completed.
+3. **One new-arm run looped.** It called `list_files` with identical arguments for all 20 turns
+   and found nothing. This led to the repeated-call guard. The run is kept as
+   `*.run2.pass1.*`.
+4. **The new arm never batched tool calls.** It made exactly one call per turn in all 14
+   audits, while 7 of 14 baseline audits batched up to 15 reads in a turn. Under the 20-turn
+   cap this starved the new arm, and the review rarely fired (it needs two turns left). This was
+   isolated by running the real agent for two turns with a 20-turn budget:
+   - the baseline batched 10–15 calls in turn 2, against 1 for the new code (3 of 3 tries);
+   - removing the new tool did not help (1, 1);
+   - the old prompt partly did (1, 10);
+   - so the cause was the new prompt line ("call inspect_workflows **once**").
+
+   The batching instruction was rewritten ("put every call you already know you need into the
+   same turn — 10 or more calls in one turn is normal"). After that, 5 of 6 two-turn tests
+   batched, and on gary-mello `inspect_workflows` ran alongside all the workflow reads.
+
+**Results (pass 1 + pass 2, scored against the verified keys):**
+
+| Repository (key) | Baseline | New (before the batching fix) | Reading |
+|---|---|---|---|
+| Grafter (5) | 2, 0 | **4, 4** | The tool's facts lead to findings the baseline missed: `runs-on:` injection, the echoed secret, the `contains()` allowlist |
+| sampleproject (1, healthy) | 0, 0; 3 false positives | **1, 1**; 2 false positives | Ungated release found every time. "Missing lockfile" is a false positive in both arms (a library) |
+| jpr5 (8) | 4, 4 | 3, 4 | Even. The new arm found `curl \| bash` and the `inputs.*` injection, but dropped the permissions finding |
+| gary-mello (5) | 3, 5 | 5, 3 | Even. Both arms reported the self-hosted runner (not a violation) |
+| paastha1 (6) | 6, 6 | 5, 5 | The new arm missed the CLI-argument pattern twice |
+| itsdangerous (0, healthy) | 0, 0 | 1, 0 | The false positive is the tag-triggered `publish.yaml`, as anticipated in the key |
+| leaky-repo (42) | 13, 15 | 7, 0 (loop); rerun 8 | Starved by one-call-per-turn |
+
+**Confirmation after the batching fix:** with the deadline in mind, only leaky-repo was rerun,
+twice, with the same settings:
+- **Run 2** (served by `3.5-flash-lite`): batched up to 15 calls in a turn, passed through the
+  final review, and found **15/42**, the same as the baseline's 13 and 15.
+- **Run 1** (served by `3.1-flash-lite`): stayed serial and found 8/42. `3.1-flash-lite` tends
+  to work one call at a time regardless of the prompt.
+
+### 4. Conclusions
+
+- **Keep `inspect_workflows`.** On the subtle-CI repository it doubled recall (Grafter 2/10 →
+  8/10 over two runs). On sampleproject it found the ungated release in both runs, after
+  missing it in most earlier rounds.
+- **The batching regression was the prompt, not the tool,** and the rewritten instruction
+  removes it when the serving model batches at all.
+- **The final review has not been shown to add findings.** It fired in 4 runs and added none.
+  It costs at most one turn and is kept for the default 40-turn budget, but its benefit is
+  unproven.
+- **Remaining false positives:** "missing lockfile" on a library, and tag-triggered publishing
+  (itsdangerous). Both need rule nuances that are written up in `evals/ANSWER_KEYS.md` but not
+  yet applied.
+- **Limits of this test:** one model family, 2 runs per arm, and, under deadline pressure, only
+  leaky-repo was rerun after the batching fix. The other repositories' new-arm numbers above
+  were measured before that fix.
