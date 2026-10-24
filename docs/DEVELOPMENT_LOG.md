@@ -749,7 +749,7 @@ round measures them.
     existing connection was forcibly closed by the remote host`.
   - sampleproject ended with `Could not resolve host: github.com`.
   - All three exited 1 with a clear message, as specified. Their logs and traces are kept as
-    `*.attempt1-network-failure.*`, and `summary-attempt1.json` holds the original summary.
+    `*.attempt1.*`, and `summary-attempt1.json` holds the original summary.
 - **Retry:** the three were rerun the next morning (09:23–09:41 Pacific, Oct 24) and all exited 0.
 - **Total for the 7 successful audits:** 111 requests (98 OK, 6 × 429, 3 × 503, 4 × 504).
 - **The stronger models were mostly unavailable in practice.**
