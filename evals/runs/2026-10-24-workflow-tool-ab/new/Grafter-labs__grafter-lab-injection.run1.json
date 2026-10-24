@@ -1,0 +1,55 @@
+{
+  "repository": "https://github.com/Grafter-labs/grafter-lab-injection",
+  "violations": [
+    {
+      "rule_id": "COL-001",
+      "category": "collaboration",
+      "severity": "critical",
+      "file": ".github/workflows/runner-control-injection.yml",
+      "line": 13,
+      "description": "Untrusted event data used in runs-on expression allowing arbitrary code execution on runner pool",
+      "evidence": "runs-on: ${{ github.event.issue.title }}",
+      "recommendation": "Use a static runner label (e.g. ubuntu-latest) instead of evaluating untrusted event properties for runs-on."
+    },
+    {
+      "rule_id": "SEC-003",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/secret-echoed-to-log.yml",
+      "line": 16,
+      "description": "Secret echoed directly to GitHub Actions workflow log",
+      "evidence": "run: echo \"GRAFTER_MARKER secret-echoed-to-log $DEMO_SECRET\"",
+      "recommendation": "Do not echo secrets or secret-derived environment variables into the step logs."
+    },
+    {
+      "rule_id": "SEC-002",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/bypassable-actor-allowlist-gate.yml",
+      "line": 12,
+      "description": "Vulnerable substring check on github.actor allowing allowlist bypass",
+      "evidence": "if: ${{ contains('alice,bob,octocat', github.actor) }}",
+      "recommendation": "Compare github.actor against an explicit array or list of exact usernames rather than using substring contains()."
+    },
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/script-injection.yml",
+      "line": 15,
+      "description": "Untrusted github.event expression interpolated directly into shell script",
+      "evidence": "run: echo \"GRAFTER_MARKER title=${{ github.event.issue.title }}\"",
+      "recommendation": "Pass the untrusted event data into the step via an environment variable instead of direct interpolation."
+    },
+    {
+      "rule_id": "CI-001",
+      "category": "ci_cd",
+      "severity": "high",
+      "file": ".github/workflows/test.yaml",
+      "line": 45,
+      "description": "Verbose HTTP client logging prints sensitive authorization token header to logs",
+      "evidence": "curl -v \\\n  -X POST \\\n  -H \"Authorization: Bearer $TOKEN\" \\\n  http://127.0.0.1:8765/upload",
+      "recommendation": "Remove the -v (verbose) flag from curl when sending requests containing authorization tokens or sensitive headers."
+    }
+  ]
+}

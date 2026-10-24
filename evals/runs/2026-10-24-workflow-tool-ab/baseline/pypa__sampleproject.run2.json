@@ -1,0 +1,25 @@
+{
+  "repository": "https://github.com/pypa/sampleproject",
+  "violations": [
+    {
+      "rule_id": "DEP-002",
+      "category": "dependency_management",
+      "severity": "medium",
+      "file": null,
+      "line": null,
+      "description": "Missing dependency lockfile.",
+      "evidence": "No lockfile (e.g., poetry.lock, pdm.lock, requirements.txt) is present in the repository.",
+      "recommendation": "Generate and commit a lockfile to ensure reproducible builds."
+    },
+    {
+      "rule_id": "DEP-001",
+      "category": "dependency_management",
+      "severity": "medium",
+      "file": "pyproject.toml",
+      "line": 119,
+      "description": "Dependency specifications lack version constraints.",
+      "evidence": "dependencies = [\"peppercorn\"] in pyproject.toml line 119.",
+      "recommendation": "Pin dependencies to specific versions or ranges, e.g., peppercorn>=0.6."
+    }
+  ]
+}

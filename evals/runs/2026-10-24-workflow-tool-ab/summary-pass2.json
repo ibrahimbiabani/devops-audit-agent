@@ -1,0 +1,347 @@
+[
+  {
+    "repo": "jpr5__vulnerable-workflows-test",
+    "arm": "baseline",
+    "run": 1,
+    "exit": 0,
+    "seconds": 92,
+    "http": {
+      "gemini-3.1-flash-lite:200": 17
+    },
+    "violations": [
+      "COL-001 .github/workflows/auto-label.yml:3 Use of pull_request_target with checkout of untrusted PR head.",
+      "SEC-001 .github/workflows/setup.yml:15 Hardcoded secret in workflow environment block.",
+      "SEC-002 .github/workflows/auto-label.yml:6 Missing permissions block in security-sensitive workflow.",
+      "COL-002 .github/workflows/greet-pr.yml:12 Untrusted PR event input used in a shell script without sanitization.",
+      "DEP-001 package.json:1 Missing lockfile for node project."
+    ],
+    "tools": {
+      "list_files": 4,
+      "read_file": 7,
+      "record_violation": 5,
+      "finish_audit": 1
+    },
+    "models": [
+      "gemini-3.1-flash-lite"
+    ],
+    "recorded_after_review": 0
+  },
+  {
+    "repo": "jpr5__vulnerable-workflows-test",
+    "arm": "new",
+    "run": 1,
+    "exit": 0,
+    "seconds": 200,
+    "http": {
+      "gemini-3.1-flash-lite:200": 18,
+      "gemini-3.1-flash-lite:503": 1
+    },
+    "violations": [
+      "SEC-001 .github/workflows/setup.yml:15 Hardcoded API key in workflow environment variable",
+      "COL-001 .github/workflows/auto-label.yml:12 Untrusted input from pull_request_target event used in workflow steps",
+      "BLD-001 .github/workflows/manual-deploy.yml:13 Deployment workflow lacks test/validation steps or dependencies",
+      "CI-001 .github/workflows/setup.yml:10 Unsafe curl pipeline without integrity verification",
+      "DEP-001 package.json:1 Missing package-lock.json for node project"
+    ],
+    "tools": {
+      "list_files": 4,
+      "inspect_workflows": 1,
+      "read_file": 6,
+      "record_violation": 5,
+      "finish_audit": 2
+    },
+    "models": [
+      "gemini-3.1-flash-lite"
+    ],
+    "recorded_after_review": 0
+  },
+  {
+    "repo": "jpr5__vulnerable-workflows-test",
+    "arm": "baseline",
+    "run": 2,
+    "exit": 0,
+    "seconds": 52,
+    "http": {
+      "gemini-3.1-flash-lite:200": 17
+    },
+    "violations": [
+      "SEC-001 .github/workflows/setup.yml:15 Hardcoded API key in workflow environment block.",
+      "SEC-002 .github/workflows/auto-label.yml:1 Missing permissions block on workflow triggered by pull_request_target",
+      "COL-001 .github/workflows/auto-label.yml:12 Untrusted pull request data used to checkout code with pull_request_ta",
+      "COL-002 .github/workflows/greet-pr.yml:12 Untrusted input from pull request title/user interpolated directly int",
+      "DEP-001 package.json:1 Missing lockfile for dependencies."
+    ],
+    "tools": {
+      "list_files": 5,
+      "read_file": 6,
+      "record_violation": 5,
+      "finish_audit": 1
+    },
+    "models": [
+      "gemini-3.1-flash-lite"
+    ],
+    "recorded_after_review": 0
+  },
+  {
+    "repo": "jpr5__vulnerable-workflows-test",
+    "arm": "new",
+    "run": 2,
+    "exit": 0,
+    "seconds": 56,
+    "http": {
+      "gemini-3.1-flash-lite:200": 20,
+      "gemini-3.1-flash-lite:429": 1
+    },
+    "violations": [
+      "SEC-001 .github/workflows/setup.yml:15 Hardcoded API key in workflow env block",
+      "COL-001 .github/workflows/auto-label.yml:12 Untrusted input in pull_request_target workflow",
+      "BLD-001 .github/workflows/manual-deploy.yml:17 Deployment step has no gating tests or validation",
+      "COL-002 .github/workflows/greet-pr.yml:12 Untrusted input in shell script via interpolation",
+      "CI-001 .github/workflows/manual-deploy.yml:19 Untrusted inputs in manual-deploy workflow command execution",
+      "DEP-001 package.json:1 Missing lockfile for Node.js project",
+      "HYG-001 None:None Missing .gitignore file"
+    ],
+    "tools": {
+      "list_files": 6,
+      "inspect_workflows": 1,
+      "read_file": 5,
+      "record_violation": 7,
+      "finish_audit": 1
+    },
+    "models": [
+      "gemini-3.1-flash-lite"
+    ],
+    "recorded_after_review": 0
+  },
+  {
+    "repo": "pallets__itsdangerous",
+    "arm": "baseline",
+    "run": 1,
+    "exit": 0,
+    "seconds": 99,
+    "http": {
+      "gemini-3.1-flash-lite:200": 11,
+      "gemini-3.1-flash-lite:429": 1
+    },
+    "violations": [],
+    "tools": {
+      "list_files": 4,
+      "read_file": 5,
+      "finish_audit": 2
+    },
+    "models": [
+      "gemini-3.1-flash-lite"
+    ],
+    "recorded_after_review": 0
+  },
+  {
+    "repo": "pallets__itsdangerous",
+    "arm": "new",
+    "run": 1,
+    "exit": 0,
+    "seconds": 48,
+    "http": {
+      "gemini-3.1-flash-lite:200": 11
+    },
+    "violations": [
+      "BLD-001 .github/workflows/publish.yaml:35 The publishing workflow does not have a test gate before release/publi"
+    ],
+    "tools": {
+      "list_files": 3,
+      "inspect_workflows": 1,
+      "read_file": 4,
+      "record_violation": 1,
+      "finish_audit": 2
+    },
+    "models": [
+      "gemini-3.1-flash-lite"
+    ],
+    "recorded_after_review": 0
+  },
+  {
+    "repo": "pallets__itsdangerous",
+    "arm": "baseline",
+    "run": 2,
+    "exit": 0,
+    "seconds": 69,
+    "http": {
+      "gemini-3.1-flash-lite:200": 16,
+      "gemini-3.1-flash-lite:429": 1,
+      "gemini-3.1-flash-lite:503": 2,
+      "gemini-3.5-flash-lite:200": 4
+    },
+    "violations": [],
+    "tools": {
+      "list_files": 19,
+      "read_file": 1
+    },
+    "models": [
+      "gemini-3.1-flash-lite",
+      "gemini-3.5-flash-lite"
+    ],
+    "recorded_after_review": 0
+  },
+  {
+    "repo": "pallets__itsdangerous",
+    "arm": "new",
+    "run": 2,
+    "exit": 0,
+    "seconds": 22,
+    "http": {
+      "gemini-3.5-flash-lite:200": 10
+    },
+    "violations": [],
+    "tools": {
+      "list_files": 1,
+      "inspect_workflows": 1,
+      "read_file": 4,
+      "search_code": 1,
+      "git_log": 1,
+      "finish_audit": 2
+    },
+    "models": [
+      "gemini-3.5-flash-lite"
+    ],
+    "recorded_after_review": 0
+  },
+  {
+    "repo": "paastha1__cicd-test-repo",
+    "arm": "baseline",
+    "run": 1,
+    "exit": 0,
+    "seconds": 49,
+    "http": {
+      "gemini-3.5-flash-lite:200": 5,
+      "gemini-3.5-flash-lite:429": 1
+    },
+    "violations": [
+      "SEC-009 .github/workflows/ci.yml:38 Sensitive environment and credential files uploaded as build artifacts",
+      "SEC-001 .github/workflows/deploy.yml:12 Hardcoded AWS secret access key in workflow environment block",
+      "SEC-002 .github/workflows/deploy.yml:13 Hardcoded database password in workflow environment block",
+      "SEC-003 .github/workflows/release.yml:11 Hardcoded PyPI API token in workflow environment block",
+      "SEC-004 .github/workflows/release.yml:12 Hardcoded Docker Hub token in workflow environment block",
+      "SEC-010 .github/workflows/release.yml:37 Private SSH keys and local configuration files uploaded as build artif",
+      "SEC-005 .github/workflows/ci.yml:26 Secrets echoed to workflow logs",
+      "SEC-008 .github/workflows/ci.yml:31 Passing secret as a command-line argument",
+      "SEC-006 .github/workflows/deploy.yml:21 Bash debug mode (set -x) enabled with secrets in environment / shell",
+      "SEC-007 .github/workflows/deploy.yml:27 Verbose HTTP request (curl -v) with authorization header leaking secre"
+    ],
+    "tools": {
+      "list_files": 2,
+      "read_file": 5,
+      "git_log": 1,
+      "record_violation": 10,
+      "finish_audit": 1
+    },
+    "models": [
+      "gemini-3.5-flash-lite"
+    ],
+    "recorded_after_review": 0
+  },
+  {
+    "repo": "paastha1__cicd-test-repo",
+    "arm": "new",
+    "run": 1,
+    "exit": 0,
+    "seconds": 25,
+    "http": {
+      "gemini-3.5-flash-lite:200": 20
+    },
+    "violations": [
+      "SEC-001 .github/workflows/ci.yml:25 Secrets echoed and printed in CI logs",
+      "SEC-002 .github/workflows/ci.yml:39 Sensitive credential files uploaded as artifacts",
+      "SEC-003 .github/workflows/deploy.yml:12 Hardcoded AWS secret access key in workflow env block",
+      "SEC-004 .github/workflows/deploy.yml:13 Hardcoded database password in workflow env block",
+      "SEC-007 .github/workflows/release.yml:11 Hardcoded PyPI API token in workflow env block",
+      "SEC-008 .github/workflows/release.yml:12 Hardcoded Docker Hub token in workflow env block",
+      "SEC-010 .github/workflows/release.yml:25 Tokens echoed and printed in release workflow logs",
+      "SEC-012 .github/workflows/release.yml:38 Private SSH and environment keys uploaded as workflow artifacts",
+      "SEC-005 .github/workflows/deploy.yml:21 Bash debug mode set -x enabled in workflow handling secrets",
+      "SEC-006 .github/workflows/deploy.yml:27 Verbose curl command leaking authorization header secret",
+      "SEC-009 .github/workflows/release.yml:20 Bash debug mode set -ex enabled in workflow handling tokens",
+      "SEC-011 .github/workflows/release.yml:27 Verbose curl command leaking GitHub token authorization header"
+    ],
+    "tools": {
+      "list_files": 1,
+      "inspect_workflows": 1,
+      "read_file": 4,
+      "git_log": 1,
+      "record_violation": 12,
+      "finish_audit": 1
+    },
+    "models": [
+      "gemini-3.5-flash-lite"
+    ],
+    "recorded_after_review": 0
+  },
+  {
+    "repo": "Plazmaz__leaky-repo",
+    "arm": "baseline",
+    "run": 2,
+    "exit": 0,
+    "seconds": 78,
+    "http": {
+      "gemini-3.5-flash-lite:200": 9,
+      "gemini-3.5-flash-lite:429": 1
+    },
+    "violations": [
+      "SEC-005 .ssh/id_rsa:1 Committed SSH private key file",
+      "SEC-008 etc/shadow:20 Committed system shadow file containing password hashes",
+      "SEC-009 misc-keys/cert-key.pem:1 Committed PEM certificate private key",
+      "SEC-010 misc-keys/putty-example.ppk:1 Committed PuTTY private key file",
+      "HYG-001 None:None Missing .gitignore file at repository root",
+      "SEC-001 .docker/.dockercfg:4 Committed Docker registry configuration containing base64-encoded auth",
+      "SEC-015 .docker/config.json:5 Committed Docker configuration JSON containing auth token",
+      "SEC-002 .git-credentials:1 Committed Git credentials file containing plaintext credentials",
+      "SEC-003 .netrc:1 Committed .netrc file containing email and plaintext password",
+      "SEC-004 .npmrc:7 Committed .npmrc file containing npm auth token and basic auth header",
+      "SEC-006 cloud/.s3cfg:1 Committed S3 configuration file containing secret key",
+      "SEC-007 db/.pgpass:2 Committed PostgreSQL password configuration file (.pgpass)",
+      "SEC-012 web/ruby/config/master.key:1 Committed Ruby on Rails master key file",
+      "SEC-011 web/var/www/.env:14 Committed Laravel environment file containing database and mail passwo",
+      "SEC-014 web/django/settings.py:24 Committed Django settings file containing hardcoded secret key and deb",
+      "SEC-013 web/var/www/public_html/.htpasswd:1 Committed Apache .htpasswd file containing password hash"
+    ],
+    "tools": {
+      "list_files": 1,
+      "read_file": 17,
+      "record_violation": 16,
+      "finish_audit": 2
+    },
+    "models": [
+      "gemini-3.5-flash-lite"
+    ],
+    "recorded_after_review": 0
+  },
+  {
+    "repo": "Plazmaz__leaky-repo",
+    "arm": "new",
+    "run": 2,
+    "exit": 0,
+    "seconds": 34,
+    "http": {
+      "gemini-3.5-flash-lite:200": 19
+    },
+    "violations": [
+      "SEC-003 .git-credentials:1 Committed .git-credentials store",
+      "SEC-002 .netrc:1 Committed .netrc credential file",
+      "SEC-004 .npmrc:7 Committed .npmrc auth config containing token and auth credentials",
+      "SEC-001 .ssh/id_rsa:1 Committed SSH private key in repository",
+      "SEC-005 cloud/.s3cfg:1 Committed .s3cfg cloud credential file",
+      "SEC-006 db/.pgpass:2 Committed PostgreSQL .pgpass credentials file",
+      "SEC-007 etc/shadow:20 Committed system shadow file containing password hashes",
+      "SEC-008 web/ruby/config/master.key:1 Committed Ruby on Rails master.key credentials file"
+    ],
+    "tools": {
+      "list_files": 1,
+      "git_log": 1,
+      "read_file": 8,
+      "record_violation": 8,
+      "finish_audit": 1
+    },
+    "models": [
+      "gemini-3.5-flash-lite"
+    ],
+    "recorded_after_review": 0
+  }
+]

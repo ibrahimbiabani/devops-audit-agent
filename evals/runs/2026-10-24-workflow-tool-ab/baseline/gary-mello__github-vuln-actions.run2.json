@@ -1,0 +1,75 @@
+{
+  "repository": "https://github.com/gary-mello/github-vuln-actions",
+  "violations": [
+    {
+      "rule_id": "COL-001",
+      "category": "collaboration",
+      "severity": "critical",
+      "file": ".github/workflows/prt-dangerous-checkout.yml",
+      "line": 17,
+      "description": "Dangerous use of pull_request_target with checkout of untrusted code",
+      "evidence": "The workflow .github/workflows/prt-dangerous-checkout.yml uses 'pull_request_target' and checks out code from the PR's head ref, which allows arbitrary code execution in the context of the repository's secrets.",
+      "recommendation": "Avoid using 'pull_request_target' for workflows that checkout untrusted pull request code. If PR code must be checked out, use 'pull_request' instead."
+    },
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/write-all-permissions.yml",
+      "line": 12,
+      "description": "Dangerous workflow permissions (write-all) on pull_request_target trigger",
+      "evidence": "The workflow .github/workflows/write-all-permissions.yml uses 'pull_request_target' with 'permissions: write-all', which allows potentially malicious code from a PR to modify repository contents and access secrets.",
+      "recommendation": "Remove 'permissions: write-all' and explicitly grant only the minimum necessary permissions (e.g., 'pull-requests: write') at the job level."
+    },
+    {
+      "rule_id": "COL-004",
+      "category": "collaboration",
+      "severity": "high",
+      "file": ".github/workflows/issue-labeler.yml",
+      "line": 18,
+      "description": "Command injection via untrusted issue title and body payloads",
+      "evidence": "The workflow .github/workflows/issue-labeler.yml interpolates untrusted issue title and body into a 'run' step, enabling command injection on the runner.",
+      "recommendation": "Pass issue attributes as environment variables to the 'run' script instead of direct interpolation."
+    },
+    {
+      "rule_id": "COL-002",
+      "category": "collaboration",
+      "severity": "high",
+      "file": ".github/workflows/pr-comment-handler.yml",
+      "line": 16,
+      "description": "Command injection via untrusted pull request comment payload",
+      "evidence": "The workflow .github/workflows/pr-comment-handler.yml interpolates the untrusted 'github.event.comment.body' into a 'run' step, which can lead to shell command injection.",
+      "recommendation": "Do not directly interpolate user-provided input from event payloads into shell commands. Use environment variables to pass untrusted values safely."
+    },
+    {
+      "rule_id": "COL-003",
+      "category": "collaboration",
+      "severity": "high",
+      "file": ".github/workflows/pr-title-injection.yml",
+      "line": 17,
+      "description": "Command injection via untrusted pull request title and body payloads",
+      "evidence": "The workflow .github/workflows/pr-title-injection.yml interpolates untrusted PR title, body, and head ref directly into a 'run' step, enabling command injection on the runner.",
+      "recommendation": "Pass PR attributes as environment variables to the 'run' script instead of direct interpolation to prevent shell command injection."
+    },
+    {
+      "rule_id": "CI-001",
+      "category": "ci_cd",
+      "severity": "medium",
+      "file": ".github/workflows/self-hosted-runner.yml",
+      "line": 14,
+      "description": "Use of self-hosted runners without explicit risk management or isolation warning",
+      "evidence": "The workflow .github/workflows/self-hosted-runner.yml uses self-hosted runners for an internal build/deploy pipeline, which exposes sensitive internal infrastructure to potential code execution risks from the CI pipeline.",
+      "recommendation": "If possible, transition to GitHub-hosted ephemeral runners. If self-hosted runners are required, ensure they are hardened, isolated, and have no access to sensitive internal infrastructure."
+    },
+    {
+      "rule_id": "CI-002",
+      "category": "ci_cd",
+      "severity": "medium",
+      "file": ".github/workflows/unpinned-actions.yml",
+      "line": 19,
+      "description": "Supply chain risk due to use of unpinned (mutable) GitHub Actions references",
+      "evidence": "The workflow .github/workflows/unpinned-actions.yml uses mutable action tags ('@v3', '@main', '@latest', '@v2.1.0') instead of immutable commit SHA pins.",
+      "recommendation": "Pin all third-party GitHub Actions to specific commit SHAs to protect the pipeline against compromised dependencies. (Note: While action pinning is often excluded from some audits, here it's identified as a deliberate supply-chain risk concern)."
+    }
+  ]
+}

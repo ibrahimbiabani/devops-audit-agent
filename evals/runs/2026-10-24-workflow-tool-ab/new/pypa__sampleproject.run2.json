@@ -1,0 +1,35 @@
+{
+  "repository": "https://github.com/pypa/sampleproject",
+  "violations": [
+    {
+      "rule_id": "BLD-001",
+      "category": "build_release",
+      "severity": "high",
+      "file": ".github/workflows/release.yml",
+      "line": 12,
+      "description": "The release workflow does not depend on the test workflow.",
+      "evidence": "The build-and-publish job in .github/workflows/release.yml does not list the test job as a dependency (needs:), meaning it could publish code that has not been tested.",
+      "recommendation": "Add a 'needs: test' dependency to the build-and-publish job, referencing the job from the test workflow, or integrate the test/lint steps into the release workflow before the build/publish steps."
+    },
+    {
+      "rule_id": "DEP-002",
+      "category": "dependency_management",
+      "severity": "medium",
+      "file": null,
+      "line": null,
+      "description": "Missing dependency lockfile.",
+      "evidence": "The repository lacks a dependency lockfile (e.g., poetry.lock, requirements.txt, or similar), which is necessary for reproducible builds.",
+      "recommendation": "Generate and commit a lockfile (e.g., using `pip-compile` or another tool) to ensure reproducible installs."
+    },
+    {
+      "rule_id": "DEP-001",
+      "category": "dependency_management",
+      "severity": "medium",
+      "file": "pyproject.toml",
+      "line": 119,
+      "description": "Project dependencies are unpinned.",
+      "evidence": "The 'dependencies' field in pyproject.toml lists 'peppercorn' without a version constraint, and the 'optional-dependencies' (dev/test) also list tools without version constraints.",
+      "recommendation": "Pin all dependencies and optional dependencies to specific versions or valid version ranges in pyproject.toml, and provide a lockfile if possible."
+    }
+  ]
+}

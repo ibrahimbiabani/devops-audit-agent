@@ -1,0 +1,55 @@
+{
+  "repository": "https://github.com/jpr5/vulnerable-workflows-test",
+  "violations": [
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/setup.yml",
+      "line": 15,
+      "description": "Hardcoded API key in workflow environment variable",
+      "evidence": "API_KEY: \"[REDACTED]\" in .github/workflows/setup.yml",
+      "recommendation": "Remove the hardcoded API key and use GitHub Secrets instead."
+    },
+    {
+      "rule_id": "COL-001",
+      "category": "collaboration",
+      "severity": "high",
+      "file": ".github/workflows/auto-label.yml",
+      "line": 12,
+      "description": "Untrusted input from pull_request_target event used in workflow steps",
+      "evidence": "${{ github.event.pull_request.head.ref }} used in .github/workflows/auto-label.yml, ${{ github.event.pull_request.title }} and ${{ github.event.pull_request.user.login }} used in .github/workflows/greet-pr.yml",
+      "recommendation": "Avoid using pull_request_target for workflows that need to handle untrusted input or checkout code from the PR. Consider using pull_request event."
+    },
+    {
+      "rule_id": "BLD-001",
+      "category": "build_release",
+      "severity": "medium",
+      "file": ".github/workflows/manual-deploy.yml",
+      "line": 13,
+      "description": "Deployment workflow lacks test/validation steps or dependencies",
+      "evidence": ".github/workflows/manual-deploy.yml performs deployment without any preceding test or validation steps, and does not depend on a test workflow.",
+      "recommendation": "Ensure the deployment job has a dependency on a testing job, e.g., 'needs: [test]'."
+    },
+    {
+      "rule_id": "CI-001",
+      "category": "ci_cd",
+      "severity": "medium",
+      "file": ".github/workflows/setup.yml",
+      "line": 10,
+      "description": "Unsafe curl pipeline without integrity verification",
+      "evidence": "run: curl -fsSL https://example.com/install.sh | bash in .github/workflows/setup.yml",
+      "recommendation": "Avoid piping remote scripts directly to bash. If necessary, download the script, verify its checksum, and then execute it."
+    },
+    {
+      "rule_id": "DEP-001",
+      "category": "dependency_management",
+      "severity": "medium",
+      "file": "package.json",
+      "line": 1,
+      "description": "Missing package-lock.json for node project",
+      "evidence": "package.json exists but no package-lock.json is tracked in the repository.",
+      "recommendation": "Generate and commit a package-lock.json file to ensure reproducible builds."
+    }
+  ]
+}

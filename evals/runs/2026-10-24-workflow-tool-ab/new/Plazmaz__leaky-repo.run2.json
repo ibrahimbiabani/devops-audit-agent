@@ -1,0 +1,85 @@
+{
+  "repository": "https://github.com/Plazmaz/leaky-repo",
+  "violations": [
+    {
+      "rule_id": "SEC-003",
+      "category": "security",
+      "severity": "critical",
+      "file": ".git-credentials",
+      "line": 1,
+      "description": "Committed .git-credentials store",
+      "evidence": ".git-credentials contains user and password",
+      "recommendation": "Remove .git-credentials from version control and rotate tokens."
+    },
+    {
+      "rule_id": "SEC-002",
+      "category": "security",
+      "severity": "critical",
+      "file": ".netrc",
+      "line": 1,
+      "description": "Committed .netrc credential file",
+      "evidence": ".netrc contains plaintext email credentials",
+      "recommendation": "Remove .netrc from version control and revoke credentials."
+    },
+    {
+      "rule_id": "SEC-004",
+      "category": "security",
+      "severity": "critical",
+      "file": ".npmrc",
+      "line": 7,
+      "description": "Committed .npmrc auth config containing token and auth credentials",
+      "evidence": ".npmrc contains _auth and _authToken",
+      "recommendation": "Remove .npmrc from version control and revoke the npm auth token."
+    },
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "critical",
+      "file": ".ssh/id_rsa",
+      "line": 1,
+      "description": "Committed SSH private key in repository",
+      "evidence": ".ssh/id_rsa contains a private key",
+      "recommendation": "Remove .ssh/id_rsa from the repository and revoke the key."
+    },
+    {
+      "rule_id": "SEC-005",
+      "category": "security",
+      "severity": "critical",
+      "file": "cloud/.s3cfg",
+      "line": 1,
+      "description": "Committed .s3cfg cloud credential file",
+      "evidence": "cloud/.s3cfg contains access_key and secret_key",
+      "recommendation": "Remove .s3cfg from version control and rotate AWS keys."
+    },
+    {
+      "rule_id": "SEC-006",
+      "category": "security",
+      "severity": "critical",
+      "file": "db/.pgpass",
+      "line": 2,
+      "description": "Committed PostgreSQL .pgpass credentials file",
+      "evidence": "db/.pgpass contains database root password",
+      "recommendation": "Remove .pgpass from version control and change database password."
+    },
+    {
+      "rule_id": "SEC-007",
+      "category": "security",
+      "severity": "critical",
+      "file": "etc/shadow",
+      "line": 20,
+      "description": "Committed system shadow file containing password hashes",
+      "evidence": "etc/shadow contains user password hashes",
+      "recommendation": "Remove etc/shadow from version control."
+    },
+    {
+      "rule_id": "SEC-008",
+      "category": "security",
+      "severity": "critical",
+      "file": "web/ruby/config/master.key",
+      "line": 1,
+      "description": "Committed Ruby on Rails master.key credentials file",
+      "evidence": "web/ruby/config/master.key contains encryption master key",
+      "recommendation": "Remove master.key from version control and rotate encryption keys."
+    }
+  ]
+}

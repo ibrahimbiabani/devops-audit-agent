@@ -1,0 +1,15 @@
+{
+  "repository": "https://github.com/pypa/sampleproject",
+  "violations": [
+    {
+      "rule_id": "BLD-001",
+      "category": "build_release",
+      "severity": "high",
+      "file": ".github/workflows/release.yml",
+      "line": 12,
+      "description": "Release workflow runs without test validation.",
+      "evidence": "The build-and-publish job in release.yml does not run tests nor does it depend on any test job. It runs on every push to main.",
+      "recommendation": "Add 'needs: test' to the build-and-publish job, referencing the test job in test.yml."
+    }
+  ]
+}

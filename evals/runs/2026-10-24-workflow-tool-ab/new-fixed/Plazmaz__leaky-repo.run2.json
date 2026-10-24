@@ -1,0 +1,155 @@
+{
+  "repository": "https://github.com/Plazmaz/leaky-repo",
+  "violations": [
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "critical",
+      "file": ".docker/.dockercfg",
+      "line": 4,
+      "description": "Committed Docker credentials configuration file",
+      "evidence": "Committed .docker/.dockercfg containing base64 auth token",
+      "recommendation": "Remove .docker/.dockercfg from version control and rotate Docker credentials."
+    },
+    {
+      "rule_id": "SEC-002",
+      "category": "security",
+      "severity": "critical",
+      "file": ".docker/config.json",
+      "line": 5,
+      "description": "Committed Docker config.json containing auth credentials",
+      "evidence": "Committed .docker/config.json containing auth tokens",
+      "recommendation": "Remove .docker/config.json from version control and rotate credentials."
+    },
+    {
+      "rule_id": "SEC-003",
+      "category": "security",
+      "severity": "critical",
+      "file": ".git-credentials",
+      "line": 1,
+      "description": "Committed Git credentials store file",
+      "evidence": "Committed .git-credentials containing plain/encoded credentials",
+      "recommendation": "Remove .git-credentials from version control and revoke the credential."
+    },
+    {
+      "rule_id": "SEC-004",
+      "category": "security",
+      "severity": "critical",
+      "file": ".netrc",
+      "line": 1,
+      "description": "Committed netrc file containing email and password credentials",
+      "evidence": "Committed .netrc containing plaintext passwords for email accounts",
+      "recommendation": "Remove .netrc from version control and rotate the credentials."
+    },
+    {
+      "rule_id": "SEC-005",
+      "category": "security",
+      "severity": "critical",
+      "file": ".npmrc",
+      "line": 7,
+      "description": "Committed npmrc file containing auth token and base64 auth credentials",
+      "evidence": "Committed .npmrc containing _auth and _authToken",
+      "recommendation": "Remove .npmrc from version control and revoke the npm auth tokens."
+    },
+    {
+      "rule_id": "SEC-006",
+      "category": "security",
+      "severity": "critical",
+      "file": ".ssh/id_rsa",
+      "line": 1,
+      "description": "Committed SSH private key file",
+      "evidence": "Committed private SSH RSA key in .ssh/id_rsa",
+      "recommendation": "Remove the private key from version control and revoke/rotate the SSH key."
+    },
+    {
+      "rule_id": "SEC-007",
+      "category": "security",
+      "severity": "critical",
+      "file": "cloud/.s3cfg",
+      "line": 1,
+      "description": "Committed AWS S3 configuration containing secret access key",
+      "evidence": "Committed cloud/.s3cfg containing secret_key",
+      "recommendation": "Remove cloud/.s3cfg from version control and rotate AWS credentials."
+    },
+    {
+      "rule_id": "SEC-008",
+      "category": "security",
+      "severity": "critical",
+      "file": "db/.pgpass",
+      "line": 2,
+      "description": "Committed PostgreSQL password configuration file",
+      "evidence": "Committed db/.pgpass containing database password",
+      "recommendation": "Remove db/.pgpass from version control and change the database password."
+    },
+    {
+      "rule_id": "SEC-009",
+      "category": "security",
+      "severity": "critical",
+      "file": "etc/shadow",
+      "line": 20,
+      "description": "Committed system shadow password file",
+      "evidence": "Committed etc/shadow containing user password hashes",
+      "recommendation": "Remove etc/shadow immediately and ensure system files are excluded from git."
+    },
+    {
+      "rule_id": "SEC-010",
+      "category": "security",
+      "severity": "critical",
+      "file": "misc-keys/cert-key.pem",
+      "line": 1,
+      "description": "Committed certificate private key file",
+      "evidence": "Committed private key in misc-keys/cert-key.pem",
+      "recommendation": "Remove private key from version control and revoke the certificate."
+    },
+    {
+      "rule_id": "SEC-011",
+      "category": "security",
+      "severity": "critical",
+      "file": "misc-keys/putty-example.ppk",
+      "line": 1,
+      "description": "Committed PuTTY private key file",
+      "evidence": "Committed PuTTY private key in misc-keys/putty-example.ppk",
+      "recommendation": "Remove .ppk private key file from version control and revoke the key."
+    },
+    {
+      "rule_id": "SEC-012",
+      "category": "security",
+      "severity": "critical",
+      "file": "web/ruby/config/master.key",
+      "line": 1,
+      "description": "Committed Rails master key file",
+      "evidence": "Committed encryption master key in web/ruby/config/master.key",
+      "recommendation": "Remove master.key from version control and rotate encryption keys."
+    },
+    {
+      "rule_id": "SEC-013",
+      "category": "security",
+      "severity": "critical",
+      "file": "web/ruby/secrets.yml",
+      "line": 22,
+      "description": "Committed Rails secrets file containing production secret key base",
+      "evidence": "Committed production secret_key_base in web/ruby/secrets.yml",
+      "recommendation": "Remove secrets.yml or exclude production secrets from version control."
+    },
+    {
+      "rule_id": "SEC-014",
+      "category": "security",
+      "severity": "critical",
+      "file": "web/var/www/.env",
+      "line": 14,
+      "description": "Committed environment configuration file containing database and mail credentials",
+      "evidence": "Committed web/var/www/.env containing DB_PASSWORD and mail/redis passwords",
+      "recommendation": "Remove .env from version control, use .env.example, and rotate all exposed credentials."
+    },
+    {
+      "rule_id": "SEC-015",
+      "category": "security",
+      "severity": "high",
+      "file": "web/var/www/public_html/.htpasswd",
+      "line": 1,
+      "description": "Committed htpasswd file with password hash",
+      "evidence": "Committed web/var/www/public_html/.htpasswd containing user password hash",
+      "recommendation": "Remove .htpasswd from version control."
+    }
+  ]
+}

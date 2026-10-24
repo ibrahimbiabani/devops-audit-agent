@@ -1,0 +1,54 @@
+2026-10-24 14:04:50,144 INFO Using GeminiLLM, models in order: gemini-3.1-flash-lite, gemini-3.5-flash-lite
+2026-10-24 14:04:50,144 INFO Cloning https://github.com/Plazmaz/leaky-repo
+2026-10-24 14:04:52,326 INFO Skipping Gemini model gemini-3.1-flash-lite: 503 UNAVAILABLE after 2 attempts (recorded earlier; retry in ~8min)
+2026-10-24 14:04:52,326 INFO Using Gemini model gemini-3.5-flash-lite
+2026-10-24 14:04:53,333 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:04:53,344 INFO Gemini model gemini-3.5-flash-lite is serving as gemini-3.5-flash-lite
+2026-10-24 14:04:53,365 INFO [turn 1] list_files({})
+2026-10-24 14:04:54,715 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:04:54,718 INFO [turn 2] read_file({"start_line": 1, "end_line": 50, "path": ".docker/.dockercfg"})
+2026-10-24 14:04:54,720 INFO [turn 2] read_file({"end_line": 50, "path": ".git-credentials", "start_line": 1})
+2026-10-24 14:04:54,721 INFO [turn 2] read_file({"end_line": 50, "start_line": 1, "path": ".netrc"})
+2026-10-24 14:04:54,722 INFO [turn 2] read_file({"path": ".npmrc", "start_line": 1, "end_line": 50})
+2026-10-24 14:04:54,728 INFO [turn 2] read_file({"path": ".ssh/id_rsa", "start_line": 1, "end_line": 50})
+2026-10-24 14:04:54,730 INFO [turn 2] read_file({"start_line": 1, "path": "cloud/.s3cfg", "end_line": 50})
+2026-10-24 14:04:54,731 INFO [turn 2] read_file({"path": "db/.pgpass", "end_line": 50, "start_line": 1})
+2026-10-24 14:04:54,732 INFO [turn 2] read_file({"path": "etc/shadow", "start_line": 1, "end_line": 50})
+2026-10-24 14:04:54,734 INFO [turn 2] read_file({"path": "misc-keys/cert-key.pem", "start_line": 1, "end_line": 50})
+2026-10-24 14:04:54,735 INFO [turn 2] read_file({"start_line": 1, "end_line": 50, "path": "misc-keys/putty-example.ppk"})
+2026-10-24 14:04:56,114 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:04:56,118 INFO [turn 3] read_file({"start_line": 1, "path": "web/var/www/.env", "end_line": 50})
+2026-10-24 14:04:56,119 INFO [turn 3] read_file({"start_line": 1, "path": "web/ruby/config/master.key", "end_line": 50})
+2026-10-24 14:04:56,121 INFO [turn 3] read_file({"start_line": 1, "path": "web/ruby/secrets.yml", "end_line": 50})
+2026-10-24 14:04:56,122 INFO [turn 3] read_file({"path": "web/var/www/public_html/.htpasswd", "end_line": 50, "start_line": 1})
+2026-10-24 14:04:56,123 INFO [turn 3] read_file({"path": "web/django/settings.py", "start_line": 1, "end_line": 50})
+2026-10-24 14:04:56,125 INFO [turn 3] read_file({"end_line": 50, "path": "README.md", "start_line": 1})
+2026-10-24 14:04:58,912 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:04:58,916 INFO [turn 4] record_violation({"category": "security", "severity": "high", "recommendation": "Remove .docker/.dockercfg from version control and revoke the credential.", "line": 4, "file": ".docker/.dockercfg", "evidence": "Docker)
+2026-10-24 14:04:58,917 INFO [turn 4] record_violation({"description": "Committed Git credentials file containing plaintext credentials", "line": 1, "file": ".git-credentials", "rule_id": "SEC-002", "recommendation": "Remove .git-credentials from version )
+2026-10-24 14:04:58,917 INFO [turn 4] record_violation({"evidence": "Gmail password in .netrc", "rule_id": "SEC-003", "line": 1, "file": ".netrc", "description": "Committed .netrc file containing email and plaintext password", "category": "security", "rec)
+2026-10-24 14:04:58,918 INFO [turn 4] record_violation({"recommendation": "Remove .npmrc from version control and revoke the npm auth tokens.", "evidence": "npm _auth and _authToken present in .npmrc", "description": "Committed .npmrc file containing npm )
+2026-10-24 14:04:58,918 INFO [turn 4] record_violation({"rule_id": "SEC-005", "severity": "critical", "category": "security", "evidence": "RSA private key block in .ssh/id_rsa", "recommendation": "Remove private keys from version control and revoke the ke)
+2026-10-24 14:04:58,919 INFO [turn 4] record_violation({"evidence": "secret_key present in cloud/.s3cfg", "recommendation": "Remove cloud/.s3cfg from version control and rotate AWS credentials.", "file": "cloud/.s3cfg", "line": 1, "severity": "high", "rul)
+2026-10-24 14:04:58,919 INFO [turn 4] record_violation({"rule_id": "SEC-007", "recommendation": "Remove db/.pgpass from version control and rotate the database password.", "evidence": "Database password in db/.pgpass", "file": "db/.pgpass", "line": 2, "ca)
+2026-10-24 14:04:58,920 INFO [turn 4] record_violation({"recommendation": "Remove etc/shadow from version control immediately.", "rule_id": "SEC-008", "file": "etc/shadow", "line": 20, "evidence": "Password hash for user in etc/shadow", "description": "Co)
+2026-10-24 14:04:58,920 INFO [turn 4] record_violation({"evidence": "PRIVATE KEY block in misc-keys/cert-key.pem", "recommendation": "Remove private key from version control and revoke it.", "file": "misc-keys/cert-key.pem", "line": 1, "severity": "critic)
+2026-10-24 14:04:58,921 INFO [turn 4] record_violation({"rule_id": "SEC-010", "severity": "critical", "category": "security", "recommendation": "Remove private key from version control and revoke it.", "evidence": "PuTTY-User-Key-File-2 in misc-keys/putty)
+2026-10-24 14:05:00,745 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:05:00,749 INFO [turn 5] record_violation({"line": 14, "evidence": "DB_PASSWORD and MAIL_PASSWORD in web/var/www/.env", "description": "Committed Laravel environment file containing database and mail passwords", "category": "security", "recom)
+2026-10-24 14:05:00,749 INFO [turn 5] record_violation({"severity": "high", "recommendation": "Remove master.key from version control and rotate encryption keys.", "rule_id": "SEC-012", "file": "web/ruby/config/master.key", "evidence": "Master key stored )
+2026-10-24 14:05:00,750 INFO [turn 5] record_violation({"category": "security", "rule_id": "SEC-013", "description": "Committed Apache .htpasswd file containing password hash", "evidence": "Password hash in web/var/www/public_html/.htpasswd", "recommendat)
+2026-10-24 14:05:00,751 INFO [turn 5] record_violation({"description": "Committed Django settings file containing hardcoded secret key and debug mode", "recommendation": "Move SECRET_KEY and DEBUG setting to environment variables.", "file": "web/django/se)
+2026-10-24 14:05:00,751 INFO [turn 5] record_violation({"line": null, "evidence": "No .gitignore file exists at the root of the repository", "category": "repository_hygiene", "rule_id": "HYG-001", "recommendation": "Add a comprehensive .gitignore file cov)
+2026-10-24 14:05:02,264 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:05:02,282 INFO [turn 6] finish_audit({"summary": "The audit of the leaky-repo repository revealed multiple severe security vulnerabilities including committed private SSH keys, shadow files, Docker and npm credentials, AWS S3 configurati) -> error
+2026-10-24 14:05:03,346 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:05:03,350 INFO [turn 7] read_file({"start_line": 1, "path": ".docker/config.json", "end_line": 50})
+2026-10-24 14:05:03,823 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-10-24 14:05:03,824 INFO Gemini gemini-3.5-flash-lite rate limited; retrying in 55s
+2026-10-24 14:06:02,774 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:06:02,777 INFO [turn 8] record_violation({"category": "security", "rule_id": "SEC-015", "evidence": "Docker auth token in .docker/config.json", "line": 5, "description": "Committed Docker configuration JSON containing auth token", "severity")
+2026-10-24 14:06:07,435 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:06:07,453 INFO [turn 9] finish_audit({"summary": "The audit of the leaky-repo repository thoroughly examined all tracked sensitive files and workflows. It identified multiple security violations involving committed private keys, docker/n)
+Wrote 16 violation(s) to <repo>\evals\runs\2026-10-24-workflow-tool-ab\baseline\Plazmaz__leaky-repo.run2.json (model: gemini-3.5-flash-lite)
+Tool-call trace: <repo>\evals\runs\2026-10-24-workflow-tool-ab\baseline\Plazmaz__leaky-repo.run2.trace.jsonl

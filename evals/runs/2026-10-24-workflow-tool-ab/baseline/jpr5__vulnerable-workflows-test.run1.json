@@ -1,0 +1,55 @@
+{
+  "repository": "https://github.com/jpr5/vulnerable-workflows-test",
+  "violations": [
+    {
+      "rule_id": "COL-001",
+      "category": "collaboration",
+      "severity": "critical",
+      "file": ".github/workflows/auto-label.yml",
+      "line": 3,
+      "description": "Use of pull_request_target with checkout of untrusted PR head.",
+      "evidence": "The workflow .github/workflows/auto-label.yml uses pull_request_target and checks out the PR head ref: ${{ github.event.pull_request.head.ref }}.",
+      "recommendation": "Do not check out untrusted PR head code when using pull_request_target."
+    },
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/setup.yml",
+      "line": 15,
+      "description": "Hardcoded secret in workflow environment block.",
+      "evidence": "API_KEY: \"[REDACTED]\" in .github/workflows/setup.yml line 15.",
+      "recommendation": "Remove the hardcoded secret and use GitHub Secrets with ${{ secrets.API_KEY }}."
+    },
+    {
+      "rule_id": "SEC-002",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/auto-label.yml",
+      "line": 6,
+      "description": "Missing permissions block in security-sensitive workflow.",
+      "evidence": "The workflow .github/workflows/auto-label.yml uses pull_request_target but does not define a permissions block, granting default (often excessive) permissions.",
+      "recommendation": "Add an explicit permissions block to restrict the GITHUB_TOKEN to the minimum necessary scopes."
+    },
+    {
+      "rule_id": "COL-002",
+      "category": "collaboration",
+      "severity": "high",
+      "file": ".github/workflows/greet-pr.yml",
+      "line": 12,
+      "description": "Untrusted PR event input used in a shell script without sanitization.",
+      "evidence": "The greeting workflow uses ${{ github.event.pull_request.title }} directly in a shell command. An attacker could inject commands into the PR title.",
+      "recommendation": "Always sanitize or use environment variables to pass PR event data into shell scripts."
+    },
+    {
+      "rule_id": "DEP-001",
+      "category": "dependency_management",
+      "severity": "medium",
+      "file": "package.json",
+      "line": 1,
+      "description": "Missing lockfile for node project.",
+      "evidence": "package.json exists but no package-lock.json or similar lockfile is present in the repository.",
+      "recommendation": "Generate and commit a package-lock.json file."
+    }
+  ]
+}

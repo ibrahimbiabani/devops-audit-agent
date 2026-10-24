@@ -1,0 +1,40 @@
+2026-10-24 13:56:29,633 INFO Using GeminiLLM, models in order: gemini-3.1-flash-lite, gemini-3.5-flash-lite
+2026-10-24 13:56:29,634 INFO Cloning https://github.com/jpr5/vulnerable-workflows-test
+2026-10-24 13:56:31,691 INFO Using Gemini model gemini-3.1-flash-lite
+2026-10-24 13:56:33,890 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:56:33,901 INFO Gemini model gemini-3.1-flash-lite is serving as gemini-3.1-flash-lite
+2026-10-24 13:56:33,918 INFO [turn 1] list_files({"subdir": "."})
+2026-10-24 13:56:35,000 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:56:35,019 INFO [turn 2] list_files({"subdir": ".github"})
+2026-10-24 13:56:35,898 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:56:35,914 INFO [turn 3] list_files({"subdir": "src"})
+2026-10-24 13:56:41,043 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:56:41,060 INFO [turn 4] list_files({"subdir": "."})
+2026-10-24 13:56:42,478 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:56:42,495 INFO [turn 5] list_files({"pattern": "*"})
+2026-10-24 13:56:48,536 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:56:48,540 INFO [turn 6] read_file({"path": ".github/workflows/auto-label.yml"})
+2026-10-24 13:56:52,154 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:56:52,157 INFO [turn 7] read_file({"path": ".github/workflows/ci.yml"})
+2026-10-24 13:56:54,873 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:56:54,877 INFO [turn 8] read_file({"path": ".github/workflows/greet-pr.yml"})
+2026-10-24 13:56:58,610 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:56:58,613 INFO [turn 9] read_file({"path": ".github/workflows/manual-deploy.yml"})
+2026-10-24 13:57:00,889 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:57:00,892 INFO [turn 10] read_file({"path": ".github/workflows/setup.yml"})
+2026-10-24 13:57:03,453 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:57:03,457 INFO [turn 11] read_file({"path": "package.json"})
+2026-10-24 13:57:07,478 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:57:07,481 INFO [turn 12] record_violation({"description": "Hardcoded API key in workflow environment block.", "rule_id": "SEC-001", "file": ".github/workflows/setup.yml", "line": 15, "severity": "critical", "evidence": "API_KEY: \"[REDACTED]\)
+2026-10-24 13:57:12,542 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:57:12,546 INFO [turn 13] record_violation({"severity": "high", "recommendation": "Do not checkout head.ref with pull_request_target as it allows arbitrary code execution from forks. Use pull_request event if checkout of untrusted code is requ)
+2026-10-24 13:57:14,168 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:57:14,172 INFO [turn 14] record_violation({"rule_id": "COL-002", "file": ".github/workflows/greet-pr.yml", "recommendation": "Avoid direct interpolation of untrusted input into shell scripts. Sanitize input or use action inputs that are safer)
+2026-10-24 13:57:16,142 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:57:16,144 INFO [turn 15] record_violation({"recommendation": "Generate and commit a lockfile (package-lock.json) to ensure reproducible builds.", "severity": "medium", "line": 1, "category": "dependency_management", "rule_id": "DEP-001", "des)
+2026-10-24 13:57:17,770 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:57:17,773 INFO [turn 16] record_violation({"file": ".github/workflows/auto-label.yml", "description": "Missing permissions block on workflow triggered by pull_request_target.", "line": 1, "recommendation": "Add a permissions: block to explici)
+2026-10-24 13:57:20,887 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:57:20,905 INFO [turn 17] finish_audit({"summary": "The repository was audited for DevOps best practices. Several critical and high-severity issues were identified: a hardcoded secret in a workflow, insecure use of pull_request_target with)
+Wrote 5 violation(s) to <repo>\evals\runs\2026-10-24-workflow-tool-ab\baseline\jpr5__vulnerable-workflows-test.run2.json (model: gemini-3.1-flash-lite)
+Tool-call trace: <repo>\evals\runs\2026-10-24-workflow-tool-ab\baseline\jpr5__vulnerable-workflows-test.run2.trace.jsonl

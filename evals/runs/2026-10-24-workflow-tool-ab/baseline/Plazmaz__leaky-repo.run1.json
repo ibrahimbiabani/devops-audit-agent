@@ -1,0 +1,135 @@
+{
+  "repository": "https://github.com/Plazmaz/leaky-repo",
+  "violations": [
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "critical",
+      "file": ".docker/.dockercfg",
+      "line": 4,
+      "description": "Committed Docker configuration file containing credentials",
+      "evidence": "Docker auth token in .docker/.dockercfg",
+      "recommendation": "Remove .docker/.dockercfg from version control and revoke the credential."
+    },
+    {
+      "rule_id": "SEC-011",
+      "category": "security",
+      "severity": "critical",
+      "file": ".docker/config.json",
+      "line": 5,
+      "description": "Committed Docker config.json file containing credentials",
+      "evidence": "Docker auth token in .docker/config.json",
+      "recommendation": "Remove .docker/config.json from version control and revoke the credential."
+    },
+    {
+      "rule_id": "SEC-002",
+      "category": "security",
+      "severity": "critical",
+      "file": ".git-credentials",
+      "line": 1,
+      "description": "Committed Git credentials file containing password",
+      "evidence": "Git URL with embedded password in .git-credentials",
+      "recommendation": "Remove .git-credentials from version control and revoke the credentials."
+    },
+    {
+      "rule_id": "SEC-003",
+      "category": "security",
+      "severity": "critical",
+      "file": ".netrc",
+      "line": 1,
+      "description": "Committed .netrc file containing plain text passwords",
+      "evidence": "IMAP and SMTP login credentials in .netrc",
+      "recommendation": "Remove .netrc from version control and rotate passwords."
+    },
+    {
+      "rule_id": "SEC-004",
+      "category": "security",
+      "severity": "critical",
+      "file": ".npmrc",
+      "line": 7,
+      "description": "Committed .npmrc file containing npm auth token and basic auth",
+      "evidence": "_auth and _authToken present in .npmrc",
+      "recommendation": "Remove .npmrc from version control and revoke the npm tokens."
+    },
+    {
+      "rule_id": "SEC-005",
+      "category": "security",
+      "severity": "critical",
+      "file": ".ssh/id_rsa",
+      "line": 1,
+      "description": "Committed SSH private key",
+      "evidence": "Private RSA key in .ssh/id_rsa",
+      "recommendation": "Remove .ssh/id_rsa from version control and revoke the SSH key."
+    },
+    {
+      "rule_id": "SEC-006",
+      "category": "security",
+      "severity": "critical",
+      "file": "cloud/.s3cfg",
+      "line": 1,
+      "description": "Committed AWS s3cfg configuration file containing secret key",
+      "evidence": "secret_key in cloud/.s3cfg",
+      "recommendation": "Remove cloud/.s3cfg from version control and rotate AWS credentials."
+    },
+    {
+      "rule_id": "SEC-007",
+      "category": "security",
+      "severity": "critical",
+      "file": "db/.pgpass",
+      "line": 2,
+      "description": "Committed PostgreSQL pgpass file containing database password",
+      "evidence": "Plain text password in db/.pgpass",
+      "recommendation": "Remove db/.pgpass from version control and change database password."
+    },
+    {
+      "rule_id": "SEC-008",
+      "category": "security",
+      "severity": "critical",
+      "file": "etc/shadow",
+      "line": 20,
+      "description": "Committed system shadow file containing password hashes",
+      "evidence": "Password hashes in etc/shadow",
+      "recommendation": "Remove etc/shadow from version control."
+    },
+    {
+      "rule_id": "SEC-009",
+      "category": "security",
+      "severity": "critical",
+      "file": "misc-keys/cert-key.pem",
+      "line": 1,
+      "description": "Committed private certificate key PEM file",
+      "evidence": "Private certificate key in misc-keys/cert-key.pem",
+      "recommendation": "Remove misc-keys/cert-key.pem from version control and revoke certificate."
+    },
+    {
+      "rule_id": "SEC-012",
+      "category": "security",
+      "severity": "critical",
+      "file": "misc-keys/putty-example.ppk",
+      "line": 1,
+      "description": "Committed PuTTY private key file",
+      "evidence": "PuTTY private key in misc-keys/putty-example.ppk",
+      "recommendation": "Remove misc-keys/putty-example.ppk from version control and revoke the key."
+    },
+    {
+      "rule_id": "SEC-010",
+      "category": "security",
+      "severity": "critical",
+      "file": "web/ruby/config/master.key",
+      "line": 1,
+      "description": "Committed Ruby on Rails master key",
+      "evidence": "Master key in web/ruby/config/master.key",
+      "recommendation": "Remove web/ruby/config/master.key from version control and rotate keys."
+    },
+    {
+      "rule_id": "SEC-013",
+      "category": "security",
+      "severity": "critical",
+      "file": "web/var/www/public_html/.htpasswd",
+      "line": 1,
+      "description": "Committed htpasswd file containing password hash",
+      "evidence": "Password hash in web/var/www/public_html/.htpasswd",
+      "recommendation": "Remove web/var/www/public_html/.htpasswd from version control and change passwords."
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+2026-10-24 14:01:24,512 INFO Using GeminiLLM, models in order: gemini-3.1-flash-lite, gemini-3.5-flash-lite
+2026-10-24 14:01:24,512 INFO Cloning https://github.com/pallets/itsdangerous
+2026-10-24 14:01:27,137 INFO Using Gemini model gemini-3.1-flash-lite
+2026-10-24 14:01:31,782 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:01:31,795 INFO Gemini model gemini-3.1-flash-lite is serving as gemini-3.1-flash-lite
+2026-10-24 14:01:31,812 INFO [turn 1] list_files({"subdir": "."})
+2026-10-24 14:01:35,350 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:01:35,370 INFO [turn 2] list_files({"subdir": "."})
+2026-10-24 14:01:37,253 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:01:37,271 INFO [turn 3] list_files({"subdir": "."})
+2026-10-24 14:01:38,241 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:01:38,258 INFO [turn 4] list_files({"subdir": "."})
+2026-10-24 14:01:41,177 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:01:41,194 INFO [turn 5] list_files({"subdir": "."})
+2026-10-24 14:01:42,782 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:01:42,800 INFO [turn 6] list_files({"subdir": "."})
+2026-10-24 14:01:43,112 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-10-24 14:01:43,112 INFO Gemini gemini-3.1-flash-lite rate limited; retrying in 16s
+2026-10-24 14:02:02,546 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:02:02,564 INFO [turn 7] list_files({"subdir": "."})
+2026-10-24 14:02:06,349 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:02:06,368 INFO [turn 8] list_files({"subdir": "."})
+2026-10-24 14:02:07,480 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:02:07,500 INFO [turn 9] list_files({"subdir": "."})
+2026-10-24 14:02:11,364 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:02:11,383 INFO [turn 10] list_files({"subdir": "."})
+2026-10-24 14:02:14,895 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:02:14,912 INFO [turn 11] list_files({"subdir": "."})
+2026-10-24 14:02:16,396 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:02:16,414 INFO [turn 12] list_files({"subdir": "."})
+2026-10-24 14:02:17,872 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:02:17,888 INFO [turn 13] list_files({"subdir": "."})
+2026-10-24 14:02:18,863 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:02:18,880 INFO [turn 14] list_files({"subdir": "."})
+2026-10-24 14:02:19,832 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:02:19,852 INFO [turn 15] list_files({"subdir": "."})
+2026-10-24 14:02:21,503 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:02:21,520 INFO [turn 16] list_files({"subdir": "."})
+2026-10-24 14:02:23,128 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 503 Service Unavailable"
+2026-10-24 14:02:23,128 INFO Gemini gemini-3.1-flash-lite returned 503 UNAVAILABLE; retrying in 3s
+2026-10-24 14:02:27,422 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 503 Service Unavailable"
+2026-10-24 14:02:27,430 WARNING Gemini model gemini-3.1-flash-lite unavailable (503 UNAVAILABLE after 2 attempts); switching to the next model
+2026-10-24 14:02:27,430 INFO Using Gemini model gemini-3.5-flash-lite
+2026-10-24 14:02:28,770 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:02:28,772 INFO Gemini model gemini-3.5-flash-lite is serving as gemini-3.5-flash-lite
+2026-10-24 14:02:28,955 INFO [turn 17] list_files({"subdir": "."})
+2026-10-24 14:02:29,915 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:02:30,276 INFO [turn 18] list_files({"subdir": ".github"})
+2026-10-24 14:02:31,644 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:02:31,664 INFO [turn 19] list_files({})
+2026-10-24 14:02:32,749 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:02:32,752 INFO [turn 20] read_file({"path": ".github/workflows/publish.yaml", "start_line": 1, "end_line": 100})
+2026-10-24 14:02:32,753 WARNING Turn limit (20) reached before finish_audit; reporting what was recorded
+Wrote 0 violation(s) to <repo>\evals\runs\2026-10-24-workflow-tool-ab\baseline\pallets__itsdangerous.run2.json (model: gemini-3.1-flash-lite, gemini-3.5-flash-lite)
+Tool-call trace: <repo>\evals\runs\2026-10-24-workflow-tool-ab\baseline\pallets__itsdangerous.run2.trace.jsonl

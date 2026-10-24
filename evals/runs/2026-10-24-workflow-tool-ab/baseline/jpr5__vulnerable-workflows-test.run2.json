@@ -1,0 +1,55 @@
+{
+  "repository": "https://github.com/jpr5/vulnerable-workflows-test",
+  "violations": [
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/setup.yml",
+      "line": 15,
+      "description": "Hardcoded API key in workflow environment block.",
+      "evidence": "API_KEY: \"[REDACTED]\"",
+      "recommendation": "Use GitHub Secrets instead of hardcoding credentials in workflow files."
+    },
+    {
+      "rule_id": "SEC-002",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/auto-label.yml",
+      "line": 1,
+      "description": "Missing permissions block on workflow triggered by pull_request_target.",
+      "evidence": ".github/workflows/auto-label.yml is triggered by pull_request_target but lacks a explicit permissions block, defaulting to broader-than-necessary permissions.",
+      "recommendation": "Add a permissions: block to explicitly define the minimum required permissions (e.g., contents: read)."
+    },
+    {
+      "rule_id": "COL-001",
+      "category": "collaboration",
+      "severity": "high",
+      "file": ".github/workflows/auto-label.yml",
+      "line": 12,
+      "description": "Untrusted pull request data used to checkout code with pull_request_target.",
+      "evidence": "ref: ${{ github.event.pull_request.head.ref }} used with pull_request_target.",
+      "recommendation": "Do not checkout head.ref with pull_request_target as it allows arbitrary code execution from forks. Use pull_request event if checkout of untrusted code is required."
+    },
+    {
+      "rule_id": "COL-002",
+      "category": "collaboration",
+      "severity": "medium",
+      "file": ".github/workflows/greet-pr.yml",
+      "line": 12,
+      "description": "Untrusted input from pull request title/user interpolated directly into shell command.",
+      "evidence": "echo \"Thanks for the PR: ${{ github.event.pull_request.title }}\"",
+      "recommendation": "Avoid direct interpolation of untrusted input into shell scripts. Sanitize input or use action inputs that are safer."
+    },
+    {
+      "rule_id": "DEP-001",
+      "category": "dependency_management",
+      "severity": "medium",
+      "file": "package.json",
+      "line": 1,
+      "description": "Missing lockfile for dependencies.",
+      "evidence": "package.json exists but no package-lock.json or equivalent found in the repository.",
+      "recommendation": "Generate and commit a lockfile (package-lock.json) to ensure reproducible builds."
+    }
+  ]
+}

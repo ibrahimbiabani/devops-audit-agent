@@ -1,0 +1,45 @@
+{
+  "repository": "https://github.com/gary-mello/github-vuln-actions",
+  "violations": [
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/prt-dangerous-checkout.yml",
+      "line": 19,
+      "description": "Dangerous checkout of untrusted PR code in pull_request_target workflow",
+      "evidence": "pull_request_target trigger allows access to secrets; checking out PR head ref and repo allows executing untrusted code with secret access.",
+      "recommendation": "Use the pull_request trigger instead, or if pull_request_target is necessary, use the base ref (default checkout) and only check files/data, not execute them."
+    },
+    {
+      "rule_id": "SEC-002",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/write-all-permissions.yml",
+      "line": 12,
+      "description": "Excessive workflow-level permissions (write-all) in pull_request_target workflow",
+      "evidence": "permissions: write-all is used in a pull_request_target workflow, granting unnecessary excessive write access to the GITHUB_TOKEN.",
+      "recommendation": "Use the minimal required permissions (e.g., permissions: { pull-requests: write })."
+    },
+    {
+      "rule_id": "COL-001",
+      "category": "collaboration",
+      "severity": "high",
+      "file": ".github/workflows/issue-labeler.yml",
+      "line": 18,
+      "description": "Untrusted GitHub event data interpolated into shell script",
+      "evidence": "Untrusted input from issues event (github.event.issue.title and github.event.issue.body) is directly interpolated into a bash run script.",
+      "recommendation": "Use environment variables to pass untrusted input to shell scripts (e.g., env: { ISSUE_TITLE: ${{ ... }} } and then use \"$ISSUE_TITLE\" in the script)."
+    },
+    {
+      "rule_id": "SEC-003",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/self-hosted-runner.yml",
+      "line": 14,
+      "description": "Usage of self-hosted runner for build and deployment tasks",
+      "evidence": "Workflow runs on self-hosted runners which persist state between jobs, posing significant risk of credential theft and persistence for build/deploy workflows.",
+      "recommendation": "Use GitHub-hosted ephemeral runners for CI/CD tasks to ensure environment isolation."
+    }
+  ]
+}

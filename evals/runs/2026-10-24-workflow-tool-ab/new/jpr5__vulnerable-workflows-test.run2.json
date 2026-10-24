@@ -1,0 +1,75 @@
+{
+  "repository": "https://github.com/jpr5/vulnerable-workflows-test",
+  "violations": [
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/setup.yml",
+      "line": 15,
+      "description": "Hardcoded API key in workflow env block",
+      "evidence": "Line 15 defines API_KEY with a literal string.",
+      "recommendation": "Remove the hardcoded secret and use GitHub Secrets with the `secrets:` context."
+    },
+    {
+      "rule_id": "COL-001",
+      "category": "collaboration",
+      "severity": "high",
+      "file": ".github/workflows/auto-label.yml",
+      "line": 12,
+      "description": "Untrusted input in pull_request_target workflow",
+      "evidence": "The auto-label workflow uses ${{ github.event.pull_request.head.ref }} and checks out the PR code.",
+      "recommendation": "Use a safer trigger (like pull_request) or do not check out code from an untrusted source."
+    },
+    {
+      "rule_id": "BLD-001",
+      "category": "build_release",
+      "severity": "high",
+      "file": ".github/workflows/manual-deploy.yml",
+      "line": 17,
+      "description": "Deployment step has no gating tests or validation",
+      "evidence": "manual-deploy.yml performs a deploy without testing requirements.",
+      "recommendation": "Ensure deployment job has a `needs:` constraint on a test job."
+    },
+    {
+      "rule_id": "COL-002",
+      "category": "collaboration",
+      "severity": "medium",
+      "file": ".github/workflows/greet-pr.yml",
+      "line": 12,
+      "description": "Untrusted input in shell script via interpolation",
+      "evidence": "The greet-pr workflow interpolates PR title and username directly into a script command.",
+      "recommendation": "Use environment variables to handle input safely, never interpolate directly into command strings."
+    },
+    {
+      "rule_id": "CI-001",
+      "category": "ci_cd",
+      "severity": "medium",
+      "file": ".github/workflows/manual-deploy.yml",
+      "line": 19,
+      "description": "Untrusted inputs in manual-deploy workflow command execution",
+      "evidence": "Inputs version and environment are interpolated directly into a shell run command.",
+      "recommendation": "Use environment variables to map inputs to the script to prevent command injection."
+    },
+    {
+      "rule_id": "DEP-001",
+      "category": "dependency_management",
+      "severity": "medium",
+      "file": "package.json",
+      "line": 1,
+      "description": "Missing lockfile for Node.js project",
+      "evidence": "package.json exists but package-lock.json is missing.",
+      "recommendation": "Run `npm install` and commit the generated `package-lock.json` file."
+    },
+    {
+      "rule_id": "HYG-001",
+      "category": "repository_hygiene",
+      "severity": "low",
+      "file": null,
+      "line": null,
+      "description": "Missing .gitignore file",
+      "evidence": "No .gitignore file in the root directory.",
+      "recommendation": "Add a .gitignore file to exclude build artifacts, dependencies, and environment files."
+    }
+  ]
+}

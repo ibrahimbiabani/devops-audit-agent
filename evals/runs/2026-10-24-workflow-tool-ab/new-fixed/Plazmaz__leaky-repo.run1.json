@@ -1,0 +1,85 @@
+{
+  "repository": "https://github.com/Plazmaz/leaky-repo",
+  "violations": [
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "critical",
+      "file": ".docker/.dockercfg",
+      "line": 4,
+      "description": "Committed Docker credentials in .dockercfg",
+      "evidence": "Found docker authentication credentials in .docker/.dockercfg.",
+      "recommendation": "Remove the file from the repository, revoke the credentials, and use environment variables or secret management tools for CI/CD authentication."
+    },
+    {
+      "rule_id": "SEC-002",
+      "category": "security",
+      "severity": "critical",
+      "file": ".docker/config.json",
+      "line": 5,
+      "description": "Committed Docker credentials in config.json",
+      "evidence": "Found docker authentication credentials in .docker/config.json.",
+      "recommendation": "Remove the file from the repository, revoke the credentials, and use environment variables or secret management tools for CI/CD authentication."
+    },
+    {
+      "rule_id": "SEC-003",
+      "category": "security",
+      "severity": "critical",
+      "file": ".git-credentials",
+      "line": 1,
+      "description": "Committed git credentials in .git-credentials",
+      "evidence": "Found plaintext git credentials in .git-credentials.",
+      "recommendation": "Remove the file from the repository, revoke the credentials, and use SSH keys or personal access tokens managed through environment variables or secret managers."
+    },
+    {
+      "rule_id": "SEC-004",
+      "category": "security",
+      "severity": "critical",
+      "file": ".netrc",
+      "line": 1,
+      "description": "Committed SMTP/IMAP credentials in .netrc",
+      "evidence": "Found email credentials in .netrc.",
+      "recommendation": "Remove the file from the repository, revoke the credentials, and use environment variables or secret management tools for configuration."
+    },
+    {
+      "rule_id": "SEC-005",
+      "category": "security",
+      "severity": "critical",
+      "file": ".npmrc",
+      "line": 9,
+      "description": "Committed npm authentication token in .npmrc",
+      "evidence": "Found _authToken in .npmrc.",
+      "recommendation": "Remove the file from the repository, revoke the credentials, and use environment variables or secret management tools."
+    },
+    {
+      "rule_id": "SEC-006",
+      "category": "security",
+      "severity": "critical",
+      "file": ".ssh/id_rsa",
+      "line": 1,
+      "description": "Committed SSH private key in .ssh/id_rsa",
+      "evidence": "Found SSH private key in .ssh/id_rsa.",
+      "recommendation": "Remove the file from the repository, revoke the SSH key, and generate a new key pair for deployment."
+    },
+    {
+      "rule_id": "SEC-007",
+      "category": "security",
+      "severity": "critical",
+      "file": "cloud/.s3cfg",
+      "line": 1,
+      "description": "Committed AWS S3 credentials in cloud/.s3cfg",
+      "evidence": "Found secret_key and access_key in cloud/.s3cfg.",
+      "recommendation": "Remove the file from the repository, revoke the AWS credentials, and use IAM roles or secure environment variables."
+    },
+    {
+      "rule_id": "SEC-008",
+      "category": "security",
+      "severity": "critical",
+      "file": "db/.pgpass",
+      "line": 2,
+      "description": "Committed PostgreSQL credentials in db/.pgpass",
+      "evidence": "Found database credentials in db/.pgpass.",
+      "recommendation": "Remove the file from the repository, revoke the credentials, and use environment variables or secret management tools."
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+2026-10-24 14:03:15,956 INFO Using GeminiLLM, models in order: gemini-3.1-flash-lite, gemini-3.5-flash-lite
+2026-10-24 14:03:15,956 INFO Cloning https://github.com/paastha1/cicd-test-repo
+2026-10-24 14:03:18,001 INFO Skipping Gemini model gemini-3.1-flash-lite: 503 UNAVAILABLE after 2 attempts (recorded earlier; retry in ~9min)
+2026-10-24 14:03:18,001 INFO Using Gemini model gemini-3.5-flash-lite
+2026-10-24 14:03:19,113 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:03:19,125 INFO Gemini model gemini-3.5-flash-lite is serving as gemini-3.5-flash-lite
+2026-10-24 14:03:19,142 INFO [turn 1] list_files({})
+2026-10-24 14:03:19,887 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:03:19,904 INFO [turn 2] list_files({"subdir": ".github/workflows"})
+2026-10-24 14:03:20,226 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-10-24 14:03:20,227 INFO Gemini gemini-3.5-flash-lite rate limited; retrying in 39s
+2026-10-24 14:04:00,348 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:04:00,352 INFO [turn 3] read_file({"path": "README.md"})
+2026-10-24 14:04:00,354 INFO [turn 3] read_file({"path": ".github/workflows/ci.yml"})
+2026-10-24 14:04:00,356 INFO [turn 3] read_file({"path": ".github/workflows/clean-workflow.yml"})
+2026-10-24 14:04:00,357 INFO [turn 3] read_file({"path": ".github/workflows/deploy.yml"})
+2026-10-24 14:04:00,359 INFO [turn 3] read_file({"path": ".github/workflows/release.yml"})
+2026-10-24 14:04:01,219 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:04:01,241 INFO [turn 4] git_log({})
+2026-10-24 14:04:04,288 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:04:04,291 INFO [turn 5] record_violation({"evidence": "AWS_SECRET_ACCESS_KEY: [REDACTED]", "rule_id": "SEC-001", "line": 12, "file": ".github/workflows/deploy.yml", "description": "Hardcoded AWS secret access key in workflow environment bloc)
+2026-10-24 14:04:04,292 INFO [turn 5] record_violation({"file": ".github/workflows/deploy.yml", "line": 13, "severity": "critical", "description": "Hardcoded database password in workflow environment block", "category": "security", "rule_id": "SEC-002", ")
+2026-10-24 14:04:04,292 INFO [turn 5] record_violation({"severity": "critical", "description": "Hardcoded PyPI API token in workflow environment block", "category": "security", "recommendation": "Remove hardcoded credentials and use GitHub Actions secrets)
+2026-10-24 14:04:04,293 INFO [turn 5] record_violation({"category": "security", "rule_id": "SEC-004", "severity": "critical", "file": ".github/workflows/release.yml", "line": 12, "evidence": "DOCKER_HUB_TOKEN: [REDACTED]", "recommendation": "Remove hardco)
+2026-10-24 14:04:04,293 INFO [turn 5] record_violation({"file": ".github/workflows/ci.yml", "line": 26, "category": "security", "severity": "high", "recommendation": "Do not echo or print secrets in logs.", "rule_id": "SEC-005", "evidence": "echo \"NPM_TO)
+2026-10-24 14:04:04,294 INFO [turn 5] record_violation({"description": "Bash debug mode (set -x) enabled with secrets in environment / shell", "recommendation": "Avoid using set -x in steps that handle sensitive values.", "severity": "high", "category": ")
+2026-10-24 14:04:04,294 INFO [turn 5] record_violation({"severity": "high", "recommendation": "Remove --verbose or -v from curl commands handling authorization tokens.", "category": "security", "description": "Verbose HTTP request (curl -v) with authoriza)
+2026-10-24 14:04:04,295 INFO [turn 5] record_violation({"category": "security", "rule_id": "SEC-008", "severity": "high", "recommendation": "Pass sensitive values via environment variables or configuration files instead of command-line arguments.", "evide)
+2026-10-24 14:04:04,295 INFO [turn 5] record_violation({"recommendation": "Do not upload sensitive files or credentials as workflow artifacts.", "evidence": "path:\\n  .env\\n  .env.production\\n  credentials.json", "line": 38, "file": ".github/workflows/)
+2026-10-24 14:04:04,296 INFO [turn 5] record_violation({"evidence": "path:\\n  ~/.ssh/id_rsa\\n  private-key.pem\\n  .env.local", "rule_id": "SEC-010", "recommendation": "Do not upload private keys or local environment files as workflow artifacts.", "cate)
+2026-10-24 14:04:04,311 INFO [turn 5] finish_audit({"summary": "Audited the repository against the nine DevOps inspection areas. Identified multiple critical security violations including hardcoded API keys and tokens in workflow environment blocks, s)
+Wrote 10 violation(s) to <repo>\evals\runs\2026-10-24-workflow-tool-ab\baseline\paastha1__cicd-test-repo.run1.json (model: gemini-3.5-flash-lite)
+Tool-call trace: <repo>\evals\runs\2026-10-24-workflow-tool-ab\baseline\paastha1__cicd-test-repo.run1.trace.jsonl

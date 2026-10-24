@@ -1,0 +1,65 @@
+{
+  "repository": "https://github.com/gary-mello/github-vuln-actions",
+  "violations": [
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/prt-dangerous-checkout.yml",
+      "line": 17,
+      "description": "Dangerous checkout in pull_request_target workflow runs untrusted code with secret access",
+      "evidence": "Workflow .github/workflows/prt-dangerous-checkout.yml uses pull_request_target and checks out attacker-controlled ref/repo.",
+      "recommendation": "Do not use pull_request_target to check out untrusted PR code, or ensure the code checked out is from a trusted base branch. Use pull_request instead for PR validation."
+    },
+    {
+      "rule_id": "SEC-002",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/write-all-permissions.yml",
+      "line": 12,
+      "description": "Unsafe write-all permissions in a pull_request_target workflow",
+      "evidence": "Workflow .github/workflows/write-all-permissions.yml uses write-all permissions with pull_request_target.",
+      "recommendation": "Use the minimal required permissions for the job. Use pull_request, not pull_request_target, to process PRs unless absolutely necessary."
+    },
+    {
+      "rule_id": "COL-001",
+      "category": "collaboration",
+      "severity": "high",
+      "file": ".github/workflows/issue-labeler.yml",
+      "line": 18,
+      "description": "Untrusted input interpolated into shell script in Issue Labeler workflow",
+      "evidence": "Workflow .github/workflows/issue-labeler.yml uses ${{ github.event.issue.title }} and ${{ github.event.issue.body }} directly in shell scripts.",
+      "recommendation": "Use environment variables to pass untrusted input to shell scripts instead of direct interpolation."
+    },
+    {
+      "rule_id": "COL-002",
+      "category": "collaboration",
+      "severity": "high",
+      "file": ".github/workflows/pr-comment-handler.yml",
+      "line": 16,
+      "description": "Untrusted input interpolated into shell script in PR Comment Handler workflow",
+      "evidence": "Workflow .github/workflows/pr-comment-handler.yml uses ${{ github.event.comment.body }} and ${{ github.event.comment.user.login }} directly in shell script.",
+      "recommendation": "Use environment variables to pass untrusted input to shell scripts instead of direct interpolation."
+    },
+    {
+      "rule_id": "COL-003",
+      "category": "collaboration",
+      "severity": "high",
+      "file": ".github/workflows/pr-title-injection.yml",
+      "line": 17,
+      "description": "Untrusted input interpolated into shell script in PR Checks workflow",
+      "evidence": "Workflow .github/workflows/pr-title-injection.yml uses PR title, body and head ref directly in shell script.",
+      "recommendation": "Use environment variables to pass untrusted input to shell scripts instead of direct interpolation."
+    },
+    {
+      "rule_id": "SEC-003",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/self-hosted-runner.yml",
+      "line": 14,
+      "description": "Use of self-hosted runners in CI workflow",
+      "evidence": "Workflow .github/workflows/self-hosted-runner.yml uses self-hosted runners.",
+      "recommendation": "Use GitHub-hosted ephemeral runners for CI to reduce the risk of persistence-based attacks and internal infrastructure exposure."
+    }
+  ]
+}

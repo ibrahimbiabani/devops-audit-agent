@@ -1,0 +1,35 @@
+{
+  "repository": "https://github.com/gary-mello/github-vuln-actions",
+  "violations": [
+    {
+      "rule_id": "COL-001",
+      "category": "collaboration",
+      "severity": "high",
+      "file": ".github/workflows/issue-labeler.yml",
+      "line": 18,
+      "description": "Expression injection in issue title echo",
+      "evidence": "github.event.issue.title is used directly in a shell command in .github/workflows/issue-labeler.yml:18",
+      "recommendation": "Use environment variables to pass untrusted input to shell scripts."
+    },
+    {
+      "rule_id": "COL-002",
+      "category": "collaboration",
+      "severity": "high",
+      "file": ".github/workflows/pr-comment-handler.yml",
+      "line": 16,
+      "description": "Expression injection in PR comment handler",
+      "evidence": "github.event.comment.body is used directly in a shell command in .github/workflows/pr-comment-handler.yml:16",
+      "recommendation": "Use environment variables to pass untrusted input to shell scripts."
+    },
+    {
+      "rule_id": "COL-003",
+      "category": "collaboration",
+      "severity": "high",
+      "file": ".github/workflows/pr-title-injection.yml",
+      "line": 17,
+      "description": "Expression injection in PR title/body/ref echo",
+      "evidence": "github.event.pull_request.title, body, and head.ref are used directly in shell commands in .github/workflows/pr-title-injection.yml:17-19",
+      "recommendation": "Use environment variables to pass untrusted input to shell scripts."
+    }
+  ]
+}

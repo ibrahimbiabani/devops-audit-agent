@@ -1,0 +1,105 @@
+{
+  "repository": "https://github.com/paastha1/cicd-test-repo",
+  "violations": [
+    {
+      "rule_id": "SEC-009",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/ci.yml",
+      "line": 38,
+      "description": "Sensitive environment and credential files uploaded as build artifacts",
+      "evidence": "path:\\n  .env\\n  .env.production\\n  credentials.json",
+      "recommendation": "Do not upload sensitive files or credentials as workflow artifacts."
+    },
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/deploy.yml",
+      "line": 12,
+      "description": "Hardcoded AWS secret access key in workflow environment block",
+      "evidence": "AWS_SECRET_ACCESS_KEY: [REDACTED]",
+      "recommendation": "Remove hardcoded credentials and use GitHub Actions secrets."
+    },
+    {
+      "rule_id": "SEC-002",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/deploy.yml",
+      "line": 13,
+      "description": "Hardcoded database password in workflow environment block",
+      "evidence": "DATABASE_PASSWORD: [REDACTED]",
+      "recommendation": "Remove hardcoded credentials and use GitHub Actions secrets."
+    },
+    {
+      "rule_id": "SEC-003",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/release.yml",
+      "line": 11,
+      "description": "Hardcoded PyPI API token in workflow environment block",
+      "evidence": "PYPI_API_TOKEN: [REDACTED]",
+      "recommendation": "Remove hardcoded credentials and use GitHub Actions secrets."
+    },
+    {
+      "rule_id": "SEC-004",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/release.yml",
+      "line": 12,
+      "description": "Hardcoded Docker Hub token in workflow environment block",
+      "evidence": "DOCKER_HUB_TOKEN: [REDACTED]",
+      "recommendation": "Remove hardcoded credentials and use GitHub Actions secrets."
+    },
+    {
+      "rule_id": "SEC-010",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/release.yml",
+      "line": 37,
+      "description": "Private SSH keys and local configuration files uploaded as build artifacts",
+      "evidence": "path:\\n  ~/.ssh/id_rsa\\n  private-key.pem\\n  .env.local",
+      "recommendation": "Do not upload private keys or local environment files as workflow artifacts."
+    },
+    {
+      "rule_id": "SEC-005",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/ci.yml",
+      "line": 26,
+      "description": "Secrets echoed to workflow logs",
+      "evidence": "echo \"NPM_TOKEN=${{ secrets.NPM_TOKEN }}\"",
+      "recommendation": "Do not echo or print secrets in logs."
+    },
+    {
+      "rule_id": "SEC-008",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/ci.yml",
+      "line": 31,
+      "description": "Passing secret as a command-line argument",
+      "evidence": "npm publish --token=${{ secrets.NPM_TOKEN }}",
+      "recommendation": "Pass sensitive values via environment variables or configuration files instead of command-line arguments."
+    },
+    {
+      "rule_id": "SEC-006",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/deploy.yml",
+      "line": 21,
+      "description": "Bash debug mode (set -x) enabled with secrets in environment / shell",
+      "evidence": "set -x",
+      "recommendation": "Avoid using set -x in steps that handle sensitive values."
+    },
+    {
+      "rule_id": "SEC-007",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/deploy.yml",
+      "line": 27,
+      "description": "Verbose HTTP request (curl -v) with authorization header leaking secrets to logs",
+      "evidence": "curl -v -X POST -H \"Authorization: Bearer ${{ secrets.SLACK_TOKEN }}\"",
+      "recommendation": "Remove --verbose or -v from curl commands handling authorization tokens."
+    }
+  ]
+}

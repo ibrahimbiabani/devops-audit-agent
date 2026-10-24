@@ -1,0 +1,85 @@
+{
+  "repository": "https://github.com/paastha1/cicd-test-repo",
+  "violations": [
+    {
+      "rule_id": "SEC-008",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/ci.yml",
+      "line": 38,
+      "description": "Sensitive configuration and credential files uploaded as build artifacts",
+      "evidence": "Artifact upload path includes .env, credentials.json, and coverage in ci.yml",
+      "recommendation": "Exclude sensitive files like .env and credentials.json from workflow artifact uploads."
+    },
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/deploy.yml",
+      "line": 12,
+      "description": "Hardcoded AWS Secret Access Key in workflow environment block",
+      "evidence": "AWS_SECRET_ACCESS_KEY hardcoded in deploy.yml env block",
+      "recommendation": "Remove hardcoded credentials and use GitHub Actions secrets instead."
+    },
+    {
+      "rule_id": "SEC-002",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/deploy.yml",
+      "line": 13,
+      "description": "Hardcoded database password in workflow environment block",
+      "evidence": "DATABASE_PASSWORD hardcoded in deploy.yml env block",
+      "recommendation": "Store database passwords in GitHub Actions secrets and reference them securely."
+    },
+    {
+      "rule_id": "SEC-003",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/release.yml",
+      "line": 11,
+      "description": "Hardcoded PyPI API token in workflow environment block",
+      "evidence": "PYPI_API_TOKEN hardcoded in release.yml env block",
+      "recommendation": "Remove hardcoded API token and use GitHub Actions secrets."
+    },
+    {
+      "rule_id": "SEC-004",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/release.yml",
+      "line": 12,
+      "description": "Hardcoded Docker Hub token in workflow environment block",
+      "evidence": "DOCKER_HUB_TOKEN hardcoded in release.yml env block",
+      "recommendation": "Remove hardcoded token and store it in GitHub Actions secrets."
+    },
+    {
+      "rule_id": "SEC-005",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/ci.yml",
+      "line": 25,
+      "description": "Secrets echoed/printed in workflow logs",
+      "evidence": "Echoing secrets and tokens in ci.yml debug steps",
+      "recommendation": "Do not print sensitive tokens or environment variables to workflow logs."
+    },
+    {
+      "rule_id": "SEC-006",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/deploy.yml",
+      "line": 21,
+      "description": "Bash debug mode set -x used alongside secrets",
+      "evidence": "set -x used in deploy.yml before running AWS s3 sync with AWS keys",
+      "recommendation": "Remove set -x in steps handling sensitive keys to prevent leaking them into build logs."
+    },
+    {
+      "rule_id": "SEC-007",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/deploy.yml",
+      "line": 27,
+      "description": "Verbose curl logging exposing authorization headers in workflow logs",
+      "evidence": "curl -v used with Bearer token in deploy.yml",
+      "recommendation": "Remove -v / --verbose flag from curl commands that send authorization headers or secrets."
+    }
+  ]
+}

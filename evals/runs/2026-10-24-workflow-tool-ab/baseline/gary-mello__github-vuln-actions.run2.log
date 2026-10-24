@@ -1,0 +1,49 @@
+2026-10-24 13:23:17,663 INFO Using GeminiLLM, models in order: gemini-3.1-flash-lite, gemini-3.5-flash-lite
+2026-10-24 13:23:17,663 INFO Cloning https://github.com/gary-mello/github-vuln-actions
+2026-10-24 13:23:19,776 INFO Using Gemini model gemini-3.1-flash-lite
+2026-10-24 13:23:21,437 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:23:21,456 INFO Gemini model gemini-3.1-flash-lite is serving as gemini-3.1-flash-lite
+2026-10-24 13:23:21,489 INFO [turn 1] list_files({"subdir": "."})
+2026-10-24 13:23:23,238 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:23:23,266 INFO [turn 2] list_files({"subdir": ".github/workflows"})
+2026-10-24 13:23:24,125 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:23:24,150 INFO [turn 3] list_files({"subdir": "."})
+2026-10-24 13:23:36,063 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:23:36,083 INFO [turn 4] list_files({"pattern": "*"})
+2026-10-24 13:23:37,137 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:23:37,144 INFO [turn 5] read_file({"path": ".github/workflows/write-all-permissions.yml"})
+2026-10-24 13:23:40,500 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:23:40,503 INFO [turn 6] record_violation({"line": 12, "category": "security", "rule_id": "SEC-001", "description": "Dangerous workflow permissions (write-all) on pull_request_target trigger", "severity": "critical", "recommendation": "Remove)
+2026-10-24 13:23:44,153 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:23:44,157 INFO [turn 7] read_file({"path": ".github/workflows/prt-dangerous-checkout.yml"})
+2026-10-24 13:23:54,245 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:23:54,249 INFO [turn 8] record_violation({"line": 17, "severity": "critical", "description": "Dangerous use of pull_request_target with checkout of untrusted code", "rule_id": "COL-001", "file": ".github/workflows/prt-dangerous-checkout.yml")
+2026-10-24 13:24:01,513 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:24:01,517 INFO [turn 9] read_file({"path": ".github/workflows/pr-comment-handler.yml"})
+2026-10-24 13:24:06,485 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:24:06,488 INFO [turn 10] record_violation({"line": 16, "file": ".github/workflows/pr-comment-handler.yml", "severity": "high", "rule_id": "COL-002", "recommendation": "Do not directly interpolate user-provided input from event payloads into s)
+2026-10-24 13:24:08,830 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 503 Service Unavailable"
+2026-10-24 13:24:08,830 INFO Gemini gemini-3.1-flash-lite returned 503 UNAVAILABLE; retrying in 2s
+2026-10-24 13:24:13,037 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:24:13,041 INFO [turn 11] read_file({"path": ".github/workflows/pr-title-injection.yml"})
+2026-10-24 13:24:19,224 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:24:19,227 INFO [turn 12] record_violation({"evidence": "The workflow .github/workflows/pr-title-injection.yml interpolates untrusted PR title, body, and head ref directly into a 'run' step, enabling command injection on the runner.", "line": )
+2026-10-24 13:24:23,357 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:24:23,361 INFO [turn 13] read_file({"path": ".github/workflows/self-hosted-runner.yml"})
+2026-10-24 13:24:25,571 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:24:25,573 INFO [turn 14] record_violation({"category": "ci_cd", "rule_id": "CI-001", "severity": "medium", "description": "Use of self-hosted runners without explicit risk management or isolation warning", "line": 14, "recommendation": "If po)
+2026-10-24 13:24:27,608 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:24:27,613 INFO [turn 15] read_file({"path": ".github/workflows/unpinned-actions.yml"})
+2026-10-24 13:24:29,929 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:24:29,932 INFO [turn 16] record_violation({"rule_id": "CI-002", "category": "ci_cd", "evidence": "The workflow .github/workflows/unpinned-actions.yml uses mutable action tags ('@v3', '@main', '@latest', '@v2.1.0') instead of immutable commit )
+2026-10-24 13:24:32,248 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:24:32,251 INFO [turn 17] read_file({"path": ".github/workflows/no-permissions-declared.yml"})
+2026-10-24 13:24:34,219 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:24:34,236 INFO [turn 18] finish_audit({"summary": "The audit of the repository identified several critical and high-severity security vulnerabilities, primarily related to insecure GitHub Actions configurations. Key findings include dange) -> error
+2026-10-24 13:24:42,425 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:24:42,432 INFO [turn 19] read_file({"path": ".github/workflows/issue-labeler.yml"})
+2026-10-24 13:24:44,416 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:24:44,418 INFO [turn 20] record_violation({"description": "Command injection via untrusted issue title and body payloads", "recommendation": "Pass issue attributes as environment variables to the 'run' script instead of direct interpolation.")
+2026-10-24 13:24:44,418 WARNING Turn limit (20) reached before finish_audit; reporting what was recorded
+Wrote 7 violation(s) to <repo>\evals\runs\2026-10-24-workflow-tool-ab\baseline\gary-mello__github-vuln-actions.run2.json (model: gemini-3.1-flash-lite)
+Tool-call trace: <repo>\evals\runs\2026-10-24-workflow-tool-ab\baseline\gary-mello__github-vuln-actions.run2.trace.jsonl

@@ -1,0 +1,73 @@
+[
+  {
+    "repo": "Plazmaz__leaky-repo",
+    "arm": "new-fixed",
+    "run": 1,
+    "exit": 0,
+    "seconds": 60,
+    "http": {
+      "gemini-3.1-flash-lite:200": 16,
+      "gemini-3.1-flash-lite:429": 2,
+      "gemini-3.5-flash-lite:200": 4
+    },
+    "violations": [
+      "SEC-001 .docker/.dockercfg:4 Committed Docker credentials in .dockercfg",
+      "SEC-002 .docker/config.json:5 Committed Docker credentials in config.json",
+      "SEC-003 .git-credentials:1 Committed git credentials in .git-credentials",
+      "SEC-004 .netrc:1 Committed SMTP/IMAP credentials in .netrc",
+      "SEC-005 .npmrc:9 Committed npm authentication token in .npmrc",
+      "SEC-006 .ssh/id_rsa:1 Committed SSH private key in .ssh/id_rsa",
+      "SEC-007 cloud/.s3cfg:1 Committed AWS S3 credentials in cloud/.s3cfg",
+      "SEC-008 db/.pgpass:2 Committed PostgreSQL credentials in db/.pgpass"
+    ],
+    "tools": {
+      "list_files": 3,
+      "read_file": 8,
+      "record_violation": 8,
+      "finish_audit": 1
+    },
+    "models": [
+      "gemini-3.1-flash-lite",
+      "gemini-3.5-flash-lite"
+    ],
+    "recorded_after_review": 0
+  },
+  {
+    "repo": "Plazmaz__leaky-repo",
+    "arm": "new-fixed",
+    "run": 2,
+    "exit": 0,
+    "seconds": 16,
+    "http": {
+      "gemini-3.5-flash-lite:200": 9
+    },
+    "violations": [
+      "SEC-001 .docker/.dockercfg:4 Committed Docker credentials configuration file",
+      "SEC-002 .docker/config.json:5 Committed Docker config.json containing auth credentials",
+      "SEC-003 .git-credentials:1 Committed Git credentials store file",
+      "SEC-004 .netrc:1 Committed netrc file containing email and password credentials",
+      "SEC-005 .npmrc:7 Committed npmrc file containing auth token and base64 auth credentials",
+      "SEC-006 .ssh/id_rsa:1 Committed SSH private key file",
+      "SEC-007 cloud/.s3cfg:1 Committed AWS S3 configuration containing secret access key",
+      "SEC-008 db/.pgpass:2 Committed PostgreSQL password configuration file",
+      "SEC-009 etc/shadow:20 Committed system shadow password file",
+      "SEC-010 misc-keys/cert-key.pem:1 Committed certificate private key file",
+      "SEC-011 misc-keys/putty-example.ppk:1 Committed PuTTY private key file",
+      "SEC-012 web/ruby/config/master.key:1 Committed Rails master key file",
+      "SEC-013 web/ruby/secrets.yml:22 Committed Rails secrets file containing production secret key base",
+      "SEC-014 web/var/www/.env:14 Committed environment configuration file containing database and mail ",
+      "SEC-015 web/var/www/public_html/.htpasswd:1 Committed htpasswd file with password hash"
+    ],
+    "tools": {
+      "list_files": 3,
+      "read_file": 15,
+      "record_violation": 15,
+      "search_code": 1,
+      "finish_audit": 2
+    },
+    "models": [
+      "gemini-3.5-flash-lite"
+    ],
+    "recorded_after_review": 0
+  }
+]

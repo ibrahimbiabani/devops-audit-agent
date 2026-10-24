@@ -1,0 +1,75 @@
+{
+  "repository": "https://github.com/Plazmaz/leaky-repo",
+  "violations": [
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "critical",
+      "file": ".docker/.dockercfg",
+      "line": 4,
+      "description": "Committed Docker credentials in .docker/.dockercfg",
+      "evidence": "Found base64-encoded auth token in .docker/.dockercfg",
+      "recommendation": "Remove the file from the repository, revoke the credentials, and ensure future credentials are not committed."
+    },
+    {
+      "rule_id": "SEC-002",
+      "category": "security",
+      "severity": "critical",
+      "file": ".docker/config.json",
+      "line": 5,
+      "description": "Committed Docker credentials in .docker/config.json",
+      "evidence": "Found base64-encoded auth token in .docker/config.json",
+      "recommendation": "Remove the file from the repository, revoke the credentials, and ensure future credentials are not committed."
+    },
+    {
+      "rule_id": "SEC-003",
+      "category": "security",
+      "severity": "critical",
+      "file": ".git-credentials",
+      "line": 1,
+      "description": "Committed git credentials in .git-credentials",
+      "evidence": "Found plaintext credentials in .git-credentials",
+      "recommendation": "Remove the file from the repository, revoke the credentials, and ensure future credentials are not committed."
+    },
+    {
+      "rule_id": "SEC-004",
+      "category": "security",
+      "severity": "critical",
+      "file": ".netrc",
+      "line": 1,
+      "description": "Committed .netrc credentials",
+      "evidence": "Found plaintext email and password for gmail.com in .netrc",
+      "recommendation": "Remove the file from the repository, revoke the credentials, and ensure future credentials are not committed."
+    },
+    {
+      "rule_id": "SEC-005",
+      "category": "security",
+      "severity": "critical",
+      "file": ".npmrc",
+      "line": 7,
+      "description": "Committed NPM auth credentials in .npmrc",
+      "evidence": "Found _auth and _authToken in .npmrc",
+      "recommendation": "Remove the file from the repository, revoke the credentials, and ensure future credentials are not committed."
+    },
+    {
+      "rule_id": "SEC-006",
+      "category": "security",
+      "severity": "critical",
+      "file": ".ssh/id_rsa",
+      "line": 1,
+      "description": "Committed private SSH key in .ssh/id_rsa",
+      "evidence": "Found [REDACTED:private_key] in .ssh/id_rsa",
+      "recommendation": "Remove the file from the repository, revoke the key, and generate a new one."
+    },
+    {
+      "rule_id": "SEC-007",
+      "category": "security",
+      "severity": "critical",
+      "file": "web/ruby/secrets.yml",
+      "line": 14,
+      "description": "Committed secret keys in web/ruby/secrets.yml",
+      "evidence": "Found secret_key_base values in web/ruby/secrets.yml",
+      "recommendation": "Remove the file from the repository, rotate the secrets, and use environment variables for production secrets."
+    }
+  ]
+}

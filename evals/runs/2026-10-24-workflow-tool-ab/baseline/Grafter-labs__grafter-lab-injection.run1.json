@@ -1,0 +1,35 @@
+{
+  "repository": "https://github.com/Grafter-labs/grafter-lab-injection",
+  "violations": [
+    {
+      "rule_id": "SEC-002",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/script-injection.yml",
+      "line": 15,
+      "description": "Untrusted issue title interpolated directly into shell script",
+      "evidence": "run: echo \"GRAFTER_MARKER title=${{ github.event.issue.title }}\"",
+      "recommendation": "Pass untrusted input via environment variables instead of direct expression interpolation in shell commands."
+    },
+    {
+      "rule_id": "COL-001",
+      "category": "collaboration",
+      "severity": "medium",
+      "file": ".github/workflows/bypassable-actor-allowlist-gate.yml",
+      "line": 12,
+      "description": "Workflow triggered by issue comment uses substring check on github.actor for authorization gate",
+      "evidence": "if: ${{ contains('alice,bob,octocat', github.actor) }}",
+      "recommendation": "Use exact equality or secure authorization checks instead of substring matching on github.actor."
+    },
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "medium",
+      "file": ".github/workflows/test.yaml",
+      "line": 45,
+      "description": "Verbose curl logging transmits authorization bearer token to local test server",
+      "evidence": "curl -v with -H Authorization: Bearer $TOKEN",
+      "recommendation": "Remove curl verbose flag (-v) or avoid logging authorization headers."
+    }
+  ]
+}

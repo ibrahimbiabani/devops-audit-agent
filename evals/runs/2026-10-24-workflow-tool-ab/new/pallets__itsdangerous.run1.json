@@ -1,0 +1,15 @@
+{
+  "repository": "https://github.com/pallets/itsdangerous",
+  "violations": [
+    {
+      "rule_id": "BLD-001",
+      "category": "build_release",
+      "severity": "high",
+      "file": ".github/workflows/publish.yaml",
+      "line": 35,
+      "description": "The publishing workflow does not have a test gate before release/publish.",
+      "evidence": "The `publish-pypi` job (line 35) and `create-release` job (line 22) only depend on the `build` job (line 6), but they do not depend on any test jobs (which exist in .github/workflows/tests.yaml). Therefore, a release can be published without tests running or passing.",
+      "recommendation": "Add `needs: [build, tests]` to the release and publish jobs to ensure tests pass before deployment."
+    }
+  ]
+}

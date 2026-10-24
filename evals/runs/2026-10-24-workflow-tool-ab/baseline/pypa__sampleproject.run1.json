@@ -1,0 +1,15 @@
+{
+  "repository": "https://github.com/pypa/sampleproject",
+  "violations": [
+    {
+      "rule_id": "DEP-001",
+      "category": "dependency_management",
+      "severity": "medium",
+      "file": "pyproject.toml",
+      "line": 119,
+      "description": "Missing lockfile for project dependencies.",
+      "evidence": "The pyproject.toml defines dependencies but there is no committed lockfile (like poetry.lock or requirements.txt with hashes) to ensure reproducible builds.",
+      "recommendation": "Use a tool that produces a lockfile (like pip-compile, Poetry, or PDM) and commit the generated lockfile to the repository."
+    }
+  ]
+}

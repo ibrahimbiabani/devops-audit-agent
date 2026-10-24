@@ -1,0 +1,47 @@
+2026-10-24 14:04:15,285 INFO Using GeminiLLM, models in order: gemini-3.1-flash-lite, gemini-3.5-flash-lite
+2026-10-24 14:04:15,285 INFO Cloning https://github.com/paastha1/cicd-test-repo
+2026-10-24 14:04:17,330 INFO Skipping Gemini model gemini-3.1-flash-lite: 503 UNAVAILABLE after 2 attempts (recorded earlier; retry in ~8min)
+2026-10-24 14:04:17,330 INFO Using Gemini model gemini-3.5-flash-lite
+2026-10-24 14:04:18,324 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:04:18,336 INFO Gemini model gemini-3.5-flash-lite is serving as gemini-3.5-flash-lite
+2026-10-24 14:04:18,353 INFO [turn 1] list_files({})
+2026-10-24 14:04:19,209 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:04:19,238 INFO [turn 2] inspect_workflows({})
+2026-10-24 14:04:20,030 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:04:20,034 INFO [turn 3] read_file({"start_line": 1, "path": ".github/workflows/ci.yml", "end_line": 50})
+2026-10-24 14:04:20,740 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:04:20,743 INFO [turn 4] read_file({"start_line": 1, "end_line": 50, "path": ".github/workflows/deploy.yml"})
+2026-10-24 14:04:21,641 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:04:21,645 INFO [turn 5] read_file({"start_line": 1, "path": ".github/workflows/clean-workflow.yml", "end_line": 50})
+2026-10-24 14:04:22,553 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:04:22,557 INFO [turn 6] read_file({"end_line": 50, "start_line": 1, "path": ".github/workflows/release.yml"})
+2026-10-24 14:04:23,292 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:04:23,313 INFO [turn 7] git_log({"max_count": 20})
+2026-10-24 14:04:24,410 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:04:24,413 INFO [turn 8] record_violation({"severity": "critical", "category": "security", "recommendation": "Remove debugging steps that echo secrets or print token environment variables.", "file": ".github/workflows/ci.yml", "line": 25, "de)
+2026-10-24 14:04:25,388 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:04:25,391 INFO [turn 9] record_violation({"rule_id": "SEC-002", "recommendation": "Remove sensitive files from artifact upload paths.", "evidence": "path includes .env, .env.production, credentials.json", "file": ".github/workflows/ci.yml", )
+2026-10-24 14:04:26,433 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:04:26,436 INFO [turn 10] record_violation({"description": "Hardcoded AWS secret access key in workflow env block", "file": ".github/workflows/deploy.yml", "line": 12, "recommendation": "Remove hardcoded credentials and use GitHub Actions secr)
+2026-10-24 14:04:28,420 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:04:28,422 INFO [turn 11] record_violation({"severity": "critical", "description": "Hardcoded database password in workflow env block", "line": 13, "recommendation": "Remove hardcoded passwords and use GitHub Actions secrets instead.", "catego)
+2026-10-24 14:04:30,153 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:04:30,155 INFO [turn 12] record_violation({"file": ".github/workflows/deploy.yml", "line": 21, "evidence": "set -x enabled prior to using AWS environment variables", "severity": "high", "description": "Bash debug mode set -x enabled in workfl)
+2026-10-24 14:04:31,238 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:04:31,241 INFO [turn 13] record_violation({"rule_id": "SEC-006", "evidence": "curl -v with Authorization: Bearer ${{ secrets.SLACK_TOKEN }}", "recommendation": "Remove -v or --verbose from curl commands that include authorization headers.", ")
+2026-10-24 14:04:32,339 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:04:32,341 INFO [turn 14] record_violation({"file": ".github/workflows/release.yml", "recommendation": "Remove hardcoded tokens and use GitHub Actions secrets instead.", "evidence": "PYPI_API_TOKEN: [REDACTED]", "rule_id": "SEC-007", "category)
+2026-10-24 14:04:33,279 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:04:33,281 INFO [turn 15] record_violation({"evidence": "DOCKER_HUB_TOKEN: [REDACTED]", "recommendation": "Remove hardcoded tokens and use GitHub Actions secrets instead.", "category": "security", "rule_id": "SEC-008", "description": "Hardcode)
+2026-10-24 14:04:34,551 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:04:34,553 INFO [turn 16] record_violation({"line": 20, "description": "Bash debug mode set -ex enabled in workflow handling tokens", "severity": "high", "file": ".github/workflows/release.yml", "recommendation": "Remove -x / -ex from workflow)
+2026-10-24 14:04:35,922 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:04:35,925 INFO [turn 17] record_violation({"evidence": "echo \"Publishing with token: $PYPI_API_TOKEN\" and echo \"Docker token is: $DOCKER_HUB_TOKEN\"", "category": "security", "severity": "critical", "rule_id": "SEC-010", "file": ".github/w)
+2026-10-24 14:04:36,952 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:04:36,957 INFO [turn 18] record_violation({"rule_id": "SEC-011", "line": 27, "evidence": "curl --verbose with Authorization: [REDACTED] $GH_TOKEN", "description": "Verbose curl command leaking GitHub token authorization header", "category": ")
+2026-10-24 14:04:38,009 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:04:38,011 INFO [turn 19] record_violation({"line": 38, "evidence": "path includes ~/.ssh/id_rsa, private-key.pem, .env.local", "rule_id": "SEC-012", "recommendation": "Remove private keys and local environment files from artifact upload paths)
+2026-10-24 14:04:39,180 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:04:39,183 INFO [turn 20] finish_audit({"summary": "The repository was audited against the nine DevOps inspection areas. Multiple critical security vulnerabilities were discovered across the GitHub Actions workflows, including hardcoded AW)
+Wrote 12 violation(s) to <repo>\evals\runs\2026-10-24-workflow-tool-ab\new\paastha1__cicd-test-repo.run1.json (model: gemini-3.5-flash-lite)
+Tool-call trace: <repo>\evals\runs\2026-10-24-workflow-tool-ab\new\paastha1__cicd-test-repo.run1.trace.jsonl

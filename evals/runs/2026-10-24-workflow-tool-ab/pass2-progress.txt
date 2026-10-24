@@ -1,0 +1,12 @@
+{"repo": "jpr5__vulnerable-workflows-test", "arm": "baseline", "run": 1, "exit": 0, "seconds": 92, "n": 5, "after_review": 0, "models": ["gemini-3.1-flash-lite"]}
+{"repo": "jpr5__vulnerable-workflows-test", "arm": "new", "run": 1, "exit": 0, "seconds": 200, "n": 5, "after_review": 0, "models": ["gemini-3.1-flash-lite"]}
+{"repo": "jpr5__vulnerable-workflows-test", "arm": "baseline", "run": 2, "exit": 0, "seconds": 52, "n": 5, "after_review": 0, "models": ["gemini-3.1-flash-lite"]}
+{"repo": "jpr5__vulnerable-workflows-test", "arm": "new", "run": 2, "exit": 0, "seconds": 56, "n": 7, "after_review": 0, "models": ["gemini-3.1-flash-lite"]}
+{"repo": "pallets__itsdangerous", "arm": "baseline", "run": 1, "exit": 0, "seconds": 99, "n": 0, "after_review": 0, "models": ["gemini-3.1-flash-lite"]}
+{"repo": "pallets__itsdangerous", "arm": "new", "run": 1, "exit": 0, "seconds": 48, "n": 1, "after_review": 0, "models": ["gemini-3.1-flash-lite"]}
+{"repo": "pallets__itsdangerous", "arm": "baseline", "run": 2, "exit": 0, "seconds": 69, "n": 0, "after_review": 0, "models": ["gemini-3.1-flash-lite", "gemini-3.5-flash-lite"]}
+{"repo": "pallets__itsdangerous", "arm": "new", "run": 2, "exit": 0, "seconds": 22, "n": 0, "after_review": 0, "models": ["gemini-3.5-flash-lite"]}
+{"repo": "paastha1__cicd-test-repo", "arm": "baseline", "run": 1, "exit": 0, "seconds": 49, "n": 10, "after_review": 0, "models": ["gemini-3.5-flash-lite"]}
+{"repo": "paastha1__cicd-test-repo", "arm": "new", "run": 1, "exit": 0, "seconds": 25, "n": 12, "after_review": 0, "models": ["gemini-3.5-flash-lite"]}
+{"repo": "Plazmaz__leaky-repo", "arm": "baseline", "run": 2, "exit": 0, "seconds": 78, "n": 16, "after_review": 0, "models": ["gemini-3.5-flash-lite"]}
+{"repo": "Plazmaz__leaky-repo", "arm": "new", "run": 2, "exit": 0, "seconds": 34, "n": 8, "after_review": 0, "models": ["gemini-3.5-flash-lite"]}

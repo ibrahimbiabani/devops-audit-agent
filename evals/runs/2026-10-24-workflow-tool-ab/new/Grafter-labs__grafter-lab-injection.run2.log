@@ -1,0 +1,49 @@
+2026-10-24 13:36:04,464 INFO Using GeminiLLM, models in order: gemini-3.1-flash-lite, gemini-3.5-flash-lite
+2026-10-24 13:36:04,464 INFO Cloning https://github.com/Grafter-labs/grafter-lab-injection
+2026-10-24 13:36:06,524 INFO Skipping Gemini model gemini-3.1-flash-lite: 503 UNAVAILABLE after 2 attempts (recorded earlier; retry in ~2min)
+2026-10-24 13:36:06,524 INFO Using Gemini model gemini-3.5-flash-lite
+2026-10-24 13:36:08,912 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:36:08,924 INFO Gemini model gemini-3.5-flash-lite is serving as gemini-3.5-flash-lite
+2026-10-24 13:36:08,941 INFO [turn 1] list_files({})
+2026-10-24 13:36:11,907 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:36:11,935 INFO [turn 2] inspect_workflows({})
+2026-10-24 13:36:14,678 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:36:14,682 INFO [turn 3] read_file({"start_line": 1, "end_line": 50, "path": ".github/workflows/test.yaml"})
+2026-10-24 13:36:17,652 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:36:17,654 INFO [turn 4] read_file({"end_line": 58, "path": ".github/workflows/test.yaml", "start_line": 51})
+2026-10-24 13:36:20,997 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:36:21,000 INFO [turn 5] read_file({"path": ".github/workflows/secret-echoed-to-log.yml", "end_line": 50, "start_line": 1})
+2026-10-24 13:36:24,704 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:36:24,707 INFO [turn 6] read_file({"start_line": 1, "path": ".github/workflows/script-injection.yml", "end_line": 50})
+2026-10-24 13:36:29,574 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:36:29,577 INFO [turn 7] read_file({"path": ".github/workflows/runner-control-injection.yml", "end_line": 50, "start_line": 1})
+2026-10-24 13:36:34,488 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:36:34,492 INFO [turn 8] read_file({"start_line": 1, "end_line": 50, "path": ".github/workflows/filename-collision-download.yml"})
+2026-10-24 13:36:39,380 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:36:39,383 INFO [turn 9] read_file({"end_line": 50, "path": ".github/workflows/deprecated-commands.yml", "start_line": 1})
+2026-10-24 13:36:39,988 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 503 Service Unavailable"
+2026-10-24 13:36:39,989 INFO Gemini gemini-3.5-flash-lite returned 503 UNAVAILABLE; retrying in 2s
+2026-10-24 13:36:46,591 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:36:46,595 INFO [turn 10] read_file({"path": ".github/workflows/bypassable-actor-allowlist-gate.yml", "start_line": 1, "end_line": 50})
+2026-10-24 13:36:50,254 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:36:50,259 INFO [turn 11] read_file({"start_line": 1, "end_line": 50, "path": ".github/workflows/controls/safe-expression-handling.yml"})
+2026-10-24 13:36:53,693 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:36:53,711 INFO [turn 12] search_code({"pattern": "."})
+2026-10-24 13:36:57,085 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:36:57,105 INFO [turn 13] git_log({})
+2026-10-24 13:37:01,130 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:37:01,133 INFO [turn 14] record_violation({"rule_id": "SEC-001", "severity": "high", "line": 45, "recommendation": "Remove the verbose (-v) flag from curl and avoid echoing secrets or tokens to logs.", "category": "security", "file": ".github)
+2026-10-24 13:37:04,875 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:37:04,878 INFO [turn 15] record_violation({"description": "Hardcoded credentials and token generation in environment block and steps", "file": ".github/workflows/test.yaml", "severity": "high", "recommendation": "Remove hardcoded passwords/to)
+2026-10-24 13:37:09,133 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:37:09,135 INFO [turn 16] record_violation({"category": "security", "recommendation": "Mask or avoid printing sensitive variables and secrets in workflow steps.", "evidence": "run: echo \"GRAFTER_MARKER secret-echoed-to-log $DEMO_SECRET\"", "l)
+2026-10-24 13:37:12,857 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:37:12,859 INFO [turn 17] record_violation({"evidence": "run: echo \"GRAFTER_MARKER title=${{ github.event.issue.title }}\"", "severity": "critical", "description": "Untrusted event expression interpolated directly into shell script", "categor)
+2026-10-24 13:37:16,463 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:37:16,466 INFO [turn 18] record_violation({"evidence": "runs-on: ${{ github.event.issue.title }}", "rule_id": "COL-002", "description": "Untrusted issue title interpolated directly into runs-on for runner control injection", "recommendation":)
+2026-10-24 13:37:20,863 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:37:20,865 INFO [turn 19] record_violation({"evidence": "if: ${{ contains('alice,bob,octocat', github.actor) }}", "line": 12, "severity": "high", "file": ".github/workflows/bypassable-actor-allowlist-gate.yml", "category": "collaboration", "ru)
+2026-10-24 13:37:25,573 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 13:37:25,576 INFO [turn 20] finish_audit({"summary": "Audited the repository Grafter-labs/grafter-lab-injection against all nine DevOps inspection areas. Identified significant security and collaboration findings including verbose curl loggi)
+Wrote 6 violation(s) to <repo>\evals\runs\2026-10-24-workflow-tool-ab\new\Grafter-labs__grafter-lab-injection.run2.json (model: gemini-3.5-flash-lite)
+Tool-call trace: <repo>\evals\runs\2026-10-24-workflow-tool-ab\new\Grafter-labs__grafter-lab-injection.run2.trace.jsonl

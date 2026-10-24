@@ -1,0 +1,95 @@
+{
+  "repository": "https://github.com/Plazmaz/leaky-repo",
+  "violations": [
+    {
+      "rule_id": "SEC-002",
+      "category": "security",
+      "severity": "critical",
+      "file": ".docker/.dockercfg",
+      "line": 1,
+      "description": "Committed docker credentials file",
+      "evidence": "Found .docker/.dockercfg containing auth tokens.",
+      "recommendation": "Remove the file, revoke the credentials, and rewrite git history to remove the sensitive file."
+    },
+    {
+      "rule_id": "SEC-003",
+      "category": "security",
+      "severity": "critical",
+      "file": ".docker/config.json",
+      "line": 1,
+      "description": "Committed docker credentials file",
+      "evidence": "Found .docker/config.json containing auth tokens.",
+      "recommendation": "Remove the file, revoke the credentials, and rewrite git history to remove the sensitive file."
+    },
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "critical",
+      "file": ".git-credentials",
+      "line": 1,
+      "description": "Committed git credentials file",
+      "evidence": "Found .git-credentials containing credentials.",
+      "recommendation": "Remove the file, revoke the credentials, and rewrite git history to remove the sensitive file."
+    },
+    {
+      "rule_id": "SEC-004",
+      "category": "security",
+      "severity": "critical",
+      "file": ".netrc",
+      "line": 1,
+      "description": "Committed .netrc credentials file",
+      "evidence": "Found .netrc containing email credentials.",
+      "recommendation": "Remove the file, revoke the credentials, and rewrite git history to remove the sensitive file."
+    },
+    {
+      "rule_id": "SEC-005",
+      "category": "security",
+      "severity": "critical",
+      "file": ".npmrc",
+      "line": 1,
+      "description": "Committed .npmrc credentials file",
+      "evidence": "Found .npmrc containing auth tokens.",
+      "recommendation": "Remove the file, revoke the credentials, and rewrite git history to remove the sensitive file."
+    },
+    {
+      "rule_id": "SEC-006",
+      "category": "security",
+      "severity": "critical",
+      "file": ".ssh/id_rsa",
+      "line": 1,
+      "description": "Committed private SSH key",
+      "evidence": "Found .ssh/id_rsa.",
+      "recommendation": "Remove the file, revoke the key, and rewrite git history to remove the sensitive file."
+    },
+    {
+      "rule_id": "SEC-007",
+      "category": "security",
+      "severity": "critical",
+      "file": "cloud/.s3cfg",
+      "line": 1,
+      "description": "Committed AWS S3 configuration with credentials",
+      "evidence": "Found cloud/.s3cfg containing access and secret keys.",
+      "recommendation": "Remove the file, revoke the credentials, and rewrite git history to remove the sensitive file."
+    },
+    {
+      "rule_id": "SEC-008",
+      "category": "security",
+      "severity": "critical",
+      "file": "db/.pgpass",
+      "line": 2,
+      "description": "Committed PostgreSQL credentials file",
+      "evidence": "Found db/.pgpass containing password.",
+      "recommendation": "Remove the file, revoke the credentials, and rewrite git history to remove the sensitive file."
+    },
+    {
+      "rule_id": "SEC-009",
+      "category": "security",
+      "severity": "critical",
+      "file": "etc/shadow",
+      "line": 1,
+      "description": "Committed system shadow file containing password hashes",
+      "evidence": "Found etc/shadow containing system password hashes.",
+      "recommendation": "Remove the file and rewrite git history. Ensure no system files are committed."
+    }
+  ]
+}
