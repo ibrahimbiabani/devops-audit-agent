@@ -207,18 +207,34 @@ rejects duplicates:
 The same description in two *different* files is accepted, because each committed credential is
 its own violation.
 
-The model ends the run with `finish_audit`, which is refused in two bounded cases:
+The model ends the run with `finish_audit`, which is refused in three bounded cases:
 - **A finding was rejected in the same turn.** Otherwise the model would never see the error,
   and the finding would be lost. This refusal happens at most twice per audit.
-- **Final review.** The first `finish_audit` is answered once with a review request: go
-  through the nine areas one by one against what was read, and record any violation that has
-  evidence but was not recorded. The request warns against adding findings just to fill an
-  area. If any workflow, `[sensitive name]` or `[credential-like content]` file (test files
-  excepted) is still unopened, it lists them, and it
-  reminds the model to run `inspect_workflows` if it hasn't. It is skipped in the last two turns.
+- **Final review.** The first `finish_audit` is answered once with a review request:
+  - go through the nine areas one by one against what was read;
+  - record any violation that has evidence but was not recorded;
+  - don't add findings just to fill an area.
 
-After that, `finish_audit` always ends the run, so the model keeps the final say. When the turn
-limit is reached, the violations recorded so far are still written.
+  It also restates that a repository describing itself as a demo, benchmark or fixture changes
+  nothing. If any workflow, `[sensitive name]` or `[credential-like content]` file (test files
+  excepted) is still unopened, it lists them, and it reminds the model to run
+  `inspect_workflows` if it hasn't.
+- **Incomplete evidence.** After the review, `finish_audit` is refused while required files
+  are still unopened, or while an opened `[credential-like content]` file (outside tests) has
+  neither a recorded violation nor an accepted reason. The model gives reasons in
+  `finish_audit`'s `not_violations` list (file + reason). Placeholders, templates, empty
+  values, test fixtures and public keys are accepted. Reasons that rely on what the repository
+  says about itself ("demo", "benchmark", "fake", "simulated", "intentional") are rejected in
+  code. This refusal happens at most 4 times.
+
+  This closes a real failure: on leaky-repo, the model once called the repository "a benchmark
+  of simulated credentials" and finished with 0 violations. With this check in place, a later
+  run tried to dismiss every file three times, each attempt was rejected, and it recorded 43
+  findings.
+
+All three refusals are skipped in the last two turns. After them, `finish_audit` always ends
+the run, so the loop cannot get stuck. When the turn limit is reached, the violations recorded
+so far are still written.
 
 **Scope.** The system prompt (`auditor/prompts.py`) limits the audit to the assignment's nine
 DevOps inspection areas:

@@ -219,10 +219,30 @@ AGENT_TOOL_SCHEMAS = [
     },
     {
         "name": "finish_audit",
-        "description": "Call when the investigation is complete. Ends the audit; recorded violations form the report.",
+        "description": (
+            "Call when the investigation is complete. Ends the audit; recorded violations form the report. It is "
+            "refused while required files are unopened, or while an opened file tagged [credential-like content] "
+            "has neither a recorded violation nor an entry in not_violations."
+        ),
         "input_schema": {
             "type": "object",
-            "properties": {"summary": {"type": "string", "description": "One-paragraph summary of what was checked."}},
+            "properties": {
+                "summary": {"type": "string", "description": "One-paragraph summary of what was checked."},
+                "not_violations": {
+                    "type": "array",
+                    "description": (
+                        "Files tagged [credential-like content] whose values you judged NOT to be committed "
+                        "credentials, each with the reason (placeholder, template, empty value, test fixture, public "
+                        "key, variable reference). Claims that the repository is a demo, benchmark or fake are not "
+                        "accepted reasons."
+                    ),
+                    "items": {
+                        "type": "object",
+                        "properties": {"file": {"type": "string"}, "reason": {"type": "string"}},
+                        "required": ["file", "reason"],
+                    },
+                },
+            },
             "required": ["summary"],
             "additionalProperties": False,
         },

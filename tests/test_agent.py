@@ -5,7 +5,7 @@ from types import SimpleNamespace as NS
 
 import pytest
 
-from auditor.loop import AgentError, AuditAgent
+from auditor.loop import MAX_EVIDENCE_REFUSALS, AgentError, AuditAgent
 from tools import RepoTools
 
 
@@ -79,7 +79,7 @@ def test_parallel_tool_calls_return_in_one_message(sample_repo):
             resp(tool_use("d", "finish_audit", summary="x")),
         ]
     )
-    AuditAgent(llm, RepoTools(sample_repo)).run("https://github.com/a/b")
+    AuditAgent(llm, RepoTools(sample_repo), review=False).run("https://github.com/a/b")
     assert [r["tool_use_id"] for r in tool_results(llm.calls[1])] == ["a", "b"]
 
 
@@ -92,7 +92,7 @@ def test_tool_errors_are_reported_back_not_raised(sample_repo):
             resp(tool_use("t5", "finish_audit", summary="x")),
         ]
     )
-    agent = AuditAgent(llm, RepoTools(sample_repo))
+    agent = AuditAgent(llm, RepoTools(sample_repo), review=False)
     assert agent.run("https://github.com/a/b") == []
     assert all(r["is_error"] for r in tool_results(llm.calls[1]))
     assert tool_results(llm.calls[2])[0]["is_error"]
@@ -106,7 +106,7 @@ def test_duplicate_violation_rejected(sample_repo):
             resp(tool_use("t4", "finish_audit", summary="x")),
         ]
     )
-    agent = AuditAgent(llm, RepoTools(sample_repo))
+    agent = AuditAgent(llm, RepoTools(sample_repo), review=False)
     assert len(agent.run("https://github.com/a/b")) == 1
     assert "duplicate" in tool_results(llm.calls[1])[1]["content"]
 
@@ -195,8 +195,18 @@ def test_finish_blocked_once_until_must_read_files_opened(sample_repo):
     llm = FakeLLM(
         [
             resp(tool_use("t1", "finish_audit", summary="early")),
-            resp(tool_use("t2", "read_file", path="./.github/workflows/ci.yml")),
-            resp(tool_use("t3", "finish_audit", summary="done")),
+            resp(
+                tool_use("t2", "read_file", path="./.github/workflows/ci.yml"),
+                tool_use("t2b", "read_file", path="app.py"),
+            ),
+            resp(
+                tool_use(
+                    "t3",
+                    "finish_audit",
+                    summary="done",
+                    not_violations=[{"file": "app.py", "reason": "placeholder value"}],
+                )
+            ),
         ]
     )
     agent = AuditAgent(llm, RepoTools(sample_repo))
@@ -207,11 +217,14 @@ def test_finish_blocked_once_until_must_read_files_opened(sample_repo):
     assert len(llm.calls) == 3
 
 
-def test_second_finish_always_ends_the_run(sample_repo):
-    llm = FakeLLM([resp(tool_use(f"f{i}", "finish_audit", summary=str(i))) for i in range(2)])
+def test_finish_refusals_are_bounded(sample_repo):
+    # One review plus MAX_EVIDENCE_REFUSALS refusals; then finish_audit always ends the run.
+    llm = FakeLLM(
+        [resp(tool_use(f"f{i}", "finish_audit", summary=str(i))) for i in range(1 + MAX_EVIDENCE_REFUSALS + 1)]
+    )
     agent = AuditAgent(llm, RepoTools(sample_repo))
     agent.run("https://github.com/a/b")
-    assert agent.finished and agent.summary == "1"
+    assert agent.finished and agent.summary == str(1 + MAX_EVIDENCE_REFUSALS)
 
 
 def test_coverage_check_skipped_on_last_turns(sample_repo):
@@ -304,8 +317,19 @@ def test_first_finish_asks_for_one_final_review(sample_repo):
     llm = FakeLLM(
         [
             resp(tool_use("t1", "finish_audit", summary="early")),
-            resp(tool_use("t2", "read_file", path=".github/workflows/ci.yml"), tool_use("t3", "inspect_workflows")),
-            resp(tool_use("t4", "finish_audit", summary="done")),
+            resp(
+                tool_use("t2", "read_file", path=".github/workflows/ci.yml"),
+                tool_use("t2b", "read_file", path="app.py"),
+                tool_use("t3", "inspect_workflows"),
+            ),
+            resp(
+                tool_use(
+                    "t4",
+                    "finish_audit",
+                    summary="done",
+                    not_violations=[{"file": "app.py", "reason": "placeholder value"}],
+                )
+            ),
         ]
     )
     agent = AuditAgent(llm, RepoTools(sample_repo))
@@ -326,7 +350,14 @@ def test_review_skips_reminders_already_done(sample_repo):
                 tool_use("t2", "inspect_workflows"),
             ),
             resp(tool_use("t3", "finish_audit", summary="x")),
-            resp(tool_use("t4", "finish_audit", summary="y")),
+            resp(
+                tool_use(
+                    "t4",
+                    "finish_audit",
+                    summary="y",
+                    not_violations=[{"file": "app.py", "reason": "placeholder value"}],
+                )
+            ),
         ]
     )
     agent = AuditAgent(llm, RepoTools(sample_repo))
@@ -346,3 +377,77 @@ def test_repeated_identical_call_is_not_rerun(sample_repo):
     assert (
         repeat["is_error"] and "already called list_files with exactly these arguments in turn 1" in repeat["content"]
     )
+
+
+AWS_KEY_FINDING = {
+    **VIOLATION,
+    "rule_id": "SEC-001",
+    "category": "security",
+    "severity": "critical",
+    "file": "app.py",
+    "line": 4,
+    "description": "Hardcoded AWS access key",
+    "evidence": "AWS access key assigned to API_KEY",
+}
+
+
+def test_finish_refused_until_opened_credential_file_is_accounted_for(sample_repo):
+    # Regression (2026-10-24, leaky-repo): read the README, called the repository "a benchmark of
+    # simulated credentials", opened 10 of 39 required files and finished with 0 violations.
+    read_all = [
+        tool_use("r1", "read_file", path=".github/workflows/ci.yml"),
+        tool_use("r2", "read_file", path="app.py"),
+    ]
+    llm = FakeLLM(
+        [
+            resp(*read_all),
+            resp(tool_use("f1", "finish_audit", summary="benchmark repo")),  # final review
+            resp(tool_use("f2", "finish_audit", summary="benchmark repo")),  # evidence check
+            resp(tool_use("v1", "record_violation", **AWS_KEY_FINDING)),
+            resp(tool_use("f3", "finish_audit", summary="done")),
+        ]
+    )
+    agent = AuditAgent(llm, RepoTools(sample_repo))
+    assert agent.run("https://github.com/a/b") == [AWS_KEY_FINDING]
+    refusal = tool_results(llm.calls[3])[0]
+    assert refusal["is_error"] and "app.py" in refusal["content"] and "credential-like values" in refusal["content"]
+    assert agent.summary == "done"
+
+
+def test_dismissal_based_on_what_the_repository_claims_is_rejected(sample_repo):
+    read_all = [
+        tool_use("r1", "read_file", path=".github/workflows/ci.yml"),
+        tool_use("r2", "read_file", path="app.py"),
+    ]
+    demo = [{"file": "app.py", "reason": "this is a demo repository and the key is fake"}]
+    llm = FakeLLM(
+        [
+            resp(*read_all),
+            resp(tool_use("f1", "finish_audit", summary="x")),
+            resp(tool_use("f2", "finish_audit", summary="x", not_violations=demo)),
+            resp(
+                tool_use(
+                    "f3", "finish_audit", summary="ok", not_violations=[{"file": "app.py", "reason": "placeholder"}]
+                )
+            ),
+        ]
+    )
+    agent = AuditAgent(llm, RepoTools(sample_repo))
+    agent.run("https://github.com/a/b")
+    rejected = tool_results(llm.calls[3])[0]["content"]
+    assert "were rejected because they rely on what the repository says about itself" in rejected
+    assert agent.finished and agent.summary == "ok" and agent.dismissed == {"app.py": "placeholder"}
+
+
+def test_healthy_repository_finishes_after_the_review(tmp_path):
+    # No credential-like content and every required file read: no evidence refusal.
+    (tmp_path / "README.md").write_text("# ok\n")
+    llm = FakeLLM(
+        [
+            resp(tool_use("r1", "read_file", path="README.md")),
+            resp(tool_use("f1", "finish_audit", summary="x")),
+            resp(tool_use("f2", "finish_audit", summary="clean")),
+        ]
+    )
+    agent = AuditAgent(llm, RepoTools(tmp_path))
+    assert agent.run("https://github.com/a/b") == [] and agent.summary == "clean"

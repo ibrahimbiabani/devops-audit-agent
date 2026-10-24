@@ -26,6 +26,7 @@ did not work. Each step lists the commits that implement it.
 | 2026-10-24 | 19 | Content-based credential hints: leaky-repo 15 → 38 of 42 secret files |
 | 2026-10-24 | 20 | Two fresh repositories, key written first: insecure-devops 7/9 with no false positives; chalk 1 false positive |
 | 2026-10-24 | 21 | Fixes for the `env` signal and the lockfile rule; agent test: lockfile false positive gone, `env` dump found |
+| 2026-10-24 | 22 | Evidence check before finishing; dismissal reasons rejected in code (leaky-repo demo run: 0 → 40 and 43 findings) |
 
 ---
 
@@ -1375,3 +1376,59 @@ secrets and no local paths.
 - **Run-to-run variance on Flash-Lite remains the largest source of error.** The same
   repository can gain or lose 1–2 findings between runs (sampleproject's release issue,
   insecure-devops' `.gitignore`), with no code change in between.
+
+---
+
+## Step 22: A finished audit may not dismiss the repository
+
+### The failure
+
+A manual demo run on leaky-repo, with
+`python agent.py --repo https://github.com/Plazmaz/leaky-repo --output report.json --trace trace.jsonl --max-turns 1000 -v`,
+wrote **0 violations**, on the same code that scored 38/42 earlier that day. From the trace:
+1. **Turn 4:** the model read `README.md` (a benchmark for secret scanners).
+2. **Turn 5:** it called `finish_audit`, with "intentionally constructed as a benchmark … simulated
+   … credential leaks". The final review refused it and listed the ~39 unopened tagged files.
+3. **Turn 6:** it opened 10 of them, all with real-looking credentials.
+4. **Turn 7:** it called `finish_audit` again ("all files present are illustrative/benchmarking
+   assets"). This was **accepted**, because every refusal was one-time.
+
+**Why:** the prompt's rule that a repository calling itself a demo or fixture changes nothing
+was read at the start and ignored at the decision. The same dismissal happened in Steps 5 and
+8; the fix proposed then (repeat the rule where the decision is made) was never implemented.
+
+### Changes
+
+| Change | Where |
+|---|---|
+| The final review message restates the rule: a repository describing itself as a demo, benchmark, test fixture or intentionally vulnerable, or calling its values fake, changes nothing. | `auditor/loop.py` (`REVIEW`) |
+| **Evidence check:** after the review, `finish_audit` is refused while required files are unopened, or while an opened `[credential-like content]` file outside tests has neither a recorded violation nor an accepted reason. The refusal lists the files. At most 4 refusals, never in the last two turns. | `auditor/loop.py` (`_evidence_gaps`) |
+| `finish_audit` takes an optional `not_violations` list (file + reason) for values the model judges harmless. Reasons matching demo / benchmark / fake / simulated / illustrative / intentional / "for testing scanners" are **rejected in code**, and the rule is quoted back. Placeholders, templates, empty values, test fixtures and public keys are accepted. | `auditor/loop.py` (`DISMISSAL`), `auditor/prompts.py` |
+
+**Tests:** 3 new tests:
+- finish refused until the tagged file is accounted for, then accepted after the finding is
+  recorded;
+- a "demo repository, fake key" reason rejected and a "placeholder" reason accepted;
+- a healthy repository finishing straight after the review.
+
+Four existing finish-logic tests were updated, and the bounded-refusal test now checks that
+the run ends after 1 review + 4 evidence refusals. The suite has 173 tests, all passing.
+
+### Live check (the same demo command, `--max-turns 1000 -v`)
+
+Results are in [`evals/runs/2026-10-24-no-dismissal/`](../evals/runs/2026-10-24-no-dismissal/);
+a scan found no secrets and no local paths.
+
+| Audit | Result |
+|---|---|
+| leaky-repo, run 1 | **40 findings, 40/42 secret files, no false positives**, 18 turns, 37 s. One evidence refusal after the review; the model then recorded the credentials (and explained one file, `.bashrc`, as having no secrets) |
+| leaky-repo, run 2 | **43 findings, 39/42 secret files, no false positives.** The model **tried three times to dismiss every file** as "Demo benchmark repository … simulated mock configuration files and fixtures". Each attempt was rejected in code. It then recorded the credentials (92 turns, about 9 minutes, one file per turn). `.bash_profile` and `.bashrc` each got 3 findings, one per credential on different lines |
+| chalk (healthy) | 0 findings; only the normal final review, no evidence refusal |
+| itsdangerous (healthy) | 1 finding: `publish.yaml` "publication job does not run tests". This is the tag-triggered, `environment:`-protected release already noted as a likely false positive in `evals/ANSWER_KEYS.md`, and it is not fixed. Its test-file fixture was explained as "a placeholder/fixture for testing" and accepted |
+
+### Conclusion
+
+The demo failure is closed: the model's own dismissal is now visible in the trace and refused
+by the agent, not just discouraged by the prompt. The cost is time when the model resists
+(run 2 took 9 minutes). Healthy repositories are unaffected: no evidence refusals on chalk or
+itsdangerous.

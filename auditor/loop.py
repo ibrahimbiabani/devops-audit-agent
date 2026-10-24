@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 import time
 from pathlib import Path
 from typing import Any, Protocol
@@ -32,7 +33,20 @@ REVIEW = (
     "release - and for each decide whether the files and tool output you have seen show a violation as the "
     "rules define it. Record every such violation you have evidence for and have not recorded yet. Do not add "
     "findings to fill an area: in a healthy repository most areas have none, and nothing on the 'Not "
-    "violations' list counts. Then call finish_audit again."
+    "violations' list counts. A repository that describes itself as a demo, benchmark, test fixture or "
+    "intentionally vulnerable, or calls its values fake, changes nothing: committed credentials and other "
+    "defects are still violations. Then call finish_audit again."
+)
+# After the review, finish_audit is refused while the evidence is incomplete: required files still
+# unopened, or a file tagged [credential-like content] (outside tests) that has neither a recorded
+# violation nor an accepted reason in `not_violations`. Regression (2026-10-24, leaky-repo): the model
+# read the README, called the repository "a benchmark of simulated credentials", opened 10 of 39
+# required files and finished with 0 violations. Bounded so the loop always ends.
+MAX_EVIDENCE_REFUSALS = 4
+# Reasons that dismiss a file by what the repository says about itself, which the rules reject.
+DISMISSAL = re.compile(
+    r"(?i)\b(?:demo|benchmark|fixture repo|fake|simulated|illustrative|intentional(?:ly)?|not real|"
+    r"for testing (?:secret|scanner)|scanner test|training|educational|sample repo(?:sitory)?)\b"
 )
 
 
@@ -80,6 +94,9 @@ class AuditAgent:
         self.review = review
         self.reviewed = False
         self.seen_calls: dict[tuple[str, str], int] = {}  # (tool, arguments) -> first turn it was called
+        self.evidence_refusals = 0
+        self.dismissed: dict[str, str] = {}  # file -> accepted reason it holds no committed credential
+        self.rejected_dismissals: list[str] = []
         self.inspected_workflows = False
         self.rejected_this_turn = 0  # record_violation calls rejected in the current turn
         self.rejected_finish_refusals = 0
@@ -210,9 +227,61 @@ class AuditAgent:
             ):
                 steps.append("Run inspect_workflows and check its facts against the rules.")
             raise inspection.ToolError("Not finished yet. " + " ".join(steps) + " " + REVIEW)
+        self._accept_dismissals(args.get("not_violations"))
+        gaps = self._evidence_gaps()
+        if gaps and self.review and enough_turns and self.evidence_refusals < MAX_EVIDENCE_REFUSALS:
+            self.evidence_refusals += 1
+            raise inspection.ToolError("Not finished: " + " ".join(gaps))
         self.finished = True
         self.summary = str(args.get("summary", ""))
         return f"Audit finished with {len(self.violations)} violation(s)."
+
+    def _accept_dismissals(self, items: Any) -> None:
+        """Keep the `not_violations` reasons the rules allow; remember the rejected ones to say why."""
+        self.rejected_dismissals = []
+        for item in items if isinstance(items, list) else []:
+            if not isinstance(item, dict) or not item.get("file") or not str(item.get("reason", "")).strip():
+                continue
+            try:
+                path, reason = self.repo_tools.relpath(str(item["file"])), str(item["reason"]).strip()
+            except inspection.ToolError:
+                continue  # a path outside the repository
+            if DISMISSAL.search(reason):
+                self.rejected_dismissals.append(path)
+            else:
+                self.dismissed[path] = reason
+
+    def _evidence_gaps(self) -> list[str]:
+        """What still stands between the audit and a finished report (empty when nothing does)."""
+        gaps = []
+        unread = [f for f in self.repo_tools.must_read_files() if f not in self.read_paths]
+        if unread:
+            listed = ", ".join(unread[:MAX_UNREAD_LISTED])
+            more = f" and {len(unread) - MAX_UNREAD_LISTED} more" if len(unread) > MAX_UNREAD_LISTED else ""
+            gaps.append(f"open these required files first (several per turn): {listed}{more}.")
+        recorded = {v["file"] for v in self.violations}
+        open_hints = [
+            f
+            for f in self.repo_tools.content_hints()
+            if not inspection.is_test_path(f) and f in self.read_paths and f not in recorded and f not in self.dismissed
+        ]
+        if open_hints:
+            listed = ", ".join(open_hints[:MAX_UNREAD_LISTED])
+            more = f" and {len(open_hints) - MAX_UNREAD_LISTED} more" if len(open_hints) > MAX_UNREAD_LISTED else ""
+            gaps.append(
+                "these files you opened contain credential-like values but have no recorded violation: "
+                f"{listed}{more}. "
+                "For each, record the committed credential (one violation per file), or, if the value is not a real "
+                "credential, list it in finish_audit's not_violations with the reason (placeholder, template, empty "
+                "value, test fixture, public key, variable reference)."
+            )
+        if self.rejected_dismissals:
+            gaps.append(
+                "These not_violations reasons were rejected because they rely on what the repository says about "
+                f"itself (demo, benchmark, fake, intentional): {', '.join(self.rejected_dismissals[:10])}. The rules "
+                "count committed credentials regardless; record them."
+            )
+        return gaps
 
     def _record(self, args: dict[str, Any]) -> str:
         v = validate_violation(args)
