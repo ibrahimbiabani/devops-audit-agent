@@ -1,0 +1,405 @@
+{
+  "repository": "https://github.com/Plazmaz/leaky-repo",
+  "violations": [
+    {
+      "rule_id": "SEC-032",
+      "category": "security",
+      "severity": "critical",
+      "file": ".bash_profile",
+      "line": 11,
+      "description": "Committed bash profile containing AWS, Heroku, Slack, and MLab API tokens/passwords",
+      "evidence": ".bash_profile containing AWS keys and tokens",
+      "recommendation": "Remove .bash_profile containing credentials from repository and rotate all exposed secrets."
+    },
+    {
+      "rule_id": "SEC-002",
+      "category": "security",
+      "severity": "critical",
+      "file": ".docker/.dockercfg",
+      "line": 4,
+      "description": "Committed Docker configuration with encoded auth tokens",
+      "evidence": ".docker/.dockercfg containing auth token",
+      "recommendation": "Remove .docker/.dockercfg from the repository and revoke the exposed token."
+    },
+    {
+      "rule_id": "SEC-003",
+      "category": "security",
+      "severity": "critical",
+      "file": ".docker/config.json",
+      "line": 5,
+      "description": "Committed Docker config.json with encoded auth tokens",
+      "evidence": ".docker/config.json containing auth token",
+      "recommendation": "Remove .docker/config.json from the repository and revoke the exposed token."
+    },
+    {
+      "rule_id": "SEC-004",
+      "category": "security",
+      "severity": "critical",
+      "file": ".ftpconfig",
+      "line": 6,
+      "description": "Committed FTP client configuration containing plaintext password",
+      "evidence": ".ftpconfig containing pass: hunter22",
+      "recommendation": "Remove .ftpconfig from the repository and revoke credentials."
+    },
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "critical",
+      "file": ".git-credentials",
+      "line": 1,
+      "description": "Committed Git credentials store containing plaintext password",
+      "evidence": ".git-credentials containing https://user@example.com:password...",
+      "recommendation": "Remove .git-credentials from the repository and revoke the exposed credentials."
+    },
+    {
+      "rule_id": "SEC-033",
+      "category": "security",
+      "severity": "critical",
+      "file": ".idea/WebServers.xml",
+      "line": 6,
+      "description": "Committed idea WebServers.xml containing SFTP password",
+      "evidence": ".idea/WebServers.xml containing password attribute",
+      "recommendation": "Remove .idea/WebServers.xml from repository and rotate credentials."
+    },
+    {
+      "rule_id": "SEC-034",
+      "category": "security",
+      "severity": "critical",
+      "file": ".mozilla/firefox/logins.json",
+      "line": 11,
+      "description": "Committed Mozilla Firefox logins.json containing encrypted browser credentials",
+      "evidence": ".mozilla/firefox/logins.json containing encryptedUsername and encryptedPassword",
+      "recommendation": "Remove .mozilla/firefox/logins.json from repository."
+    },
+    {
+      "rule_id": "SEC-005",
+      "category": "security",
+      "severity": "critical",
+      "file": ".netrc",
+      "line": 1,
+      "description": "Committed .netrc file containing email passwords",
+      "evidence": ".netrc containing password pass123",
+      "recommendation": "Remove .netrc from the repository and revoke passwords."
+    },
+    {
+      "rule_id": "SEC-006",
+      "category": "security",
+      "severity": "critical",
+      "file": ".npmrc",
+      "line": 7,
+      "description": "Committed .npmrc containing authentication tokens",
+      "evidence": ".npmrc containing _auth and _authToken",
+      "recommendation": "Remove .npmrc from the repository and revoke the npm auth tokens."
+    },
+    {
+      "rule_id": "SEC-007",
+      "category": "security",
+      "severity": "critical",
+      "file": ".remote-sync.json",
+      "line": 17,
+      "description": "Committed remote-sync configuration containing plaintext password",
+      "evidence": ".remote-sync.json containing password hunter22",
+      "recommendation": "Remove .remote-sync.json from the repository and rotate credentials."
+    },
+    {
+      "rule_id": "SEC-008",
+      "category": "security",
+      "severity": "critical",
+      "file": ".ssh/id_rsa",
+      "line": 1,
+      "description": "Committed SSH private key",
+      "evidence": ".ssh/id_rsa containing private key block",
+      "recommendation": "Remove the SSH private key from the repository and revoke/rotate the key pair."
+    },
+    {
+      "rule_id": "SEC-009",
+      "category": "security",
+      "severity": "critical",
+      "file": ".vscode/sftp.json",
+      "line": 6,
+      "description": "Committed VS Code SFTP configuration containing plaintext password",
+      "evidence": ".vscode/sftp.json containing password swordfish!23",
+      "recommendation": "Remove .vscode/sftp.json from the repository and rotate credentials."
+    },
+    {
+      "rule_id": "SEC-010",
+      "category": "security",
+      "severity": "critical",
+      "file": "cloud/.credentials",
+      "line": 4,
+      "description": "Committed AWS credentials file containing secret access key",
+      "evidence": "cloud/.credentials containing aws_secret_access_key",
+      "recommendation": "Remove cloud/.credentials from the repository and rotate AWS access keys."
+    },
+    {
+      "rule_id": "SEC-011",
+      "category": "security",
+      "severity": "critical",
+      "file": "cloud/.s3cfg",
+      "line": 1,
+      "description": "Committed .s3cfg configuration containing secret key",
+      "evidence": "cloud/.s3cfg containing secret_key",
+      "recommendation": "Remove cloud/.s3cfg from repository and rotate AWS keys."
+    },
+    {
+      "rule_id": "SEC-012",
+      "category": "security",
+      "severity": "critical",
+      "file": "cloud/.tugboat",
+      "line": 4,
+      "description": "Committed Tugboat configuration containing API key",
+      "evidence": "cloud/.tugboat containing api_key",
+      "recommendation": "Remove cloud/.tugboat from repository and revoke API key."
+    },
+    {
+      "rule_id": "SEC-013",
+      "category": "security",
+      "severity": "critical",
+      "file": "cloud/heroku.json",
+      "line": 4,
+      "description": "Committed Heroku configuration containing API key",
+      "evidence": "cloud/heroku.json containing HEROKU_API_KEY",
+      "recommendation": "Remove cloud/heroku.json from repository and rotate Heroku API key."
+    },
+    {
+      "rule_id": "SEC-014",
+      "category": "security",
+      "severity": "critical",
+      "file": "config",
+      "line": 10,
+      "description": "Committed IRC configuration containing plaintext password",
+      "evidence": "config containing IRC_PASS",
+      "recommendation": "Remove config from repository and rotate IRC password."
+    },
+    {
+      "rule_id": "SEC-015",
+      "category": "security",
+      "severity": "critical",
+      "file": "db/.pgpass",
+      "line": 2,
+      "description": "Committed PostgreSQL pgpass file containing plaintext password",
+      "evidence": "db/.pgpass containing database password",
+      "recommendation": "Remove db/.pgpass from repository and rotate password."
+    },
+    {
+      "rule_id": "SEC-031",
+      "category": "security",
+      "severity": "critical",
+      "file": "db/dbeaver-data-sources.xml",
+      "line": 4,
+      "description": "Committed DBeaver data sources XML containing database password",
+      "evidence": "db/dbeaver-data-sources.xml containing password=\"[REDACTED]\"",
+      "recommendation": "Remove db/dbeaver-data-sources.xml from version control and rotate database password."
+    },
+    {
+      "rule_id": "SEC-035",
+      "category": "security",
+      "severity": "critical",
+      "file": "db/dump.sql",
+      "line": 32,
+      "description": "Committed MySQL database dump containing user password hashes",
+      "evidence": "db/dump.sql containing password column hashes",
+      "recommendation": "Remove db/dump.sql from repository."
+    },
+    {
+      "rule_id": "SEC-016",
+      "category": "security",
+      "severity": "critical",
+      "file": "db/mongoid.yml",
+      "line": 4,
+      "description": "Committed Mongoid configuration containing database URI with credentials",
+      "evidence": "db/mongoid.yml containing mongodb URI with testpass",
+      "recommendation": "Remove db/mongoid.yml from repository and rotate database credentials."
+    },
+    {
+      "rule_id": "SEC-017",
+      "category": "security",
+      "severity": "critical",
+      "file": "db/robomongo.json",
+      "line": 14,
+      "description": "Committed RoboMongo configuration containing plaintext passwords",
+      "evidence": "db/robomongo.json containing userPassword",
+      "recommendation": "Remove db/robomongo.json from repository and rotate database/SSH passwords."
+    },
+    {
+      "rule_id": "SEC-018",
+      "category": "security",
+      "severity": "critical",
+      "file": "deployment-config.json",
+      "line": 5,
+      "description": "Committed deployment configuration containing SFTP password",
+      "evidence": "deployment-config.json containing password",
+      "recommendation": "Remove deployment-config.json from repository and rotate SFTP credentials."
+    },
+    {
+      "rule_id": "SEC-019",
+      "category": "security",
+      "severity": "critical",
+      "file": "etc/shadow",
+      "line": 20,
+      "description": "Committed system shadow file containing password hashes",
+      "evidence": "etc/shadow containing password hash for ubuntu",
+      "recommendation": "Remove etc/shadow from repository."
+    },
+    {
+      "rule_id": "SEC-020",
+      "category": "security",
+      "severity": "critical",
+      "file": "filezilla/filezilla.xml",
+      "line": 13,
+      "description": "Committed FileZilla configuration containing plaintext password",
+      "evidence": "filezilla/filezilla.xml containing Pass tag",
+      "recommendation": "Remove filezilla/filezilla.xml from repository and rotate FTP password."
+    },
+    {
+      "rule_id": "SEC-021",
+      "category": "security",
+      "severity": "critical",
+      "file": "filezilla/recentservers.xml",
+      "line": 13,
+      "description": "Committed FileZilla recentservers.xml containing base64 encoded passwords",
+      "evidence": "filezilla/recentservers.xml containing Pass tag",
+      "recommendation": "Remove filezilla/recentservers.xml from repository and rotate FTP passwords."
+    },
+    {
+      "rule_id": "SEC-022",
+      "category": "security",
+      "severity": "critical",
+      "file": "hub",
+      "line": 4,
+      "description": "Committed Hub configuration containing GitHub OAuth token",
+      "evidence": "hub containing oauth_token",
+      "recommendation": "Remove hub configuration from repository and revoke GitHub token."
+    },
+    {
+      "rule_id": "SEC-023",
+      "category": "security",
+      "severity": "critical",
+      "file": "misc-keys/cert-key.pem",
+      "line": 1,
+      "description": "Committed private SSL certificate key",
+      "evidence": "misc-keys/cert-key.pem containing private key",
+      "recommendation": "Remove misc-keys/cert-key.pem from repository and revoke/rotate certificate."
+    },
+    {
+      "rule_id": "SEC-024",
+      "category": "security",
+      "severity": "critical",
+      "file": "misc-keys/putty-example.ppk",
+      "line": 1,
+      "description": "Committed PuTTY private key file",
+      "evidence": "misc-keys/putty-example.ppk containing private key",
+      "recommendation": "Remove misc-keys/putty-example.ppk from repository and revoke/rotate key."
+    },
+    {
+      "rule_id": "SEC-025",
+      "category": "security",
+      "severity": "critical",
+      "file": "proftpdpasswd",
+      "line": 1,
+      "description": "Committed ProFTPD passwd file containing password hash",
+      "evidence": "proftpdpasswd containing password hash",
+      "recommendation": "Remove proftpdpasswd from repository and rotate user credentials."
+    },
+    {
+      "rule_id": "SEC-026",
+      "category": "security",
+      "severity": "critical",
+      "file": "sftp-config.json",
+      "line": 15,
+      "description": "Committed Sublime sftp-config.json containing plaintext password",
+      "evidence": "sftp-config.json containing password hunter22",
+      "recommendation": "Remove sftp-config.json from repository and rotate SFTP password."
+    },
+    {
+      "rule_id": "SEC-027",
+      "category": "security",
+      "severity": "critical",
+      "file": "ventrilo_srv.ini",
+      "line": 7,
+      "description": "Committed Ventrilo server INI containing plaintext admin and user passwords",
+      "evidence": "ventrilo_srv.ini containing AdminPassword",
+      "recommendation": "Remove ventrilo_srv.ini from repository and rotate passwords."
+    },
+    {
+      "rule_id": "SEC-028",
+      "category": "security",
+      "severity": "critical",
+      "file": "web/django/settings.py",
+      "line": 24,
+      "description": "Committed Django settings.py containing hardcoded SECRET_KEY",
+      "evidence": "web/django/settings.py containing SECRET_KEY",
+      "recommendation": "Move Django SECRET_KEY to environment variables."
+    },
+    {
+      "rule_id": "SEC-029",
+      "category": "security",
+      "severity": "critical",
+      "file": "web/js/salesforce.js",
+      "line": 7,
+      "description": "Hardcoded Salesforce login credentials in JavaScript source",
+      "evidence": "web/js/salesforce.js containing conn.login",
+      "recommendation": "Remove hardcoded credentials from source code and use environment variables."
+    },
+    {
+      "rule_id": "SEC-030",
+      "category": "security",
+      "severity": "critical",
+      "file": "web/ruby/config/master.key",
+      "line": 1,
+      "description": "Committed Rails master.key credentials file",
+      "evidence": "web/ruby/config/master.key containing encryption key",
+      "recommendation": "Remove master.key from version control and rotate master key."
+    },
+    {
+      "rule_id": "SEC-036",
+      "category": "security",
+      "severity": "critical",
+      "file": "web/ruby/secrets.yml",
+      "line": 14,
+      "description": "Committed Ruby on Rails secrets.yml containing secret_key_base",
+      "evidence": "web/ruby/secrets.yml containing secret_key_base",
+      "recommendation": "Remove secrets.yml from repository and use environment variables."
+    },
+    {
+      "rule_id": "SEC-037",
+      "category": "security",
+      "severity": "critical",
+      "file": "web/var/www/.env",
+      "line": 5,
+      "description": "Committed Laravel .env file containing app key, database, redis and mail passwords",
+      "evidence": "web/var/www/.env containing DB_PASSWORD and APP_KEY",
+      "recommendation": "Remove .env from repository and rotate all secrets."
+    },
+    {
+      "rule_id": "SEC-038",
+      "category": "security",
+      "severity": "critical",
+      "file": "web/var/www/public_html/.htpasswd",
+      "line": 1,
+      "description": "Committed .htpasswd file containing password hash",
+      "evidence": "web/var/www/public_html/.htpasswd containing admin password hash",
+      "recommendation": "Remove .htpasswd from repository and rotate password."
+    },
+    {
+      "rule_id": "SEC-039",
+      "category": "security",
+      "severity": "critical",
+      "file": "web/var/www/public_html/config.php",
+      "line": 11,
+      "description": "Committed PHP config file containing plaintext database password",
+      "evidence": "web/var/www/public_html/config.php containing dbpasswd",
+      "recommendation": "Remove config.php from repository and rotate database password."
+    },
+    {
+      "rule_id": "SEC-040",
+      "category": "security",
+      "severity": "critical",
+      "file": "web/var/www/public_html/wp-config.php",
+      "line": 20,
+      "description": "Committed WordPress wp-config.php containing database credentials and security salts",
+      "evidence": "web/var/www/public_html/wp-config.php containing DB_PASSWORD and AUTH_KEY",
+      "recommendation": "Remove wp-config.php from repository and rotate database passwords and keys."
+    }
+  ]
+}

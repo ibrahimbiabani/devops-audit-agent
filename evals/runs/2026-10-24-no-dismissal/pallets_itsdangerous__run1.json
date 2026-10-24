@@ -1,0 +1,15 @@
+{
+  "repository": "https://github.com/pallets/itsdangerous",
+  "violations": [
+    {
+      "rule_id": "BLD-001",
+      "category": "build_release",
+      "severity": "high",
+      "file": ".github/workflows/publish.yaml",
+      "line": 35,
+      "description": "Publication job does not run tests.",
+      "evidence": "The publish-pypi job in .github/workflows/publish.yaml does not run tests, nor does it strictly gate against a successful test run from a previous workflow. The build job (which the publish job depends on) does not include a test step.",
+      "recommendation": "Ensure tests are run as part of the build or release process, either by making publish jobs depend on a successful test job or by explicitly including a test step."
+    }
+  ]
+}

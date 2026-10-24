@@ -1,0 +1,219 @@
+2026-10-24 15:21:25,880 INFO HTTP Request: GET https://generativelanguage.googleapis.com/v1beta/models "HTTP/1.1 200 OK"
+2026-10-24 15:21:26,422 INFO HTTP Request: GET https://generativelanguage.googleapis.com/v1beta/models?pageToken=Cgptb2RlbHMvYXFh "HTTP/1.1 200 OK"
+2026-10-24 15:21:26,430 INFO Using GeminiLLM, models in order: gemini-3.1-pro-preview, gemini-2.5-pro, gemini-3.6-flash, gemini-3.5-flash, gemini-3-flash-preview, gemini-2.5-flash, gemini-3.5-flash-lite, gemini-3.1-flash-lite, gemini-2.5-flash-lite, gemma-4-31b-it, gemma-4-26b-a4b-it
+2026-10-24 15:21:26,430 INFO Cloning https://github.com/Plazmaz/leaky-repo
+2026-10-24 15:21:28,645 INFO Skipping Gemini model gemini-3.1-pro-preview: not available on the free tier (recorded earlier; retry in ~150h)
+2026-10-24 15:21:28,645 INFO Skipping Gemini model gemini-2.5-pro: model not found or no longer available (recorded earlier; retry in ~125h)
+2026-10-24 15:21:28,645 INFO Skipping Gemini model gemini-3.6-flash: daily free-tier quota used up (20 requests a day), resets in ~24h (recorded earlier; retry in ~21h)
+2026-10-24 15:21:28,645 INFO Skipping Gemini model gemini-3.5-flash: daily free-tier quota used up (20 requests a day), resets in ~24h (recorded earlier; retry in ~21h)
+2026-10-24 15:21:28,645 INFO Passing over Gemini model gemini-3-flash-preview for now: 2 request(s) of today's quota left
+2026-10-24 15:21:28,645 INFO Skipping Gemini model gemini-2.5-flash: model not found or no longer available (recorded earlier; retry in ~125h)
+2026-10-24 15:21:28,645 INFO Using Gemini model gemini-3.5-flash-lite
+2026-10-24 15:21:29,617 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:21:29,630 INFO Gemini model gemini-3.5-flash-lite is serving as gemini-3.5-flash-lite
+2026-10-24 15:21:29,725 INFO [turn 1] list_files({})
+2026-10-24 15:21:30,567 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:21:30,597 INFO [turn 2] search_code({"pattern": "github\\.com"})
+2026-10-24 15:21:32,046 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:21:32,066 INFO [turn 3] list_files({"pattern": "*.yml"})
+2026-10-24 15:21:32,994 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:21:33,012 INFO [turn 4] list_files({"subdir": ".github"})
+2026-10-24 15:21:33,851 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:21:33,854 INFO [turn 5] read_file({"start_line": 1, "end_line": 50, "path": "README.md"})
+2026-10-24 15:21:38,327 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:21:38,346 INFO [turn 6] finish_audit({"not_violations": [{"file": ".bash_profile", "reason": "Demo benchmark repository containing randomized/redacted simulated mock configuration files and fixtures for testing secret-scanning tools"}, {) -> error
+2026-10-24 15:21:39,404 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:21:39,408 INFO [turn 7] read_file({"end_line": 50, "path": ".git-credentials", "start_line": 1})
+2026-10-24 15:21:40,407 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:21:40,410 INFO [turn 8] read_file({"start_line": 1, "path": ".npmrc", "end_line": 50})
+2026-10-24 15:21:41,608 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:21:41,610 INFO [turn 9] record_violation({"description": "Committed .npmrc file containing base64 auth and npm auth token", "severity": "critical", "evidence": ".npmrc contains _auth and _authToken lines", "file": ".npmrc", "rule_id": "SEC-0)
+2026-10-24 15:21:42,048 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-10-24 15:21:42,051 WARNING Gemini model gemini-3.5-flash-lite unavailable (daily free-tier quota used up (500 requests a day), resets in ~21h); switching to the next model
+2026-10-24 15:21:42,051 INFO Passing over Gemini model gemini-3-flash-preview for now: 2 request(s) of today's quota left
+2026-10-24 15:21:42,051 INFO Using Gemini model gemini-3.1-flash-lite
+2026-10-24 15:21:43,783 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:21:43,785 INFO Gemini model gemini-3.1-flash-lite is serving as gemini-3.1-flash-lite
+2026-10-24 15:21:43,785 INFO [turn 10] record_violation({"rule_id": "SEC-002", "severity": "critical", "line": 1, "description": "Committed .git-credentials file containing plain-text credentials", "file": ".git-credentials", "category": "security", "evide)
+2026-10-24 15:21:48,092 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:21:48,123 INFO [turn 11] finish_audit({"summary": "Audited the leaky-repo GitHub repository (Plazmaz/leaky-repo), a public benchmark and testing fixture collection designed for secret-scanning tools. Despite its nature as a benchmark coll) -> error
+2026-10-24 15:21:49,600 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:21:49,603 INFO [turn 12] read_file({"path": ".bash_profile"})
+2026-10-24 15:21:51,192 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:21:51,195 INFO [turn 13] record_violation({"recommendation": "Remove credentials, rotate them, and use a secure secrets manager.", "severity": "critical", "line": 11, "category": "security", "file": ".bash_profile", "rule_id": "SEC-003", "evi)
+2026-10-24 15:21:52,820 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:21:52,824 INFO [turn 14] record_violation({"recommendation": "Revoke and rotate the token.", "category": "security", "line": 22, "rule_id": "SEC-004", "description": "Committed GitHub API token in .bash_profile", "file": ".bash_profile", "sev)
+2026-10-24 15:21:54,349 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:21:54,351 INFO [turn 15] record_violation({"evidence": "Contains MLAB_PASS line", "category": "security", "severity": "medium", "line": 24, "recommendation": "Remove password and rotate the database credentials.", "file": ".bash_profile", "de)
+2026-10-24 15:21:55,743 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:21:55,751 INFO [turn 16] read_file({"path": ".bashrc"})
+2026-10-24 15:21:57,323 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:21:57,326 INFO [turn 17] record_violation({"evidence": "Contains GMAIL_PASSWORD line", "rule_id": "SEC-006", "file": ".bashrc", "category": "security", "recommendation": "Remove password and change it.", "severity": "critical", "description":)
+2026-10-24 15:21:58,665 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:21:58,668 INFO [turn 18] record_violation({"category": "security", "description": "Committed Mailchimp API key in .bashrc", "line": 106, "recommendation": "Revoke and rotate the Mailchimp API key.", "evidence": "Contains MAILCHIMP_API_KEY lin)
+2026-10-24 15:22:01,134 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:22:01,136 INFO [turn 19] record_violation({"recommendation": "Revoke and rotate the GitHub token.", "severity": "critical", "file": ".bashrc", "category": "security", "description": "Committed GitHub token in .bashrc", "rule_id": "SEC-008", ")
+2026-10-24 15:22:05,551 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:22:05,582 INFO [turn 20] finish_audit({"summary": "Audited the leaky-repo GitHub repository (Plazmaz/leaky-repo), a public benchmark and testing fixture collection. Although intended as a benchmark, the repository committed numerous real-) -> error
+2026-10-24 15:22:06,912 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:22:06,915 INFO [turn 21] read_file({"path": ".docker/.dockercfg"})
+2026-10-24 15:22:08,459 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:22:08,462 INFO [turn 22] record_violation({"category": "security", "file": ".docker/.dockercfg", "description": "Committed Docker credentials in .dockercfg", "evidence": "Contains auth base64 strings in .dockercfg", "rule_id": "SEC-009", "sev)
+2026-10-24 15:22:09,986 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:22:09,989 INFO [turn 23] read_file({"path": ".docker/config.json"})
+2026-10-24 15:22:11,599 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:22:11,602 INFO [turn 24] record_violation({"evidence": "Contains auth base64 strings in .docker/config.json", "file": ".docker/config.json", "line": 5, "description": "Committed Docker credentials in .docker/config.json", "category": "securit)
+2026-10-24 15:22:13,315 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:22:13,318 INFO [turn 25] read_file({"path": ".ftpconfig"})
+2026-10-24 15:22:13,836 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-10-24 15:22:13,837 INFO Gemini gemini-3.1-flash-lite rate limited; retrying in 46s
+2026-10-24 15:23:01,584 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:23:01,586 INFO [turn 26] record_violation({"category": "security", "line": 6, "recommendation": "Remove passwords, rotate credentials, and avoid committing config files with passwords.", "file": ".ftpconfig", "severity": "critical", "descript)
+2026-10-24 15:23:03,037 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:23:03,040 INFO [turn 27] read_file({"path": ".idea/WebServers.xml"})
+2026-10-24 15:23:06,427 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:23:06,429 INFO [turn 28] record_violation({"recommendation": "Remove the committed password and rotate the credentials for the web server.", "evidence": "Contains password line with a hex-encoded string", "category": "security", "line": 6, "r)
+2026-10-24 15:23:07,857 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:23:07,859 INFO [turn 29] read_file({"path": ".mozilla/firefox/logins.json"})
+2026-10-24 15:23:09,945 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:23:09,948 INFO [turn 30] record_violation({"category": "security", "evidence": "Contains encryptedUsername and encryptedPassword fields", "description": "Committed browser login data in logins.json", "line": 11, "rule_id": "SEC-013", "recomme)
+2026-10-24 15:23:12,208 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:23:12,213 INFO [turn 31] read_file({"path": ".netrc"})
+2026-10-24 15:23:13,802 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:23:13,804 INFO [turn 32] record_violation({"line": 1, "category": "security", "severity": "critical", "description": "Committed SMTP credentials in .netrc", "rule_id": "SEC-014", "file": ".netrc", "evidence": "Contains plain-text credentials )
+2026-10-24 15:23:15,385 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:23:15,388 INFO [turn 33] read_file({"path": ".remote-sync.json"})
+2026-10-24 15:23:17,047 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:23:17,051 INFO [turn 34] record_violation({"category": "security", "description": "Committed FTP password in .remote-sync.json", "severity": "critical", "line": 17, "file": ".remote-sync.json", "evidence": "Contains password line in .remote-s)
+2026-10-24 15:23:19,193 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:23:19,196 INFO [turn 35] read_file({"path": ".ssh/id_rsa"})
+2026-10-24 15:23:21,671 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:23:21,674 INFO [turn 36] record_violation({"recommendation": "Immediately revoke the key and remove it from the repository history.", "description": "Committed private SSH key in .ssh/id_rsa", "category": "security", "evidence": "Contains a p)
+2026-10-24 15:23:23,210 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:23:23,212 INFO [turn 37] read_file({"path": ".vscode/sftp.json"})
+2026-10-24 15:23:23,889 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-10-24 15:23:23,890 INFO Gemini gemini-3.1-flash-lite rate limited; retrying in 36s
+2026-10-24 15:24:03,214 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:24:03,218 INFO [turn 38] record_violation({"recommendation": "Remove passwords, rotate credentials, and avoid committing config files with credentials.", "evidence": "Contains password line with plain-text password", "file": ".vscode/sftp.jso)
+2026-10-24 15:24:05,006 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:24:05,012 INFO [turn 39] read_file({"path": "cloud/.credentials"})
+2026-10-24 15:24:07,280 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:24:07,282 INFO [turn 40] record_violation({"evidence": "Contains aws_access_key_id and aws_secret_access_key lines", "rule_id": "SEC-018", "file": "cloud/.credentials", "category": "security", "line": 3, "severity": "critical", "recommendatio)
+2026-10-24 15:24:11,939 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:24:11,961 INFO [turn 41] finish_audit({"summary": "Audited the leaky-repo GitHub repository (Plazmaz/leaky-repo), a public benchmark collection. I have recorded 18 separate security violations for credentials committed to the repository. ) -> error
+2026-10-24 15:24:13,615 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:24:13,618 INFO [turn 42] read_file({"path": "cloud/.s3cfg"})
+2026-10-24 15:24:15,424 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:24:15,426 INFO [turn 43] record_violation({"severity": "critical", "rule_id": "SEC-019", "line": 1, "file": "cloud/.s3cfg", "category": "security", "description": "Committed AWS S3 credentials in cloud/.s3cfg", "recommendation": "Remove crede)
+2026-10-24 15:24:17,051 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:24:17,053 INFO [turn 44] read_file({"path": "cloud/.tugboat"})
+2026-10-24 15:24:18,967 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:24:18,970 INFO [turn 45] record_violation({"severity": "critical", "rule_id": "SEC-020", "line": 4, "file": "cloud/.tugboat", "evidence": "Contains api_key line", "recommendation": "Revoke and rotate the DigitalOcean API key.", "description":)
+2026-10-24 15:24:20,341 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:24:20,343 INFO [turn 46] read_file({"path": "cloud/heroku.json"})
+2026-10-24 15:24:22,562 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:24:22,565 INFO [turn 47] record_violation({"rule_id": "SEC-021", "severity": "critical", "evidence": "Contains HEROKU_API_KEY line", "description": "Committed Heroku API key in cloud/heroku.json", "recommendation": "Revoke and rotate the Hero)
+2026-10-24 15:24:23,278 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-10-24 15:24:23,279 INFO Gemini gemini-3.1-flash-lite rate limited; retrying in 36s
+2026-10-24 15:25:01,678 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:25:01,680 INFO [turn 48] read_file({"path": "config"})
+2026-10-24 15:25:05,578 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:25:05,581 INFO [turn 49] record_violation({"line": 10, "rule_id": "SEC-022", "description": "Committed IRC password in config", "category": "security", "recommendation": "Remove password and rotate IRC credentials.", "file": "config", "severi)
+2026-10-24 15:25:07,893 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:25:07,896 INFO [turn 50] read_file({"path": "db/.pgpass"})
+2026-10-24 15:25:09,786 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:25:09,788 INFO [turn 51] record_violation({"severity": "critical", "recommendation": "Remove password and rotate database credentials.", "evidence": "Contains plain-text password for PostgreSQL in .pgpass", "description": "Committed PostgreSQ)
+2026-10-24 15:25:11,665 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:25:11,669 INFO [turn 52] read_file({"path": "db/dump.sql"})
+2026-10-24 15:25:14,922 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:25:14,924 INFO [turn 53] record_violation({"file": "db/dump.sql", "description": "Committed database password hashes in db/dump.sql", "severity": "medium", "rule_id": "SEC-024", "evidence": "Contains hashed passwords in SQL insert statements")
+2026-10-24 15:25:16,664 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:25:16,667 INFO [turn 54] read_file({"path": "db/mongoid.yml"})
+2026-10-24 15:25:18,410 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:25:18,412 INFO [turn 55] record_violation({"severity": "critical", "recommendation": "Remove credentials, rotate them, and do not commit sensitive URIs.", "description": "Committed MongoDB URI with credentials in db/mongoid.yml", "file": "db/)
+2026-10-24 15:25:20,613 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:25:20,616 INFO [turn 56] read_file({"path": "db/robomongo.json"})
+2026-10-24 15:25:21,417 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-10-24 15:25:21,418 INFO Gemini gemini-3.1-flash-lite rate limited; retrying in 38s
+2026-10-24 15:26:01,938 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:26:01,941 INFO [turn 57] record_violation({"rule_id": "SEC-026", "line": 14, "evidence": "Contains userPassword, sshPassphrase, and sshUserPassword lines", "category": "security", "description": "Committed database and SSH credentials in db/r)
+2026-10-24 15:26:04,482 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:26:04,484 INFO [turn 58] read_file({"path": "deployment-config.json"})
+2026-10-24 15:26:06,262 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:26:06,264 INFO [turn 59] record_violation({"recommendation": "Remove passwords, rotate credentials, and avoid committing config files with credentials.", "line": 5, "severity": "critical", "category": "security", "file": "deployment-config.js)
+2026-10-24 15:26:08,264 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:26:08,266 INFO [turn 60] read_file({"path": "etc/shadow"})
+2026-10-24 15:26:09,968 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:26:09,971 INFO [turn 61] record_violation({"severity": "critical", "rule_id": "SEC-028", "line": 20, "evidence": "Contains password hash for the ubuntu user", "file": "etc/shadow", "category": "security", "description": "Committed system shad)
+2026-10-24 15:26:12,809 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:26:12,812 INFO [turn 62] read_file({"path": "filezilla/filezilla.xml"})
+2026-10-24 15:26:14,962 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:26:14,964 INFO [turn 63] record_violation({"severity": "critical", "file": "filezilla/filezilla.xml", "line": 13, "rule_id": "SEC-029", "description": "Committed FileZilla FTP password in filezilla/filezilla.xml", "category": "security", "evi)
+2026-10-24 15:26:17,444 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:26:17,447 INFO [turn 64] read_file({"path": "filezilla/recentservers.xml"})
+2026-10-24 15:26:19,232 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:26:19,234 INFO [turn 65] record_violation({"rule_id": "SEC-030", "evidence": "Contains base64 encoded Pass elements", "severity": "critical", "description": "Committed FileZilla server passwords in filezilla/recentservers.xml", "category": "s)
+2026-10-24 15:26:20,010 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-10-24 15:26:20,011 INFO Gemini gemini-3.1-flash-lite rate limited; retrying in 39s
+2026-10-24 15:27:02,067 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:27:02,070 INFO [turn 66] read_file({"path": "hub"})
+2026-10-24 15:27:04,317 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:27:04,321 INFO [turn 67] record_violation({"rule_id": "SEC-031", "description": "Committed GitHub oauth_token in hub config file", "evidence": "Contains oauth_token line", "line": 4, "file": "hub", "recommendation": "Revoke and rotate the Git)
+2026-10-24 15:27:05,898 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:27:05,900 INFO [turn 68] read_file({"path": "misc-keys/cert-key.pem"})
+2026-10-24 15:27:08,385 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:27:08,388 INFO [turn 69] record_violation({"recommendation": "Revoke and rotate the key, remove file from repository.", "file": "misc-keys/cert-key.pem", "line": 1, "rule_id": "SEC-032", "description": "Committed private RSA key in misc-keys/)
+2026-10-24 15:27:10,513 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:27:10,516 INFO [turn 70] read_file({"path": "misc-keys/putty-example.ppk"})
+2026-10-24 15:27:12,495 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:27:12,497 INFO [turn 71] record_violation({"line": 1, "rule_id": "SEC-033", "file": "misc-keys/putty-example.ppk", "category": "security", "severity": "critical", "recommendation": "Revoke and rotate the key, remove file from repository.", "d)
+2026-10-24 15:27:15,250 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:27:15,253 INFO [turn 72] read_file({"path": "proftpdpasswd"})
+2026-10-24 15:27:17,218 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:27:17,221 INFO [turn 73] record_violation({"description": "Committed ProFTPD password hash in proftpdpasswd", "rule_id": "SEC-034", "category": "security", "severity": "medium", "file": "proftpdpasswd", "line": 1, "recommendation": "Remove fi)
+2026-10-24 15:27:17,994 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-10-24 15:27:17,994 INFO Gemini gemini-3.1-flash-lite rate limited; retrying in 41s
+2026-10-24 15:28:03,212 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:28:03,216 INFO [turn 74] read_file({"path": "sftp-config.json"})
+2026-10-24 15:28:06,074 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:28:06,076 INFO [turn 75] record_violation({"severity": "critical", "evidence": "Contains password line in sftp-config.json", "line": 15, "file": "sftp-config.json", "category": "security", "rule_id": "SEC-035", "description": "Committed SFTP )
+2026-10-24 15:28:08,135 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:28:08,139 INFO [turn 76] read_file({"path": "ventrilo_srv.ini"})
+2026-10-24 15:28:10,947 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:28:10,952 INFO [turn 77] record_violation({"evidence": "Contains AdminPassword and Password lines", "description": "Committed Ventrilo server passwords in ventrilo_srv.ini", "line": 7, "file": "ventrilo_srv.ini", "rule_id": "SEC-036", "catego)
+2026-10-24 15:28:12,856 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:28:12,862 INFO [turn 78] read_file({"path": "web/django/settings.py"})
+2026-10-24 15:28:16,241 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:28:16,243 INFO [turn 79] record_violation({"recommendation": "Remove SECRET_KEY from version control and use environment variables.", "description": "Committed Django SECRET_KEY in web/django/settings.py", "evidence": "Contains SECRET_KEY lin)
+2026-10-24 15:28:18,203 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:28:18,206 INFO [turn 80] read_file({"path": "web/ruby/config/master.key"})
+2026-10-24 15:28:21,677 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:28:21,679 INFO [turn 81] record_violation({"line": 1, "severity": "critical", "description": "Committed Rails master.key in web/ruby/config/master.key", "recommendation": "Remove the master key from the repository and rotate it.", "file": "we)
+2026-10-24 15:28:22,325 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-10-24 15:28:22,326 INFO Gemini gemini-3.1-flash-lite rate limited; retrying in 37s
+2026-10-24 15:29:01,427 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:29:01,429 INFO [turn 82] read_file({"path": "web/ruby/secrets.yml"})
+2026-10-24 15:29:03,451 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:29:03,455 INFO [turn 83] record_violation({"severity": "critical", "file": "web/ruby/secrets.yml", "rule_id": "SEC-039", "line": 14, "evidence": "Contains secret_key_base values for development, test, and production", "description": "Committe)
+2026-10-24 15:29:05,569 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:29:05,572 INFO [turn 84] read_file({"path": "web/var/www/.env"})
+2026-10-24 15:29:07,664 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:29:07,667 INFO [turn 85] record_violation({"line": 14, "recommendation": "Remove credentials, use environment variables and a secrets manager.", "evidence": "Contains DB_PASSWORD, REDIS_PASSWORD, and MAIL_PASSWORD lines", "file": "web/var/www)
+2026-10-24 15:29:09,958 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:29:09,961 INFO [turn 86] read_file({"path": "web/var/www/public_html/.htpasswd"})
+2026-10-24 15:29:12,250 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:29:12,253 INFO [turn 87] record_violation({"category": "security", "rule_id": "SEC-041", "severity": "medium", "recommendation": "Remove file and rotate the user password.", "evidence": "Contains user:hash entry", "description": "Committed .h)
+2026-10-24 15:29:14,411 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:29:14,414 INFO [turn 88] read_file({"path": "web/var/www/public_html/config.php"})
+2026-10-24 15:29:15,249 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-10-24 15:29:15,250 INFO Gemini gemini-3.1-flash-lite rate limited; retrying in 44s
+2026-10-24 15:30:02,095 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:30:02,098 INFO [turn 89] record_violation({"recommendation": "Remove credentials, use environment variables, and rotate database passwords.", "severity": "critical", "category": "security", "line": 11, "file": "web/var/www/public_html/config.)
+2026-10-24 15:30:05,308 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:30:05,311 INFO [turn 90] read_file({"path": "web/var/www/public_html/wp-config.php"})
+2026-10-24 15:30:07,132 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:30:07,134 INFO [turn 91] record_violation({"severity": "critical", "description": "Committed WordPress credentials and salts in wp-config.php", "evidence": "Contains DB_PASSWORD and authentication keys/salts lines", "file": "web/var/www/publi)
+2026-10-24 15:30:09,170 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:30:09,186 INFO [turn 92] finish_audit({"summary": "Audited the leaky-repo GitHub repository (Plazmaz/leaky-repo), a public benchmark for secret-scanning tools. Despite its nature as a benchmark repository, it committed numerous real-looki)
+Wrote 43 violation(s) to evals\runs\2026-10-24-no-dismissal\Plazmaz_leaky-repo__run2.json (model: gemini-3.5-flash-lite, gemini-3.1-flash-lite)
+Tool-call trace: evals\runs\2026-10-24-no-dismissal\Plazmaz_leaky-repo__run2.trace.jsonl

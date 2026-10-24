@@ -1,0 +1,4 @@
+{"audit": "Plazmaz_leaky-repo__run1", "exit": 0, "seconds": 37, "result": "Wrote 40 violation(s) to evals\runs\2026-10-24-no-dismissal\Plazmaz_leaky-repo__run1.json (model: gemini-3.5-f"}
+{"audit": "chalk_chalk__run1", "exit": 0, "seconds": 49, "result": "Wrote 0 violation(s) to evals\runs\2026-10-24-no-dismissal\chalk_chalk__run1.json (model: gemini-3.5-flash-lit"}
+{"audit": "Plazmaz_leaky-repo__run2", "exit": 0, "seconds": 525, "result": "Wrote 43 violation(s) to evals\runs\2026-10-24-no-dismissal\Plazmaz_leaky-repo__run2.json (model: gemini-3.5-f"}
+{"audit": "pallets_itsdangerous__run1", "exit": 0, "seconds": 62, "result": "Wrote 1 violation(s) to evals\runs\2026-10-24-no-dismissal\pallets_itsdangerous__run1.json (model: gemini-3.1-"}
