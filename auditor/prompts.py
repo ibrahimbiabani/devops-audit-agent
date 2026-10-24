@@ -32,7 +32,9 @@ maintainability problems such as large copy-pasted files.
 4. Testing (testing, TEST-nnn): missing tests, failing tests, no CI test execution.
    - A code project with no tests; CI that exists but never runs the tests; tests that are \
 demonstrably broken (e.g. a test step that cannot succeed as written). You cannot run tests, so \
-never claim tests fail without such evidence.
+never claim tests fail without such evidence. Testing findings are about whether tests exist, \
+run in CI and can pass - not about the style or robustness of test or helper code (conftest.py, \
+noxfile.py, tox.ini), which is out of scope.
 5. GitHub Actions / CI (ci_cd, CI-nnn): incorrect triggers, ineffective gates, skipped validation.
    - Triggers that never fire for the code they should check (wrong branch name, CI only on \
 `workflow_dispatch`, pull requests never validated); gates that do not gate (`continue-on-error: \
@@ -49,9 +51,14 @@ repository_hygiene.
 that handle secrets, `curl -v` / `--verbose` with authorization headers, secrets passed as \
 command-line arguments, sensitive files uploaded as artifacts.
    - Unsafe workflow permissions: `permissions: write-all` or broader write access than the \
-job needs, especially on workflows triggered by pull requests, issues or comments. A missing \
-`permissions:` block is a finding only once for the whole repository (list the workflows in \
-`evidence`), not once per file.
+job needs, especially on workflows triggered by pull requests, issues or comments.
+   - A missing `permissions:` block means the job gets the repository's default GITHUB_TOKEN \
+permissions, which you cannot see. Report it only where that default is risky: the workflow \
+is triggered by pull_request_target, issues, issue_comment, workflow_run or other events \
+carrying untrusted input, or its steps push, publish, deploy, merge, comment or label. Then \
+report it once for the whole repository and list the affected workflows in `evidence`. A \
+missing block on an ordinary build or test workflow (push, pull_request, schedule) is not a \
+violation.
 7. Configuration (configuration, CFG-nnn): machine-specific paths, committed local settings, \
 poor environment separation.
    - Absolute paths to one developer's machine (C:\\Users\\..., /home/<user>/...); committed \
@@ -111,6 +118,10 @@ Not violations - do not report these:
 - Missing optional files: SECURITY.md, CODE_OF_CONDUCT.md, issue templates, a changelog, \
 badges; and a missing contributing guide or PR template where review guidance is not relevant.
 - http:// links in documentation or package metadata.
+- A missing `permissions:` block on a workflow that only builds or tests code on push, \
+pull_request or a schedule.
+- Small code nitpicks (an unsorted directory listing, a magic index) - they are general code \
+issues, not maintainability problems.
 - Missing CI, tests, linting or a dependency manifest in a repository with no buildable or \
 runnable software.
 - An absent tool when an equivalent exists (pyproject.toml instead of requirements.txt, ruff \
@@ -126,8 +137,8 @@ Granularity:
 even in the same file (a hardcoded secret, a secret echoed to the log, and `set -x` next to \
 secrets are three violations).
 - When the same anti-pattern appears in several places, record it once at the most \
-representative location and list the other locations in `evidence` (e.g. a missing \
-`permissions:` block in five workflows is one violation).
+representative location and list the other locations in `evidence` (e.g. the same untrusted \
+`${{{{ github.event.* }}}}` interpolation in three workflows is one violation).
 - Credentials are the exception: every committed credential file and every hardcoded credential \
 is its own violation at its own file and line, because each one must be revoked and rotated \
 separately. Never group several credentials into one finding.

@@ -93,6 +93,10 @@ differently:
 | 404 (model retired) | Move to the next model | 7 days |
 | 400 "… not enabled / not supported" | The model lacks a feature the agent needs; move on | 7 days |
 | 401 / 403, or any other 400 | Stop with a clear error; these are configuration problems | — |
+| Dropped connection or DNS failure | This machine's network, not the model: retried on the same model up to 5 times (waits of about 2–16 s), then stop with a clear error | not skipped |
+
+`git clone` is retried the same way, twice, after 5 s and then 15 s, but only for network
+errors. A repository that doesn't exist fails at once.
 
 Gemma rejects conversations that contain Gemini's thought signatures. When a Gemma model takes
 over, earlier turns are therefore replayed to it without them; Gemini models still get them
@@ -184,10 +188,15 @@ rejects duplicates:
 - a `rule_id` that is already used; the error names the next free one
 
 The same description in two *different* files is accepted, because each committed credential is
-its own violation. It ends
-the run with `finish_audit`. The first `finish_audit` is refused if the model has never opened
-some workflow file or some file tagged `[sensitive name]`. The refusal lists those files, and
-a second `finish_audit` always ends the run, so the model keeps the final say. When the turn
+its own violation.
+
+The model ends the run with `finish_audit`, which is refused in two bounded cases:
+- **A finding was rejected in the same turn.** Otherwise the model would never see the error,
+  and the finding would be lost. This refusal happens at most twice per audit.
+- **Unopened files.** The model never opened some workflow file, or some file tagged
+  `[sensitive name]`. The refusal lists them, and it happens once.
+
+After that, `finish_audit` always ends the run, so the model keeps the final say. When the turn
 limit is reached, the violations recorded so far are still written.
 
 **Scope.** The system prompt (`auditor/prompts.py`) limits the audit to the assignment's nine

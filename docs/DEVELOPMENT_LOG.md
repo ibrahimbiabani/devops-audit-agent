@@ -17,6 +17,8 @@ did not work. Each step lists the commits that implement it.
 | 2026-10-23 | 10 | Free-tier model check; probe replaced by local quota counting; Gemma added as last resort |
 | 2026-10-23 | 11 | Fourth evaluation (all 7 repositories) after the scope and model-selection changes |
 | 2026-10-23 | 12 | Requirements review; one finding per credential, stricter duplicate checks, trace by default |
+| 2026-10-23/24 | 13 | Fifth evaluation, after the quota reset and the Step 12 fixes |
+| 2026-10-24 | 14 | Fixes from Step 13: rejected findings can't be lost, network retries, narrower permissions and testing rules |
 
 ---
 
@@ -722,3 +724,114 @@ The suite has 116 tests, all passing.
 
 These changes affect detection. They have not been evaluated live yet; the next evaluation
 round measures them.
+
+---
+
+## Step 13: Fifth evaluation, after the quota reset and the Step 12 fixes
+
+### Setup
+
+- **Runner and settings:** the same as Steps 8 and 11. All 7 repositories, `--max-turns 20`,
+  no model settings.
+- **Timing:** the round started at 09:11 Pacific on Oct 23, after the daily quota reset, so the
+  Flash models were available again.
+- **Results:** in
+  [`evals/runs/2026-10-23-flash-after-reset/`](../evals/runs/2026-10-23-flash-after-reset/).
+  `summary.json` merges the two attempts described below. A scan found no secrets: its one
+  hit was a search pattern the model typed (`BEGIN PRIVATE KEY`). No local paths appear in
+  any file.
+
+### Reliability
+
+- **First attempt: 4 audits succeeded, then the machine's network dropped.**
+  - Grafter and leaky-repo ended with `Could not reach the Gemini API: [WinError 10054] An
+    existing connection was forcibly closed by the remote host`.
+  - sampleproject ended with `Could not resolve host: github.com`.
+  - All three exited 1 with a clear message, as specified. Their logs and traces are kept as
+    `*.attempt1-network-failure.*`, and `summary-attempt1.json` holds the original summary.
+- **Retry:** the three were rerun the next morning (09:23–09:41 Pacific, Oct 24) and all exited 0.
+- **Total for the 7 successful audits:** 111 requests (98 OK, 6 × 429, 3 × 503, 4 × 504).
+- **The stronger models were mostly unavailable in practice.**
+  - `3.8-flash` and `3.7-flash` returned 504 (server timed out after about 2 minutes) three
+    times each.
+  - `3.6-flash` reported its daily quota used up after only a few requests, the third time
+    its quota has not matched our count (see Step 10).
+  - So only gary-mello and jpr5 ran mainly on Flash models (`3.6-flash`, `3-flash-preview`).
+    The other five ended up on `3.5-flash-lite`.
+- **The quota reserve worked as designed.** After two audits, `3-flash-preview` had 8
+  requests left, below the reserve of 10. It was passed over without a request.
+
+### Detection
+
+| Repository | Step 11 | Step 13 | Serving model |
+|---|---|---|---|
+| gary-mello (held-out) | 6 / 7 + 2 extras | 6 / 7, 10 findings. Extras: auto-merge without review, deploy without tests, `npm ci` without a lockfile, `npm test` with no `package.json`, no `.gitignore`, no review guidance next to auto-merge. All are defensible, but they add volume. Still misses the self-hosted runner. | 3.6-flash → 3-flash-preview |
+| jpr5 (held-out) | 4 / 6 | **5 / 6, the best so far.** It caught the `inputs.*` injection in `manual-deploy.yml` for the first time and still misses `curl … \| bash`. Extras: no real tests (dummy test script), CI never builds, no `.gitignore`, no linter. | 3-flash-preview |
+| itsdangerous (healthy) | 0 | **1 false positive:** missing `permissions:` block | 3.5-flash-lite |
+| paastha1 | 6 / 6 + 5 extras + 2 duplicates | **6 / 6, 10 findings, no duplicates.** Each hardcoded credential is now its own finding (4), as Step 12 intended. | 3.5-flash-lite |
+| Grafter | 3 / 5 | **0: lost to a loop flaw** (below) | 3.8-flash → 3.5-flash-lite |
+| leaky-repo | 9 / 35 named in 3 findings | **16 / 35, one finding per file, no false positives.** The best so far (Step 5: 14). | 3.5-flash-lite |
+| sampleproject (healthy) | 1 borderline | **2 false positives:** missing `permissions:` block, and a "fragile" `os.listdir` index in `noxfile.py` (a code nitpick filed under testing) | 3.5-flash-lite |
+
+### Analysis
+
+1. **The Step 12 credential rule worked.** leaky-repo went from 3 grouped findings to 16
+   separate ones, and paastha1 reported each of its 4 hardcoded credentials separately. Both
+   ran on Flash-Lite, so this is the prompt's effect, not a stronger model's.
+2. **The duplicate checks worked.** paastha1 had no duplicates, and no audit reused a rule ID.
+3. **Grafter was lost to a loop flaw, not a detection miss.**
+   - The audit read every workflow on `3.8-flash`.
+   - It then spent turns 6–11 on broad searches, at 30–120 s per turn.
+   - After two 504s it was switched to Flash-Lite. On turn 13 that model sent two
+     `record_violation` calls with garbled arguments (`rule_id: "COL-001,severity:"`).
+   - Both were rejected, but `finish_audit` **in the same turn** ended the run before the model
+     could correct them. Step 5 listed exactly this as a candidate fix, and this time it
+     cost the whole repository.
+4. **Missing `permissions:` blocks cause false positives on healthy repositories.**
+   - It was reported on itsdangerous here and on sampleproject in Steps 11 and 13.
+   - Whether a missing block is dangerous depends on the repository's default token setting,
+     which is a remote setting the assignment says not to infer.
+   - But it is also a planted defect in gary-mello (`no-permissions-declared.yml`), so
+     dropping it would cost recall there.
+5. **A dropped network connection ends the audit at once.** `httpx` connection errors are
+   treated as fatal, so one reset connection cost two audits that a retry would likely have
+   saved.
+
+### Candidate fixes
+
+1. Refuse `finish_audit` in a turn in which a `record_violation` was rejected, at most twice,
+   so the model can resubmit its findings.
+2. Retry connection resets and DNS failures with backoff before giving up. They are network
+   problems, not model problems, so no model is recorded as unavailable.
+3. Missing `permissions:` block: decide between reporting it always (recall on planted
+   defects) and only where a trigger or step makes the default token risky (precision on
+   healthy repositories).
+4. Testing findings must be about missing, unrun or demonstrably broken tests, not the style
+   of test helper code.
+
+---
+
+## Step 14: Fixes from the fifth evaluation
+
+| # | Change | Step 13 evidence | Where |
+|---|---|---|---|
+| 1 | `finish_audit` is refused in a turn in which a `record_violation` was rejected. The refusal says how many were rejected and asks for them to be corrected and resubmitted. It happens at most twice per audit and never on the last turn, so the model still has the final say. | Grafter: two garbled findings (`rule_id: "COL-001,severity:"`) were rejected, and the `finish_audit` in the same turn ended the audit with 0 findings | `auditor/loop.py` |
+| 2 | Network errors (`httpx.TransportError`: connection reset, DNS failure, …) are retried on the same model up to 5 times, waiting about 2, 4, 8 and 16 s. They do not count as one of the model's 2 attempts, and no model is recorded as unavailable. Timeouts keep their existing handling (the request reached a congested model). | First attempt: `[WinError 10054] … forcibly closed by the remote host` ended Grafter and leaky-repo immediately | `auditor/gemini_llm.py` (`_send`) |
+| 2 | `git clone` is retried twice (after 5 s, then 15 s) when git's error is a network error ("Could not resolve host", "Connection reset", …). Other failures, such as a repository that does not exist, are still reported at once. | First attempt: `Could not resolve host: github.com` ended sampleproject | `auditor/repo.py` |
+| 3 | A missing `permissions:` block is reported only where the default token is risky: triggers carrying untrusted input (pull_request_target, issues, issue_comment, workflow_run) or steps that push, publish, deploy, merge, comment or label. A missing block on an ordinary build/test workflow is listed under "not violations". The repository's default token permission is a remote setting the assignment says not to infer. | False positive on itsdangerous (Step 13) and sampleproject (Steps 11, 13) | `auditor/prompts.py` |
+| 4 | Testing findings are about whether tests exist, run in CI and can pass, not the style of test or helper code. Small code nitpicks are listed under "not violations". | sampleproject: an `os.listdir` index in `noxfile.py` was reported as `TEST-001` | `auditor/prompts.py` |
+
+**Trade-off in change 3:** gary-mello's planted `no-permissions-declared.yml` is a push/PR
+build workflow, so this finding will probably no longer be reported there. That costs one
+point of recall on a repository that planted it, in exchange for not reporting it on healthy
+repositories. The hidden type-C repository is there specifically to test false positives.
+
+**Tests:** 7 new tests cover:
+- finish refused after a rejected finding, then accepted after resubmission
+- that refusal being bounded
+- a network error retried on the same model without blocking it
+- a network that stays down giving one clear error, with no model blamed
+- clone retry on a DNS error, no retry for a missing repository, and giving up after three
+  network failures
+
+The suite has 123 tests, all passing.

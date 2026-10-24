@@ -52,6 +52,11 @@ STATIC_CHAIN = (
     "gemma-4-26b-a4b-it",
 )
 ATTEMPTS_PER_MODEL = 2
+# A dropped connection or failed DNS lookup is a problem with this machine's network, not with
+# the model: it is retried on the same model (waits of about 2, 4, 8 and 16 s) without counting as
+# one of the model's attempts, and no model is recorded as unavailable. Seen on 2026-10-23, when a
+# network outage ended two audits on their first "connection forcibly closed" error.
+NETWORK_ATTEMPTS = 5
 MAX_RETRY_WAIT = 60.0
 TRANSIENT_STATUS = {500, 502, 503, 504}
 REFUSAL_REASONS = {"SAFETY", "BLOCKLIST", "PROHIBITED_CONTENT", "SPII"}
@@ -550,7 +555,7 @@ class GeminiLLM:
         for attempt in range(ATTEMPTS_PER_MODEL):
             final = attempt == ATTEMPTS_PER_MODEL - 1
             try:
-                return self.client.models.generate_content(model=model, contents=contents, config=config)
+                return self._send(model, contents, config)
             except errors.ClientError as e:
                 if e.code in (401, 403):
                     raise LLMError("Gemini API authentication failed; check GEMINI_API_KEY") from e
@@ -599,6 +604,21 @@ class GeminiLLM:
             except httpx.HTTPError as e:
                 raise LLMError(f"Could not reach the Gemini API: {e}") from e
         raise ModelUnavailable("retries exhausted", COOLDOWN["overloaded"])  # not reached
+
+    def _send(self, model: str, contents: Any, config: types.GenerateContentConfig):
+        """One request, retried while the network itself fails (see NETWORK_ATTEMPTS)."""
+        for n in range(NETWORK_ATTEMPTS):
+            try:
+                return self.client.models.generate_content(model=model, contents=contents, config=config)
+            except httpx.TimeoutException:
+                raise  # the request reached the server and hung: the model is congested
+            except httpx.TransportError as e:
+                if n == NETWORK_ATTEMPTS - 1:
+                    raise LLMError(f"Could not reach the Gemini API after {NETWORK_ATTEMPTS} attempts: {e}") from e
+                delay = _backoff(n)
+                log.warning("Network error reaching Gemini (%s); retrying in %.0fs", e, delay)
+                self._sleep(delay)
+        raise LLMError("Could not reach the Gemini API")  # not reached
 
     def _note_version(self, model: str, resp: types.GenerateContentResponse) -> None:
         version = resp.model_version or model

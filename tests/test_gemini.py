@@ -531,3 +531,23 @@ def test_server_timeout_504_moves_on_without_retrying():
     llm.create(*ASK)
     assert models.calls == ["m-a", "m-b"] and sleeps == []
     assert "server timed out" in llm.skipped[0]
+
+
+def test_network_error_is_retried_on_the_same_model_without_blocking_it(tmp_path):
+    clock, path = Clock(), tmp_path / "status.json"
+    reset = httpx.ReadError("[WinError 10054] An existing connection was forcibly closed by the remote host")
+    models = ScriptedModels(m_a=[reset, httpx.ConnectError("dns"), ok("m-a")])
+    sleeps = []
+    llm = GeminiLLM(model="m-a", fallbacks=["m-b"], client=NS(models=models), sleep=sleeps.append,
+                    status_path=path, clock=clock)  # fmt: skip
+    llm.create(*ASK)
+    assert models.calls == ["m-a"] * 3 and len(sleeps) == 2
+    assert ModelStatus(path, clock).blocked("m-a") is None and llm.skipped == []
+
+
+def test_network_down_for_good_is_one_clear_error():
+    models = ScriptedModels(m_a=[httpx.ConnectError("dns")] * 5, m_b=[ok("m-b")])
+    llm, sleeps = make(models)
+    with pytest.raises(LLMError, match="Could not reach the Gemini API after 5 attempts"):
+        llm.create(*ASK)
+    assert models.calls == ["m-a"] * 5 and len(sleeps) == 4  # no model was blamed for the network

@@ -21,6 +21,8 @@ log = logging.getLogger(__name__)
 
 MAX_NUDGES = 2
 MAX_UNREAD_LISTED = 25
+# How often finish_audit is refused because a record_violation in the same turn was rejected.
+MAX_REJECTED_FINISH_REFUSALS = 2
 
 
 def trace_preview(tool: str, output: str, is_error: bool) -> str:
@@ -64,6 +66,8 @@ class AuditAgent:
         self.turn = 0
         self.read_paths: set[str] = set()
         self.coverage_checked = False
+        self.rejected_this_turn = 0  # record_violation calls rejected in the current turn
+        self.rejected_finish_refusals = 0
 
     # ------------------------------------------------------------------ run
 
@@ -98,6 +102,7 @@ class AuditAgent:
                 )
                 continue
 
+            self.rejected_this_turn = 0
             results = [self._execute(block) for block in tool_uses]
             remaining = self.max_turns - self.turn
             if not self.finished and remaining <= 3:
@@ -132,6 +137,8 @@ class AuditAgent:
                     self.read_paths.add(self.repo_tools.relpath(args["path"]))
         except (inspection.ToolError, ViolationError) as e:
             output, is_error = f"Error: {e}", True
+            if name == "record_violation":
+                self.rejected_this_turn += 1
         except Exception as e:  # a tool bug must not kill the audit
             log.exception("Tool %s crashed", name)
             output, is_error = f"Error: tool {name} failed unexpectedly ({type(e).__name__})", True
@@ -146,11 +153,20 @@ class AuditAgent:
         return result
 
     def _finish(self, args: dict[str, Any]) -> str:
-        """End the audit, unless workflows or sensitive-looking files were never opened.
+        """End the audit, unless findings were just rejected or required files were never opened.
 
-        The check fires once: a second finish_audit always ends the run, so the
-        model keeps the final say and the loop cannot get stuck.
+        - A record_violation rejected in this same turn would otherwise be lost: the model
+          never sees the error. Refused at most MAX_REJECTED_FINISH_REFUSALS times.
+        - Workflows and sensitive-looking files that were never opened: refused once.
+        Both checks are bounded, so the model keeps the final say and the loop cannot get stuck.
         """
+        has_turn_left = self.turn < self.max_turns
+        if self.rejected_this_turn and has_turn_left and self.rejected_finish_refusals < MAX_REJECTED_FINISH_REFUSALS:
+            self.rejected_finish_refusals += 1
+            raise inspection.ToolError(
+                f"Not finished: {self.rejected_this_turn} record_violation call(s) in this turn were rejected "
+                "(see their errors). Correct and resubmit them, then call finish_audit again."
+            )
         unread = [f for f in self.repo_tools.must_read_files() if f not in self.read_paths]
         enough_turns = self.max_turns - self.turn >= 2
         if unread and enough_turns and not self.coverage_checked:
