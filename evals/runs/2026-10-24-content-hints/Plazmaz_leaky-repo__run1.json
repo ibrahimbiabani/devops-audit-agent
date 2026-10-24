@@ -1,0 +1,385 @@
+{
+  "repository": "https://github.com/Plazmaz/leaky-repo",
+  "violations": [
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "critical",
+      "file": ".bash_profile",
+      "line": 11,
+      "description": "Committed AWS credentials in .bash_profile",
+      "evidence": "AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY exported in .bash_profile",
+      "recommendation": "Remove credential files from the repository and revoke the exposed credentials."
+    },
+    {
+      "rule_id": "SEC-037",
+      "category": "security",
+      "severity": "critical",
+      "file": ".bashrc",
+      "line": 105,
+      "description": "Committed Gmail and Mailchimp credentials in .bashrc",
+      "evidence": "GMAIL_PASSWORD and MAILCHIMP_API_KEY exported in .bashrc",
+      "recommendation": "Remove credential files from the repository and revoke the exposed credentials."
+    },
+    {
+      "rule_id": "SEC-002",
+      "category": "security",
+      "severity": "critical",
+      "file": ".docker/.dockercfg",
+      "line": 4,
+      "description": "Committed Docker configuration with auth token",
+      "evidence": "Docker auth token present in .docker/.dockercfg",
+      "recommendation": "Remove credential files from the repository and revoke the exposed credentials."
+    },
+    {
+      "rule_id": "SEC-003",
+      "category": "security",
+      "severity": "critical",
+      "file": ".docker/config.json",
+      "line": 5,
+      "description": "Committed Docker configuration with auth token in config.json",
+      "evidence": "Docker auth token present in .docker/config.json",
+      "recommendation": "Remove credential files from the repository and revoke the exposed credentials."
+    },
+    {
+      "rule_id": "SEC-004",
+      "category": "security",
+      "severity": "critical",
+      "file": ".ftpconfig",
+      "line": 6,
+      "description": "Committed SFTP configuration with password in .ftpconfig",
+      "evidence": "Password present in .ftpconfig",
+      "recommendation": "Remove credential files from the repository and revoke the exposed credentials."
+    },
+    {
+      "rule_id": "SEC-005",
+      "category": "security",
+      "severity": "critical",
+      "file": ".git-credentials",
+      "line": 1,
+      "description": "Committed Git credentials file",
+      "evidence": "Git credentials stored in .git-credentials",
+      "recommendation": "Remove credential files from the repository and revoke the exposed credentials."
+    },
+    {
+      "rule_id": "SEC-006",
+      "category": "security",
+      "severity": "critical",
+      "file": ".idea/WebServers.xml",
+      "line": 6,
+      "description": "Committed WebServers configuration with password",
+      "evidence": "Password present in .idea/WebServers.xml",
+      "recommendation": "Remove credential files from the repository and revoke the exposed credentials."
+    },
+    {
+      "rule_id": "SEC-007",
+      "category": "security",
+      "severity": "critical",
+      "file": ".netrc",
+      "line": 1,
+      "description": "Committed .netrc file with mail server credentials",
+      "evidence": "Credentials present in .netrc",
+      "recommendation": "Remove credential files from the repository and revoke the exposed credentials."
+    },
+    {
+      "rule_id": "SEC-008",
+      "category": "security",
+      "severity": "critical",
+      "file": ".npmrc",
+      "line": 9,
+      "description": "Committed .npmrc file with auth token",
+      "evidence": "_authToken present in .npmrc",
+      "recommendation": "Remove credential files from the repository and revoke the exposed credentials."
+    },
+    {
+      "rule_id": "SEC-009",
+      "category": "security",
+      "severity": "critical",
+      "file": ".remote-sync.json",
+      "line": 17,
+      "description": "Committed remote-sync configuration with password",
+      "evidence": "Password present in .remote-sync.json",
+      "recommendation": "Remove credential files from the repository and revoke the exposed credentials."
+    },
+    {
+      "rule_id": "SEC-010",
+      "category": "security",
+      "severity": "critical",
+      "file": ".ssh/id_rsa",
+      "line": 1,
+      "description": "Committed SSH private key",
+      "evidence": "SSH private key present in .ssh/id_rsa",
+      "recommendation": "Remove credential files from the repository and revoke the exposed credentials."
+    },
+    {
+      "rule_id": "SEC-038",
+      "category": "security",
+      "severity": "critical",
+      "file": ".vscode/sftp.json",
+      "line": 6,
+      "description": "Committed VSCode SFTP configuration with password",
+      "evidence": "Password present in .vscode/sftp.json",
+      "recommendation": "Remove credential files from the repository and revoke the exposed credentials."
+    },
+    {
+      "rule_id": "SEC-011",
+      "category": "security",
+      "severity": "critical",
+      "file": "cloud/.credentials",
+      "line": 3,
+      "description": "Committed cloud credentials file",
+      "evidence": "AWS access key and secret key in cloud/.credentials",
+      "recommendation": "Remove credential files from the repository and revoke the exposed credentials."
+    },
+    {
+      "rule_id": "SEC-012",
+      "category": "security",
+      "severity": "critical",
+      "file": "cloud/.s3cfg",
+      "line": 1,
+      "description": "Committed s3cmd configuration with secret key",
+      "evidence": "secret_key present in cloud/.s3cfg",
+      "recommendation": "Remove credential files from the repository and revoke the exposed credentials."
+    },
+    {
+      "rule_id": "SEC-013",
+      "category": "security",
+      "severity": "critical",
+      "file": "cloud/.tugboat",
+      "line": 4,
+      "description": "Committed Tugboat configuration with api key",
+      "evidence": "api_key present in cloud/.tugboat",
+      "recommendation": "Remove credential files from the repository and revoke the exposed credentials."
+    },
+    {
+      "rule_id": "SEC-014",
+      "category": "security",
+      "severity": "critical",
+      "file": "cloud/heroku.json",
+      "line": 4,
+      "description": "Committed Heroku configuration with API key",
+      "evidence": "HEROKU_API_KEY present in cloud/heroku.json",
+      "recommendation": "Remove credential files from the repository and revoke the exposed credentials."
+    },
+    {
+      "rule_id": "SEC-015",
+      "category": "security",
+      "severity": "critical",
+      "file": "config",
+      "line": 10,
+      "description": "Committed IRC configuration with password",
+      "evidence": "IRC_PASS present in config",
+      "recommendation": "Remove credential files from the repository and revoke the exposed credentials."
+    },
+    {
+      "rule_id": "SEC-016",
+      "category": "security",
+      "severity": "critical",
+      "file": "db/.pgpass",
+      "line": 2,
+      "description": "Committed PostgreSQL pgpass file with password",
+      "evidence": "Database password present in db/.pgpass",
+      "recommendation": "Remove credential files from the repository and revoke the exposed credentials."
+    },
+    {
+      "rule_id": "SEC-017",
+      "category": "security",
+      "severity": "critical",
+      "file": "db/mongoid.yml",
+      "line": 4,
+      "description": "Committed Mongoid configuration with database URI credentials",
+      "evidence": "MongoDB URI with username and password in db/mongoid.yml",
+      "recommendation": "Remove credential files from the repository and revoke the exposed credentials."
+    },
+    {
+      "rule_id": "SEC-018",
+      "category": "security",
+      "severity": "critical",
+      "file": "db/robomongo.json",
+      "line": 14,
+      "description": "Committed Robomongo connection configuration with credentials and SSH password",
+      "evidence": "User password and SSH passwords present in db/robomongo.json",
+      "recommendation": "Remove credential files from the repository and revoke the exposed credentials."
+    },
+    {
+      "rule_id": "SEC-019",
+      "category": "security",
+      "severity": "critical",
+      "file": "deployment-config.json",
+      "line": 5,
+      "description": "Committed deployment configuration with password",
+      "evidence": "Password present in deployment-config.json",
+      "recommendation": "Remove credential files from the repository and revoke the exposed credentials."
+    },
+    {
+      "rule_id": "SEC-020",
+      "category": "security",
+      "severity": "critical",
+      "file": "etc/shadow",
+      "line": 20,
+      "description": "Committed system shadow file with password hash",
+      "evidence": "etc/shadow file committed with user password hash",
+      "recommendation": "Remove credential files from the repository and revoke the exposed credentials."
+    },
+    {
+      "rule_id": "SEC-021",
+      "category": "security",
+      "severity": "critical",
+      "file": "filezilla/filezilla.xml",
+      "line": 13,
+      "description": "Committed FileZilla configuration with plain text password",
+      "evidence": "Password present in filezilla/filezilla.xml",
+      "recommendation": "Remove credential files from the repository and revoke the exposed credentials."
+    },
+    {
+      "rule_id": "SEC-022",
+      "category": "security",
+      "severity": "critical",
+      "file": "filezilla/recentservers.xml",
+      "line": 13,
+      "description": "Committed FileZilla recent servers configuration with encoded password",
+      "evidence": "Pass present in filezilla/recentservers.xml",
+      "recommendation": "Remove credential files from the repository and revoke the exposed credentials."
+    },
+    {
+      "rule_id": "SEC-023",
+      "category": "security",
+      "severity": "critical",
+      "file": "hub",
+      "line": 4,
+      "description": "Committed hub configuration with GitHub OAuth token",
+      "evidence": "oauth_token present in hub",
+      "recommendation": "Remove credential files from the repository and revoke the exposed credentials."
+    },
+    {
+      "rule_id": "SEC-024",
+      "category": "security",
+      "severity": "critical",
+      "file": "misc-keys/cert-key.pem",
+      "line": 1,
+      "description": "Committed SSL certificate private key",
+      "evidence": "Private key present in misc-keys/cert-key.pem",
+      "recommendation": "Remove credential files from the repository and revoke the exposed credentials."
+    },
+    {
+      "rule_id": "SEC-025",
+      "category": "security",
+      "severity": "critical",
+      "file": "misc-keys/putty-example.ppk",
+      "line": 1,
+      "description": "Committed PuTTY private key file",
+      "evidence": "PuTTY private key present in misc-keys/putty-example.ppk",
+      "recommendation": "Remove credential files from the repository and revoke the exposed credentials."
+    },
+    {
+      "rule_id": "SEC-026",
+      "category": "security",
+      "severity": "critical",
+      "file": "proftpdpasswd",
+      "line": 1,
+      "description": "Committed proftpd passwd file with password hash",
+      "evidence": "Password hash present in proftpdpasswd",
+      "recommendation": "Remove credential files from the repository and revoke the exposed credentials."
+    },
+    {
+      "rule_id": "SEC-027",
+      "category": "security",
+      "severity": "critical",
+      "file": "sftp-config.json",
+      "line": 15,
+      "description": "Committed Sublime SFTP configuration with password",
+      "evidence": "Password present in sftp-config.json",
+      "recommendation": "Remove credential files from the repository and revoke the exposed credentials."
+    },
+    {
+      "rule_id": "SEC-028",
+      "category": "security",
+      "severity": "critical",
+      "file": "ventrilo_srv.ini",
+      "line": 7,
+      "description": "Committed Ventrilo server INI configuration with passwords",
+      "evidence": "AdminPassword and Password present in ventrilo_srv.ini",
+      "recommendation": "Remove credential files from the repository and revoke the exposed credentials."
+    },
+    {
+      "rule_id": "SEC-029",
+      "category": "security",
+      "severity": "critical",
+      "file": "web/django/settings.py",
+      "line": 24,
+      "description": "Hardcoded Django secret key in settings.py",
+      "evidence": "SECRET_KEY hardcoded in web/django/settings.py",
+      "recommendation": "Move secret keys and configuration to environment variables."
+    },
+    {
+      "rule_id": "SEC-030",
+      "category": "security",
+      "severity": "critical",
+      "file": "web/js/salesforce.js",
+      "line": 7,
+      "description": "Hardcoded Salesforce login credentials in JavaScript code",
+      "evidence": "Hardcoded username and password in web/js/salesforce.js",
+      "recommendation": "Remove hardcoded credentials and use environment variables."
+    },
+    {
+      "rule_id": "SEC-031",
+      "category": "security",
+      "severity": "critical",
+      "file": "web/ruby/config/master.key",
+      "line": 1,
+      "description": "Committed Rails master key file",
+      "evidence": "master.key present in web/ruby/config/master.key",
+      "recommendation": "Remove credential files from the repository and revoke the exposed credentials."
+    },
+    {
+      "rule_id": "SEC-032",
+      "category": "security",
+      "severity": "critical",
+      "file": "web/ruby/secrets.yml",
+      "line": 14,
+      "description": "Committed Rails secrets configuration with secret keys",
+      "evidence": "secret_key_base present in web/ruby/secrets.yml",
+      "recommendation": "Remove credential files from the repository and revoke the exposed credentials."
+    },
+    {
+      "rule_id": "SEC-033",
+      "category": "security",
+      "severity": "critical",
+      "file": "web/var/www/.env",
+      "line": 14,
+      "description": "Committed environment file (.env) with database and mail credentials",
+      "evidence": "DB_PASSWORD and MAIL_PASSWORD present in web/var/www/.env",
+      "recommendation": "Remove credential files from the repository and revoke the exposed credentials."
+    },
+    {
+      "rule_id": "SEC-034",
+      "category": "security",
+      "severity": "critical",
+      "file": "web/var/www/public_html/.htpasswd",
+      "line": 1,
+      "description": "Committed .htpasswd file with password hash",
+      "evidence": "Password hash present in web/var/www/public_html/.htpasswd",
+      "recommendation": "Remove credential files from the repository and revoke the exposed credentials."
+    },
+    {
+      "rule_id": "SEC-035",
+      "category": "security",
+      "severity": "critical",
+      "file": "web/var/www/public_html/config.php",
+      "line": 11,
+      "description": "Committed PHP configuration file with database password",
+      "evidence": "dbpasswd present in web/var/www/public_html/config.php",
+      "recommendation": "Remove credential files from the repository and revoke the exposed credentials."
+    },
+    {
+      "rule_id": "SEC-036",
+      "category": "security",
+      "severity": "critical",
+      "file": "web/var/www/public_html/wp-config.php",
+      "line": 20,
+      "description": "Committed WordPress configuration file with database password and salts",
+      "evidence": "DB_PASSWORD and authentication salts present in web/var/www/public_html/wp-config.php",
+      "recommendation": "Remove credential files from the repository and revoke the exposed credentials."
+    }
+  ]
+}

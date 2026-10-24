@@ -1,0 +1,15 @@
+{
+  "repository": "https://github.com/chalk/chalk",
+  "violations": [
+    {
+      "rule_id": "DEP-001",
+      "category": "dependency_management",
+      "severity": "medium",
+      "file": ".npmrc",
+      "line": 1,
+      "description": "Missing lockfile with non-deterministic version ranges in package.json",
+      "evidence": "package-lock=false in .npmrc and package.json has caret version ranges (^26.6.3, ^7.0.0, etc.) without a committed lockfile (package-lock.json).",
+      "recommendation": "Remove package-lock=false from .npmrc, generate a package-lock.json, and commit it to ensure reproducible builds and dependency integrity."
+    }
+  ]
+}

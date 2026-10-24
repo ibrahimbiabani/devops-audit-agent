@@ -1,0 +1,37 @@
+2026-10-24 15:03:01,381 INFO HTTP Request: GET https://generativelanguage.googleapis.com/v1beta/models "HTTP/1.1 200 OK"
+2026-10-24 15:03:01,934 INFO HTTP Request: GET https://generativelanguage.googleapis.com/v1beta/models?pageToken=Cgptb2RlbHMvYXFh "HTTP/1.1 200 OK"
+2026-10-24 15:03:01,946 INFO Using GeminiLLM, models in order: gemini-3.1-pro-preview, gemini-2.5-pro, gemini-3.6-flash, gemini-3.5-flash, gemini-3-flash-preview, gemini-2.5-flash, gemini-3.5-flash-lite, gemini-3.1-flash-lite, gemini-2.5-flash-lite, gemma-4-31b-it, gemma-4-26b-a4b-it
+2026-10-24 15:03:01,946 INFO Cloning https://github.com/ngocdh/insecure-devops
+2026-10-24 15:03:04,079 INFO Skipping Gemini model gemini-3.1-pro-preview: not available on the free tier (recorded earlier; retry in ~150h)
+2026-10-24 15:03:04,079 INFO Skipping Gemini model gemini-2.5-pro: model not found or no longer available (recorded earlier; retry in ~126h)
+2026-10-24 15:03:04,079 INFO Skipping Gemini model gemini-3.6-flash: daily free-tier quota used up (20 requests a day), resets in ~24h (recorded earlier; retry in ~21h)
+2026-10-24 15:03:04,079 INFO Skipping Gemini model gemini-3.5-flash: daily free-tier quota used up (20 requests a day), resets in ~24h (recorded earlier; retry in ~21h)
+2026-10-24 15:03:04,080 INFO Passing over Gemini model gemini-3-flash-preview for now: 2 request(s) of today's quota left
+2026-10-24 15:03:04,080 INFO Skipping Gemini model gemini-2.5-flash: model not found or no longer available (recorded earlier; retry in ~126h)
+2026-10-24 15:03:04,080 INFO Using Gemini model gemini-3.5-flash-lite
+2026-10-24 15:03:05,013 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:03:05,023 INFO Gemini model gemini-3.5-flash-lite is serving as gemini-3.5-flash-lite
+2026-10-24 15:03:05,091 INFO [turn 1] list_files({})
+2026-10-24 15:03:06,301 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:03:06,304 INFO [turn 2] read_file({"end_line": 290, "path": ".github/workflows/deploy_prod.yml", "start_line": 1})
+2026-10-24 15:03:06,305 INFO [turn 2] read_file({"start_line": 1, "path": "README.md", "end_line": 32})
+2026-10-24 15:03:06,305 INFO [turn 2] read_file({"path": "app/.gitignore", "start_line": 1, "end_line": 4})
+2026-10-24 15:03:06,306 INFO [turn 2] read_file({"end_line": 192, "start_line": 1, "path": "app/Dockerfile"})
+2026-10-24 15:03:06,307 INFO [turn 2] read_file({"start_line": 1, "end_line": 766, "path": "app/app.py"})
+2026-10-24 15:03:06,307 INFO [turn 2] read_file({"start_line": 1, "end_line": 5, "path": "app/requirements.txt"})
+2026-10-24 15:03:06,308 INFO [turn 2] read_file({"start_line": 1, "end_line": 100, "path": "deploy/app.yml"})
+2026-10-24 15:03:06,328 INFO [turn 2] inspect_workflows({"path": ".github/workflows/deploy_prod.yml"})
+2026-10-24 15:03:06,346 INFO [turn 2] git_log({})
+2026-10-24 15:03:09,256 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:03:09,259 INFO [turn 3] record_violation({"recommendation": "Do not print or echo secrets in GitHub Actions workflows. Remove the step or mask/avoid handling raw secrets in plaintext echo commands.", "description": "Secret echoed and process)
+2026-10-24 15:03:09,260 INFO [turn 3] record_violation({"category": "collaboration", "recommendation": "Avoid using self-hosted runners on workflows triggered by external or untrusted pull requests (pull_request) to prevent arbitrary code execution on the)
+2026-10-24 15:03:09,260 INFO [turn 3] record_violation({"category": "dependency_management", "recommendation": "Pin application dependencies to specific versions or ranges (e.g. flask==2.3.3) to ensure reproducible builds.", "description": "Unpinned depen)
+2026-10-24 15:03:09,260 INFO [turn 3] record_violation({"recommendation": "Add a test suite for the application and configure CI to execute tests before completing workflow runs.", "category": "testing", "description": "Missing tests and no test execution)
+2026-10-24 15:03:09,261 INFO [turn 3] record_violation({"recommendation": "Configure a linter or formatter (like ruff or black) and integrate it into the development workflow or CI.", "category": "code_quality", "file": null, "line": null, "description": )
+2026-10-24 15:03:09,261 INFO [turn 3] record_violation({"category": "build_release", "recommendation": "Add build and test validation steps to the CI/CD pipeline before any deployment or release stages.", "description": "Missing build validation and relea)
+2026-10-24 15:03:09,276 INFO [turn 3] finish_audit({"summary": "The audit of the insecure-devops repository identified multiple critical and high severity issues across security, collaboration, testing, dependency management, code quality, and build/r) -> error
+2026-10-24 15:03:10,685 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 15:03:10,687 INFO [turn 4] record_violation({"file": "app/.gitignore", "evidence": ".gitignore only ignores .git directory and fails to ignore standard Python/Docker/IDE artifacts or caches", "description": "Inadequate .gitignore configuration")
+2026-10-24 15:03:10,688 INFO [turn 4] finish_audit({"summary": "The audit of the insecure-devops repository successfully identified key DevOps violations across repository hygiene, dependency management, code quality, testing, security, collaboration,)
+Wrote 7 violation(s) to evals\runs\2026-10-24-fresh-repos\ngocdh_insecure-devops.json (model: gemini-3.5-flash-lite)
+Tool-call trace: evals\runs\2026-10-24-fresh-repos\ngocdh_insecure-devops.trace.jsonl

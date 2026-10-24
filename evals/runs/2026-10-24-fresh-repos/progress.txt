@@ -1,0 +1,2 @@
+{"audit": "ngocdh_insecure-devops", "exit": 0, "seconds": 10, "result": "Wrote 7 violation(s) to evals\runs\2026-10-24-fresh-repos\ngocdh_insecure-devops.json (model: gemini-3.5-flash"}
+{"audit": "chalk_chalk", "exit": 0, "seconds": 12, "result": "Wrote 1 violation(s) to evals\runs\2026-10-24-fresh-repos\chalk_chalk.json (model: gemini-3.5-flash-lite)"}

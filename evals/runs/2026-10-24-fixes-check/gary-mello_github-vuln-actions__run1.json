@@ -1,0 +1,75 @@
+{
+  "repository": "https://github.com/gary-mello/github-vuln-actions",
+  "violations": [
+    {
+      "rule_id": "COL-004",
+      "category": "collaboration",
+      "severity": "critical",
+      "file": ".github/workflows/prt-dangerous-checkout.yml",
+      "line": 19,
+      "description": "Dangerous pull_request_target checkout of untrusted pull request head ref and repo",
+      "evidence": "ref: ${{ github.event.pull_request.head.ref }} and repository: ${{ github.event.pull_request.head.repo.full_name }} under pull_request_target",
+      "recommendation": "Avoid checking out untrusted PR head code under pull_request_target, or use standard pull_request trigger."
+    },
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/write-all-permissions.yml",
+      "line": 12,
+      "description": "Workflow-level write-all permissions combined with pull_request_target trigger",
+      "evidence": "permissions: write-all with pull_request_target on auto-merge workflow",
+      "recommendation": "Apply least-privilege permissions and avoid write-all on workflows triggered by pull requests."
+    },
+    {
+      "rule_id": "COL-001",
+      "category": "collaboration",
+      "severity": "high",
+      "file": ".github/workflows/issue-labeler.yml",
+      "line": 18,
+      "description": "Workflow interpolation of untrusted github.event.issue.title and issue.body in run script",
+      "evidence": "${{ github.event.issue.title }} and ${{ github.event.issue.body }} used in run script",
+      "recommendation": "Use intermediate environment variables to pass event data safely into shell scripts, or avoid raw string interpolation."
+    },
+    {
+      "rule_id": "COL-002",
+      "category": "collaboration",
+      "severity": "high",
+      "file": ".github/workflows/pr-comment-handler.yml",
+      "line": 16,
+      "description": "Workflow interpolation of untrusted github.event.comment.body in run script",
+      "evidence": "${{ github.event.comment.body }} interpolated directly into run script",
+      "recommendation": "Pass untrusted event fields via environment variables rather than direct shell interpolation."
+    },
+    {
+      "rule_id": "BLD-001",
+      "category": "build_release",
+      "severity": "high",
+      "file": ".github/workflows/self-hosted-runner.yml",
+      "line": 22,
+      "description": "Deployment to internal registry via self-hosted runner and docker push without prior test validation step",
+      "evidence": "Internal build workflow builds and pushes docker image directly without any test step or needs gating",
+      "recommendation": "Add test validation jobs and require them via needs before executing deployment or push steps."
+    },
+    {
+      "rule_id": "CI-001",
+      "category": "ci_cd",
+      "severity": "medium",
+      "file": ".github/workflows/no-permissions-declared.yml",
+      "line": null,
+      "description": "Missing permissions block on a workflow running build and test on push and pull_request",
+      "evidence": "No permissions block declared in .github/workflows/no-permissions-declared.yml",
+      "recommendation": "Explicitly declare minimum required permissions blocks on workflows."
+    },
+    {
+      "rule_id": "COL-003",
+      "category": "collaboration",
+      "severity": "medium",
+      "file": ".github/workflows/pr-title-injection.yml",
+      "line": 17,
+      "description": "Workflow interpolation of untrusted pull request title, body, and head.ref in run script",
+      "evidence": "${{ github.event.pull_request.title }}, body, and head.ref interpolated in run script",
+      "recommendation": "Pass PR metadata via environment variables to prevent shell injection."
+    }
+  ]
+}

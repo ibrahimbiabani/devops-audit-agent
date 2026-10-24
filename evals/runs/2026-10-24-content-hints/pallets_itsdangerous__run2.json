@@ -1,0 +1,15 @@
+{
+  "repository": "https://github.com/pallets/itsdangerous",
+  "violations": [
+    {
+      "rule_id": "CFG-001",
+      "category": "configuration",
+      "severity": "medium",
+      "file": "pyproject.toml",
+      "line": 86,
+      "description": "Coverage configuration source points to jinja2 instead of itsdangerous",
+      "evidence": "In pyproject.toml under [tool.coverage.run], source is set to [\"jinja2\", \"tests\"] instead of itsdangerous.",
+      "recommendation": "Change the coverage run source setting in pyproject.toml from [\"jinja2\", \"tests\"] to [\"itsdangerous\", \"tests\"]."
+    }
+  ]
+}

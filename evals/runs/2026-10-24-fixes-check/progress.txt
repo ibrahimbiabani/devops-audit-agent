@@ -1,0 +1,5 @@
+{"audit": "chalk_chalk__run1", "exit": 0, "seconds": 14, "result": "Wrote 0 violation(s) to evals\runs\2026-10-24-fixes-check\chalk_chalk__run1.json (model: gemini-3.5-flash-lite"}
+{"audit": "ngocdh_insecure-devops__run1", "exit": 0, "seconds": 14, "result": "Wrote 5 violation(s) to evals\runs\2026-10-24-fixes-check\ngocdh_insecure-devops__run1.json (model: gemini-3.5"}
+{"audit": "pypa_sampleproject__run1", "exit": 0, "seconds": 15, "result": "Wrote 0 violation(s) to evals\runs\2026-10-24-fixes-check\pypa_sampleproject__run1.json (model: gemini-3.5-fla"}
+{"audit": "chalk_chalk__run2", "exit": 0, "seconds": 31, "result": "Wrote 0 violation(s) to evals\runs\2026-10-24-fixes-check\chalk_chalk__run2.json (model: gemini-3.5-flash-lite"}
+{"audit": "gary-mello_github-vuln-actions__run1", "exit": 0, "seconds": 36, "result": "Wrote 7 violation(s) to evals\runs\2026-10-24-fixes-check\gary-mello_github-vuln-actions__run1.json (model: ge"}

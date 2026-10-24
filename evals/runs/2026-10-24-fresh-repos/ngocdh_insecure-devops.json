@@ -1,0 +1,75 @@
+{
+  "repository": "https://github.com/ngocdh/insecure-devops",
+  "violations": [
+    {
+      "rule_id": "COL-001",
+      "category": "collaboration",
+      "severity": "critical",
+      "file": ".github/workflows/deploy_prod.yml",
+      "line": 9,
+      "description": "Self-hosted runner used on public pull request trigger",
+      "evidence": "runs-on: self-hosted-ubuntu triggered by pull_request from any branch",
+      "recommendation": "Avoid using self-hosted runners on workflows triggered by external or untrusted pull requests (pull_request) to prevent arbitrary code execution on the runner host."
+    },
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/deploy_prod.yml",
+      "line": 13,
+      "description": "Secret echoed and processed in CI workflow log",
+      "evidence": "echo \"${{secrets.TOP_SECRET_1}}\" | base64 in workflow step",
+      "recommendation": "Do not print or echo secrets in GitHub Actions workflows. Remove the step or mask/avoid handling raw secrets in plaintext echo commands."
+    },
+    {
+      "rule_id": "TEST-001",
+      "category": "testing",
+      "severity": "high",
+      "file": null,
+      "line": null,
+      "description": "Missing tests and no test execution in CI",
+      "evidence": "No tests exist in the repository and CI workflow runs no test steps",
+      "recommendation": "Add a test suite for the application and configure CI to execute tests before completing workflow runs."
+    },
+    {
+      "rule_id": "BLD-001",
+      "category": "build_release",
+      "severity": "high",
+      "file": ".github/workflows/deploy_prod.yml",
+      "line": 8,
+      "description": "Missing build validation and release pipeline testing",
+      "evidence": "Build/deploy workflow runs without building the Docker image or running any validation/tests",
+      "recommendation": "Add build and test validation steps to the CI/CD pipeline before any deployment or release stages."
+    },
+    {
+      "rule_id": "CQ-001",
+      "category": "code_quality",
+      "severity": "medium",
+      "file": null,
+      "line": null,
+      "description": "Missing linter or code formatter configuration",
+      "evidence": "No linter, static analyzer, or formatter (such as ruff, flake8, black, pylint) configured in the project or CI",
+      "recommendation": "Configure a linter or formatter (like ruff or black) and integrate it into the development workflow or CI."
+    },
+    {
+      "rule_id": "DEP-001",
+      "category": "dependency_management",
+      "severity": "medium",
+      "file": "app/requirements.txt",
+      "line": 1,
+      "description": "Unpinned dependency specification",
+      "evidence": "flask dependency listed without any version specifier in requirements.txt",
+      "recommendation": "Pin application dependencies to specific versions or ranges (e.g. flask==2.3.3) to ensure reproducible builds."
+    },
+    {
+      "rule_id": "HYG-001",
+      "category": "repository_hygiene",
+      "severity": "low",
+      "file": "app/.gitignore",
+      "line": 1,
+      "description": "Inadequate .gitignore configuration",
+      "evidence": ".gitignore only ignores .git directory and fails to ignore standard Python/Docker/IDE artifacts or caches",
+      "recommendation": "Update .gitignore to properly exclude standard build artifacts, caches (__pycache__), virtual environments, and local environment files."
+    }
+  ]
+}

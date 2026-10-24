@@ -1,0 +1,15 @@
+{
+  "repository": "https://github.com/pypa/sampleproject",
+  "violations": [
+    {
+      "rule_id": "BLD-001",
+      "category": "build_release",
+      "severity": "high",
+      "file": ".github/workflows/release.yml",
+      "line": 7,
+      "description": "Release workflow publishes without running test suite or gating on tests",
+      "evidence": ".github/workflows/release.yml triggers on push to main and runs build-and-publish job without running tests or needing the Test workflow",
+      "recommendation": "Add test execution or a 'needs: test' dependency to the release workflow so releases are gated by passing tests."
+    }
+  ]
+}

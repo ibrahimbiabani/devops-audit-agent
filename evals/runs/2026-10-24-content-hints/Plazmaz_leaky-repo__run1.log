@@ -1,0 +1,112 @@
+2026-10-24 14:55:14,164 INFO HTTP Request: GET https://generativelanguage.googleapis.com/v1beta/models "HTTP/1.1 200 OK"
+2026-10-24 14:55:14,701 INFO HTTP Request: GET https://generativelanguage.googleapis.com/v1beta/models?pageToken=Cgptb2RlbHMvYXFh "HTTP/1.1 200 OK"
+2026-10-24 14:55:14,708 INFO Using GeminiLLM, models in order: gemini-3.1-pro-preview, gemini-2.5-pro, gemini-3.6-flash, gemini-3.5-flash, gemini-3-flash-preview, gemini-2.5-flash, gemini-3.5-flash-lite, gemini-3.1-flash-lite, gemini-2.5-flash-lite, gemma-4-31b-it, gemma-4-26b-a4b-it
+2026-10-24 14:55:14,708 INFO Cloning https://github.com/Plazmaz/leaky-repo
+2026-10-24 14:55:16,876 INFO Skipping Gemini model gemini-3.1-pro-preview: not available on the free tier (recorded earlier; retry in ~150h)
+2026-10-24 14:55:16,876 INFO Skipping Gemini model gemini-2.5-pro: model not found or no longer available (recorded earlier; retry in ~126h)
+2026-10-24 14:55:16,876 INFO Skipping Gemini model gemini-3.6-flash: daily free-tier quota used up (20 requests a day), resets in ~24h (recorded earlier; retry in ~21h)
+2026-10-24 14:55:16,876 INFO Skipping Gemini model gemini-3.5-flash: daily free-tier quota used up (20 requests a day), resets in ~24h (recorded earlier; retry in ~21h)
+2026-10-24 14:55:16,876 INFO Passing over Gemini model gemini-3-flash-preview for now: 2 request(s) of today's quota left
+2026-10-24 14:55:16,877 INFO Skipping Gemini model gemini-2.5-flash: model not found or no longer available (recorded earlier; retry in ~126h)
+2026-10-24 14:55:16,877 INFO Using Gemini model gemini-3.5-flash-lite
+2026-10-24 14:55:19,961 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:55:19,971 INFO Gemini model gemini-3.5-flash-lite is serving as gemini-3.5-flash-lite
+2026-10-24 14:55:20,111 INFO [turn 1] list_files({})
+2026-10-24 14:55:22,193 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:55:22,211 INFO [turn 2] list_files({"pattern": ".github/workflows/*"})
+2026-10-24 14:55:25,875 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:55:25,877 INFO [turn 3] read_file({"start_line": 1, "path": ".bash_profile", "end_line": 50})
+2026-10-24 14:55:25,878 INFO [turn 3] read_file({"start_line": 1, "path": ".docker/.dockercfg", "end_line": 50})
+2026-10-24 14:55:25,879 INFO [turn 3] read_file({"end_line": 50, "path": ".docker/config.json", "start_line": 1})
+2026-10-24 14:55:25,880 INFO [turn 3] read_file({"end_line": 50, "path": ".ftpconfig", "start_line": 1})
+2026-10-24 14:55:25,880 INFO [turn 3] read_file({"start_line": 1, "path": ".git-credentials", "end_line": 50})
+2026-10-24 14:55:25,881 INFO [turn 3] read_file({"path": ".idea/WebServers.xml", "end_line": 50, "start_line": 1})
+2026-10-24 14:55:25,882 INFO [turn 3] read_file({"path": ".netrc", "start_line": 1, "end_line": 50})
+2026-10-24 14:55:25,882 INFO [turn 3] read_file({"path": ".npmrc", "start_line": 1, "end_line": 50})
+2026-10-24 14:55:25,883 INFO [turn 3] read_file({"start_line": 1, "end_line": 50, "path": ".remote-sync.json"})
+2026-10-24 14:55:25,884 INFO [turn 3] read_file({"end_line": 50, "path": ".ssh/id_rsa", "start_line": 1})
+2026-10-24 14:55:27,748 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:55:27,773 INFO [turn 4] search_code({"pattern": ".*"})
+2026-10-24 14:55:30,261 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:55:30,264 INFO [turn 5] record_violation({"description": "Committed AWS credentials in .bash_profile", "severity": "critical", "recommendation": "Remove credential files from the repository and revoke the exposed credentials.", "line": 11, ")
+2026-10-24 14:55:30,264 INFO [turn 5] record_violation({"rule_id": "SEC-002", "line": 4, "severity": "critical", "category": "security", "evidence": "Docker auth token present in .docker/.dockercfg", "file": ".docker/.dockercfg", "recommendation": "Remove)
+2026-10-24 14:55:30,265 INFO [turn 5] record_violation({"severity": "critical", "line": 5, "file": ".docker/config.json", "recommendation": "Remove credential files from the repository and revoke the exposed credentials.", "rule_id": "SEC-003", "evidence")
+2026-10-24 14:55:30,265 INFO [turn 5] record_violation({"recommendation": "Remove credential files from the repository and revoke the exposed credentials.", "category": "security", "line": 6, "evidence": "Password present in .ftpconfig", "rule_id": "SEC-0)
+2026-10-24 14:55:30,265 INFO [turn 5] record_violation({"rule_id": "SEC-005", "severity": "critical", "file": ".git-credentials", "line": 1, "description": "Committed Git credentials file", "category": "security", "recommendation": "Remove credential file)
+2026-10-24 14:55:30,266 INFO [turn 5] record_violation({"severity": "critical", "line": 6, "file": ".idea/WebServers.xml", "rule_id": "SEC-006", "recommendation": "Remove credential files from the repository and revoke the exposed credentials.", "category)
+2026-10-24 14:55:30,266 INFO [turn 5] record_violation({"file": ".netrc", "evidence": "Credentials present in .netrc", "category": "security", "rule_id": "SEC-007", "recommendation": "Remove credential files from the repository and revoke the exposed cred)
+2026-10-24 14:55:30,267 INFO [turn 5] record_violation({"rule_id": "SEC-008", "severity": "critical", "line": 9, "recommendation": "Remove credential files from the repository and revoke the exposed credentials.", "file": ".npmrc", "description": "Committ)
+2026-10-24 14:55:30,267 INFO [turn 5] record_violation({"line": 17, "rule_id": "SEC-009", "description": "Committed remote-sync configuration with password", "evidence": "Password present in .remote-sync.json", "category": "security", "severity": "critica)
+2026-10-24 14:55:30,267 INFO [turn 5] record_violation({"severity": "critical", "file": ".ssh/id_rsa", "description": "Committed SSH private key", "recommendation": "Remove credential files from the repository and revoke the exposed credentials.", "rule_i)
+2026-10-24 14:55:31,626 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:55:31,628 INFO [turn 6] read_file({"end_line": 50, "path": "cloud/.credentials", "start_line": 1})
+2026-10-24 14:55:31,629 INFO [turn 6] read_file({"start_line": 1, "path": "cloud/.s3cfg", "end_line": 50})
+2026-10-24 14:55:31,630 INFO [turn 6] read_file({"end_line": 50, "path": "cloud/.tugboat", "start_line": 1})
+2026-10-24 14:55:31,631 INFO [turn 6] read_file({"path": "cloud/heroku.json", "end_line": 50, "start_line": 1})
+2026-10-24 14:55:31,631 INFO [turn 6] read_file({"start_line": 1, "path": "config", "end_line": 50})
+2026-10-24 14:55:31,632 INFO [turn 6] read_file({"path": "db/.pgpass", "end_line": 50, "start_line": 1})
+2026-10-24 14:55:31,633 INFO [turn 6] read_file({"path": "db/dump.sql", "start_line": 1, "end_line": 50})
+2026-10-24 14:55:31,634 INFO [turn 6] read_file({"end_line": 50, "path": "db/mongoid.yml", "start_line": 1})
+2026-10-24 14:55:31,634 INFO [turn 6] read_file({"start_line": 1, "path": "db/robomongo.json", "end_line": 50})
+2026-10-24 14:55:31,635 INFO [turn 6] read_file({"end_line": 50, "path": "deployment-config.json", "start_line": 1})
+2026-10-24 14:55:34,108 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:55:34,110 INFO [turn 7] record_violation({"file": "cloud/.credentials", "category": "security", "severity": "critical", "evidence": "AWS access key and secret key in cloud/.credentials", "recommendation": "Remove credential files from the re)
+2026-10-24 14:55:34,111 INFO [turn 7] record_violation({"rule_id": "SEC-012", "file": "cloud/.s3cfg", "description": "Committed s3cmd configuration with secret key", "category": "security", "evidence": "secret_key present in cloud/.s3cfg", "severity": "cr)
+2026-10-24 14:55:34,111 INFO [turn 7] record_violation({"rule_id": "SEC-013", "line": 4, "recommendation": "Remove credential files from the repository and revoke the exposed credentials.", "category": "security", "severity": "critical", "evidence": "api_)
+2026-10-24 14:55:34,112 INFO [turn 7] record_violation({"description": "Committed Heroku configuration with API key", "category": "security", "severity": "critical", "evidence": "HEROKU_API_KEY present in cloud/heroku.json", "line": 4, "recommendation": ")
+2026-10-24 14:55:34,112 INFO [turn 7] record_violation({"description": "Committed IRC configuration with password", "line": 10, "evidence": "IRC_PASS present in config", "severity": "critical", "category": "security", "recommendation": "Remove credential )
+2026-10-24 14:55:34,113 INFO [turn 7] record_violation({"severity": "critical", "evidence": "Database password present in db/.pgpass", "category": "security", "description": "Committed PostgreSQL pgpass file with password", "recommendation": "Remove crede)
+2026-10-24 14:55:34,113 INFO [turn 7] record_violation({"file": "db/mongoid.yml", "line": 4, "evidence": "MongoDB URI with username and password in db/mongoid.yml", "severity": "critical", "category": "security", "rule_id": "SEC-017", "description": "Comm)
+2026-10-24 14:55:34,114 INFO [turn 7] record_violation({"description": "Committed Robomongo connection configuration with credentials and SSH password", "line": 14, "rule_id": "SEC-018", "file": "db/robomongo.json", "category": "security", "evidence": "Us)
+2026-10-24 14:55:34,114 INFO [turn 7] record_violation({"line": 5, "description": "Committed deployment configuration with password", "category": "security", "evidence": "Password present in deployment-config.json", "severity": "critical", "file": "deploy)
+2026-10-24 14:55:35,625 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:55:35,628 INFO [turn 8] read_file({"start_line": 1, "path": "etc/shadow", "end_line": 50})
+2026-10-24 14:55:35,629 INFO [turn 8] read_file({"end_line": 50, "start_line": 1, "path": "filezilla/filezilla.xml"})
+2026-10-24 14:55:35,630 INFO [turn 8] read_file({"end_line": 50, "start_line": 1, "path": "filezilla/recentservers.xml"})
+2026-10-24 14:55:35,630 INFO [turn 8] read_file({"start_line": 1, "end_line": 50, "path": "hub"})
+2026-10-24 14:55:35,631 INFO [turn 8] read_file({"end_line": 50, "path": "misc-keys/cert-key.pem", "start_line": 1})
+2026-10-24 14:55:35,632 INFO [turn 8] read_file({"path": "misc-keys/putty-example.ppk", "end_line": 50, "start_line": 1})
+2026-10-24 14:55:35,632 INFO [turn 8] read_file({"start_line": 1, "path": "proftpdpasswd", "end_line": 50})
+2026-10-24 14:55:35,633 INFO [turn 8] read_file({"start_line": 1, "end_line": 50, "path": "sftp-config.json"})
+2026-10-24 14:55:35,634 INFO [turn 8] read_file({"start_line": 1, "path": "ventrilo_srv.ini", "end_line": 50})
+2026-10-24 14:55:35,635 INFO [turn 8] read_file({"path": "web/django/settings.py", "end_line": 50, "start_line": 1})
+2026-10-24 14:55:38,430 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:55:38,433 INFO [turn 9] record_violation({"rule_id": "SEC-020", "file": "etc/shadow", "severity": "critical", "recommendation": "Remove credential files from the repository and revoke the exposed credentials.", "description": "Committed syst)
+2026-10-24 14:55:38,434 INFO [turn 9] record_violation({"description": "Committed FileZilla configuration with plain text password", "file": "filezilla/filezilla.xml", "evidence": "Password present in filezilla/filezilla.xml", "line": 13, "recommendation")
+2026-10-24 14:55:38,434 INFO [turn 9] record_violation({"category": "security", "line": 13, "rule_id": "SEC-022", "recommendation": "Remove credential files from the repository and revoke the exposed credentials.", "file": "filezilla/recentservers.xml", ")
+2026-10-24 14:55:38,435 INFO [turn 9] record_violation({"evidence": "oauth_token present in hub", "file": "hub", "recommendation": "Remove credential files from the repository and revoke the exposed credentials.", "severity": "critical", "line": 4, "descr)
+2026-10-24 14:55:38,435 INFO [turn 9] record_violation({"rule_id": "SEC-024", "recommendation": "Remove credential files from the repository and revoke the exposed credentials.", "category": "security", "line": 1, "evidence": "Private key present in misc-)
+2026-10-24 14:55:38,435 INFO [turn 9] record_violation({"description": "Committed PuTTY private key file", "recommendation": "Remove credential files from the repository and revoke the exposed credentials.", "category": "security", "file": "misc-keys/putt)
+2026-10-24 14:55:38,436 INFO [turn 9] record_violation({"evidence": "Password hash present in proftpdpasswd", "severity": "critical", "file": "proftpdpasswd", "description": "Committed proftpd passwd file with password hash", "line": 1, "recommendation": )
+2026-10-24 14:55:38,436 INFO [turn 9] record_violation({"evidence": "Password present in sftp-config.json", "severity": "critical", "recommendation": "Remove credential files from the repository and revoke the exposed credentials.", "line": 15, "descripti)
+2026-10-24 14:55:38,437 INFO [turn 9] record_violation({"description": "Committed Ventrilo server INI configuration with passwords", "recommendation": "Remove credential files from the repository and revoke the exposed credentials.", "severity": "critical)
+2026-10-24 14:55:38,437 INFO [turn 9] record_violation({"line": 24, "severity": "critical", "evidence": "SECRET_KEY hardcoded in web/django/settings.py", "file": "web/django/settings.py", "rule_id": "SEC-029", "category": "security", "recommendation": "Mo)
+2026-10-24 14:55:40,053 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:55:40,056 INFO [turn 10] read_file({"end_line": 50, "path": "web/js/salesforce.js", "start_line": 1})
+2026-10-24 14:55:40,057 INFO [turn 10] read_file({"end_line": 50, "start_line": 1, "path": "web/ruby/config/master.key"})
+2026-10-24 14:55:40,058 INFO [turn 10] read_file({"start_line": 1, "path": "web/ruby/secrets.yml", "end_line": 50})
+2026-10-24 14:55:40,059 INFO [turn 10] read_file({"start_line": 1, "end_line": 50, "path": "web/var/www/.env"})
+2026-10-24 14:55:40,059 INFO [turn 10] read_file({"start_line": 1, "end_line": 50, "path": "web/var/www/public_html/.htpasswd"})
+2026-10-24 14:55:40,060 INFO [turn 10] read_file({"end_line": 50, "path": "web/var/www/public_html/config.php", "start_line": 1})
+2026-10-24 14:55:40,061 INFO [turn 10] read_file({"path": "web/var/www/public_html/wp-config.php", "start_line": 1, "end_line": 50})
+2026-10-24 14:55:42,402 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:55:42,405 INFO [turn 11] record_violation({"category": "security", "severity": "critical", "file": "web/js/salesforce.js", "rule_id": "SEC-030", "evidence": "Hardcoded username and password in web/js/salesforce.js", "description": "Hardcoded )
+2026-10-24 14:55:42,406 INFO [turn 11] record_violation({"file": "web/ruby/config/master.key", "line": 1, "description": "Committed Rails master key file", "evidence": "master.key present in web/ruby/config/master.key", "recommendation": "Remove credential)
+2026-10-24 14:55:42,406 INFO [turn 11] record_violation({"file": "web/ruby/secrets.yml", "line": 14, "rule_id": "SEC-032", "evidence": "secret_key_base present in web/ruby/secrets.yml", "recommendation": "Remove credential files from the repository and rev)
+2026-10-24 14:55:42,407 INFO [turn 11] record_violation({"rule_id": "SEC-033", "category": "security", "line": 14, "severity": "critical", "description": "Committed environment file (.env) with database and mail credentials", "recommendation": "Remove cred)
+2026-10-24 14:55:42,407 INFO [turn 11] record_violation({"evidence": "Password hash present in web/var/www/public_html/.htpasswd", "recommendation": "Remove credential files from the repository and revoke the exposed credentials.", "category": "security", )
+2026-10-24 14:55:42,408 INFO [turn 11] record_violation({"rule_id": "SEC-035", "description": "Committed PHP configuration file with database password", "recommendation": "Remove credential files from the repository and revoke the exposed credentials.", "e)
+2026-10-24 14:55:42,408 INFO [turn 11] record_violation({"rule_id": "SEC-036", "description": "Committed WordPress configuration file with database password and salts", "line": 20, "evidence": "DB_PASSWORD and authentication salts present in web/var/www/pu)
+2026-10-24 14:55:43,835 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:55:43,852 INFO [turn 12] finish_audit({"summary": "The repository was thoroughly audited against the nine DevOps inspection areas. Multiple critical security vulnerabilities were discovered, including a large collection of committed sensi) -> error
+2026-10-24 14:55:45,095 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:55:45,099 INFO [turn 13] read_file({"end_line": 120, "start_line": 95, "path": ".bashrc"})
+2026-10-24 14:55:45,100 INFO [turn 13] read_file({"path": ".mozilla/firefox/logins.json", "end_line": 50, "start_line": 1})
+2026-10-24 14:55:45,101 INFO [turn 13] read_file({"path": ".vscode/sftp.json", "start_line": 1, "end_line": 50})
+2026-10-24 14:55:46,457 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:55:46,460 INFO [turn 14] record_violation({"description": "Committed Gmail and Mailchimp credentials in .bashrc", "file": ".bashrc", "rule_id": "SEC-037", "evidence": "GMAIL_PASSWORD and MAILCHIMP_API_KEY exported in .bashrc", "line": 105, "c)
+2026-10-24 14:55:46,460 INFO [turn 14] record_violation({"evidence": "Password present in .vscode/sftp.json", "rule_id": "SEC-038", "category": "security", "description": "Committed VSCode SFTP configuration with password", "file": ".vscode/sftp.json", "li)
+2026-10-24 14:55:47,598 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-10-24 14:55:47,601 INFO [turn 15] finish_audit({"summary": "The repository was audited against the nine DevOps inspection areas. Multiple critical security vulnerabilities were discovered, including numerous committed sensitive files, configuratio)
+Wrote 38 violation(s) to evals\runs\2026-10-24-content-hints\Plazmaz_leaky-repo__run1.json (model: gemini-3.5-flash-lite)
+Tool-call trace: evals\runs\2026-10-24-content-hints\Plazmaz_leaky-repo__run1.trace.jsonl
