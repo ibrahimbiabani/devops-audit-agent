@@ -118,10 +118,12 @@ def test_list_files_tags_sensitive_names_and_must_read(sample_repo):
     subprocess.run(["git", "-C", str(sample_repo), "add", ".env", ".env.example"], check=True)
     t = RepoTools(sample_repo)
     lines = {line.split(" (")[0]: line for line in t.list_files().splitlines()[1:]}
-    assert lines[".env"].endswith("[sensitive name]")
+    assert "[sensitive name]" in lines[".env"]
     assert "[sensitive name]" not in lines[".env.example"]
     assert "[sensitive name]" not in lines["app.py"]
-    assert t.must_read_files() == [".env", ".github/workflows/ci.yml"]
+    assert lines["app.py"].endswith("[credential-like content: line 4]")  # found by content, not name
+    assert "credential-like" not in lines[".env.example"]  # templates are never tagged
+    assert t.must_read_files() == [".env", ".github/workflows/ci.yml", "app.py"]
 
 
 def test_relpath_canonicalizes(sample_repo):

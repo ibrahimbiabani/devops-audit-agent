@@ -114,6 +114,7 @@ as **excluded by design**, with the reason, so their cost to recall is visible.
 - **Key: no violations.** Actions are pinned to SHAs, there is a `uv.lock` lockfile, tests and
   typing run via tox in CI, linting runs via pre-commit, the `.gitignore` is suitable, and
   permissions are declared where tokens write (`lock.yaml`, `publish.yaml` jobs).
+- **Quirk found by the agent (Step 19):** `pyproject.toml:86` has coverage `source = ["jinja2", "tests"]`, a copy-paste from Jinja, so coverage measures the wrong package. It is true, but outside the nine areas; it is not counted in the key.
 - **Nuance:** `publish.yaml` publishes on tag push without running tests in that workflow. It
   is a deliberate maintainer release, the build is a `needs:` dependency, and publishing goes
   through a protected `environment: publish`. That is not a violation, but the Build and
@@ -129,3 +130,38 @@ as **excluded by design**, with the reason, so their cost to recall is visible.
    management). Version tags such as `@v4` are not.
 3. **Tag- or release-triggered publishing through a protected `environment:`** (itsdangerous)
    should not be confused with publishing on every branch push (sampleproject).
+
+## Fresh repositories (key written on 2026-10-24 BEFORE the agent was run on them)
+
+### C — chalk/chalk (healthy, JavaScript; 35 files)
+
+- **Key: no violations.**
+  - CI (`main.yml`) runs `npm test` (which includes the `xo` linter, tests and a type check) on
+    push and pull requests across two Node versions.
+  - `.npmrc` sets `package-lock=false` deliberately: a library whose dependencies are all dev
+    dependencies, so no lockfile is expected.
+  - Actions are referenced by version tags.
+  - There is no `permissions:` block, but the workflow only builds and tests (not a violation
+    under the rules).
+- **Traps:** "missing lockfile", "missing permissions", and `.npmrc` tagged `[sensitive name]`.
+
+### A/B — ngocdh/insecure-devops (7 files)
+
+| # | Issue | Where |
+|---|---|---|
+| 1 | Production deploy workflow triggered by pull requests to any branch (`branches: "**"`) | `.github/workflows/deploy_prod.yml` 3–6 |
+| 2 | Self-hosted runner in a `pull_request` workflow: untrusted PR code runs on own infrastructure | `deploy_prod.yml` 9 |
+| 3 | Secret echoed through `base64`, which defeats GitHub's log masking | `deploy_prod.yml` 13 |
+| 4 | `env` dumps the whole environment to the log | `deploy_prod.yml` 14 |
+| 5 | No tests anywhere; the CI/CD runs none before deploying | repository-wide |
+| 6 | `flask` unpinned in a deployed application | `app/requirements.txt` 1 |
+| 7 | Unsuitable `.gitignore`: only `.git` (no `__pycache__`, virtualenv, `.env`) | `app/.gitignore` |
+| 8 | Kubernetes deploys `:latest` with `imagePullPolicy: Always`: unversioned releases, no rollback | `deploy/app.yml` 18–19 |
+| 9 | No linter or formatter configured anywhere | repository-wide |
+
+**Borderline (counted if reported, not required):**
+- EOL base image `python:3.8-slim-buster` (`app/Dockerfile` 1);
+- the container runs as root (no `USER`);
+- `COPY . .` with no `.dockerignore`;
+- no `permissions:` block on a workflow that deploys.
+

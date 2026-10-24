@@ -109,3 +109,18 @@ def test_tool_single_path_and_bad_path(workflow_repo):
     assert "job publish" in workflow_repo.inspect_workflows(".github/workflows/release.yml")
     with pytest.raises(ToolError, match="Not a workflow file GitHub runs"):
         workflow_repo.inspect_workflows(".github/workflows/controls/fixture.yml")
+
+
+@pytest.mark.parametrize(
+    "command", ["          env", "      - run: env", "          printenv | grep -i token", "          env | sort"]
+)
+def test_environment_dump_commands_are_signalled(command):
+    # Regression (2026-10-24, ngocdh/insecure-devops): a bare `env` line was not reported.
+    assert "environment dump" in summarize("w.yml", f"on: push\njobs:\n  j:\n    steps:\n      - run: |\n{command}\n")
+
+
+@pytest.mark.parametrize(
+    "line", ["    env:", "      NODE_ENV: production", "    environment: prod", "      - run: echo $ENV_FILE"]
+)
+def test_env_keys_and_names_are_not_environment_dumps(line):
+    assert "environment dump" not in summarize("w.yml", f"on: push\njobs:\n  j:\n{line}\n")

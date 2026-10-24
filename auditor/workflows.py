@@ -35,7 +35,12 @@ TESTS = re.compile(
 LINE_SIGNALS: list[tuple[str, re.Pattern[str]]] = [
     ("bash debug mode (set -x)", re.compile(r"\bset -[a-z]*x")),
     ("verbose HTTP client", re.compile(r"\bcurl\b[^\n]*\s(?:-v\b|--verbose\b)|\bwget\b[^\n]*\s(?:-d\b|--debug\b)")),
-    ("environment dump", re.compile(r"\b(?:printenv|env\s*\|)|\bset\s*$")),
+    # A command that prints every variable: `env`, `printenv`, `export -p` or a bare `set`, alone or piped.
+    # Regression (2026-10-24, ngocdh/insecure-devops): a bare `env` line was not reported.
+    (
+        "environment dump",
+        re.compile(r"(?:^\s*|run:\s*|[;&|]\s*)(?:printenv|env|export\s+-p)\s*(?:[|;&]|$)|\bprintenv\b|^\s*set\s*$"),
+    ),
     ("remote script piped to a shell", re.compile(r"\b(?:curl|wget)\b[^\n|]*\|\s*(?:sudo\s+)?(?:ba|z)?sh\b")),
     ("value passed as a command-line credential", re.compile(r"--(?:token|password|api-key|apikey|secret)[= ]")),
     ("step failure ignored", re.compile(r"continue-on-error:\s*true|\|\|\s*true\b")),

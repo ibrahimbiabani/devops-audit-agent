@@ -181,6 +181,7 @@ agent.py              CLI: parse args, clone, run agent, write report, clean up
 tools.py              Read-only inspection tools + their JSON schemas + dispatch
 auditor/
   workflows.py        GitHub Actions workflow facts for inspect_workflows (YAML + line scan)
+  content_hints.py    Content scan behind the [credential-like content] tag (lines only, never values)
   loop.py             AuditAgent: the observe → reason → act loop
   gemini_llm.py       Gemini client: converts history to/from Gemini function calling
   llm.py              Provider selection (Gemini by default) and the shared LLMError
@@ -212,7 +213,8 @@ The model ends the run with `finish_audit`, which is refused in two bounded case
 - **Final review.** The first `finish_audit` is answered once with a review request: go
   through the nine areas one by one against what was read, and record any violation that has
   evidence but was not recorded. The request warns against adding findings just to fill an
-  area. If any workflow or `[sensitive name]` file is still unopened, it lists them, and it
+  area. If any workflow, `[sensitive name]` or `[credential-like content]` file (test files
+  excepted) is still unopened, it lists them, and it
   reminds the model to run `inspect_workflows` if it hasn't. It is skipped in the last two turns.
 
 After that, `finish_audit` always ends the run, so the model keeps the final say. When the turn
@@ -242,7 +244,7 @@ area (for example `security` → `SEC-001`). Both are checked when a finding is 
 
 | Tool | What it does |
 |---|---|
-| `list_files(subdir?, pattern?)` | Git-tracked files with sizes (shows committed junk, not local files). Files named like keys or credentials (`.env`, `id_rsa`, `*.pem`, `.npmrc`, …) are tagged `[sensitive name]` as a hint to open them; templates such as `.env.example` are not tagged |
+| `list_files(subdir?, pattern?)` | Git-tracked files with sizes (shows committed junk, not local files). Two kinds of hint tag tell the model which files to open. Files named like keys or credentials (`.env`, `id_rsa`, `*.pem`, `.npmrc`, …) are tagged `[sensitive name]`. Files whose **contents** look like a committed credential are tagged `[credential-like content: lines …]`: a known token format, a secret-like name assigned a literal value, credentials in a URL, or a password hash (`auditor/content_hints.py`). The content tag shows line numbers, never values. In code, only quoted literals count (not variables or type annotations), and docs are skipped. Templates such as `.env.example` get neither tag. Test files are marked "in a test file". |
 | `read_file(path, start_line?, end_line?)` | Line-numbered file contents |
 | `search_code(pattern, path_glob?, ignore_case?, max_results?)` | Regex search across tracked text files |
 | `git_log(max_count?, path?)` | Commits with changed files |

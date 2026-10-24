@@ -13,6 +13,7 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
+from auditor.content_hints import credential_lines, is_test_path
 from auditor.redact import redact_tokens
 from auditor.repo import git_env
 from auditor.workflows import summarize
@@ -84,6 +85,7 @@ class RepoTools:
     def __init__(self, root: Path, max_output_chars: int = MAX_OUTPUT_CHARS):
         self.root = Path(root).resolve()
         self.max_output_chars = max_output_chars
+        self._content_hints: dict[str, list[int]] | None = None
         if not self.root.is_dir():
             raise ToolError(f"Repository root does not exist: {self.root}")
 
@@ -138,8 +140,45 @@ class RepoTools:
         return self._resolve(path).relative_to(self.root).as_posix()
 
     def must_read_files(self) -> list[str]:
-        """Tracked files the agent should open before finishing: workflows and sensitive names."""
-        return [f for f in self._tracked_files() if is_workflow_file(f) or is_sensitive_name(f)]
+        """Tracked files the agent should open before finishing: workflows, sensitive names, and files
+        with credential-like content (test files excepted: their values are usually fixtures)."""
+        hints = self.content_hints()
+        return [
+            f
+            for f in self._tracked_files()
+            if is_workflow_file(f) or is_sensitive_name(f) or (f in hints and not is_test_path(f))
+        ]
+
+    def content_hints(self) -> dict[str, list[int]]:
+        """Tracked files with credential-like content -> line numbers. Scanned once per audit."""
+        if self._content_hints is None:
+            hints: dict[str, list[int]] = {}
+            for rel in self._tracked_files():
+                lower = rel.lower()
+                if any(marker in lower.rsplit("/", 1)[-1] for marker in _TEMPLATE_MARKERS) or lower.startswith("docs/"):
+                    continue  # templates and docs hold placeholders by design
+                p = self.root / rel
+                try:
+                    if not p.is_file() or p.is_symlink() or p.stat().st_size > MAX_FILE_BYTES:
+                        continue
+                    data = p.read_bytes()
+                except OSError:
+                    continue
+                if b"\0" in data[:8192]:
+                    continue
+                lines = credential_lines(rel, data.decode("utf-8", errors="replace"))
+                if lines:
+                    hints[rel] = lines
+            self._content_hints = hints
+        return self._content_hints
+
+    def _content_tag(self, path: str) -> str:
+        lines = self.content_hints().get(path)
+        if not lines:
+            return ""
+        shown = ", ".join(map(str, lines[:5])) + (f" +{len(lines) - 5} more" if len(lines) > 5 else "")
+        where = " in a test file" if is_test_path(path) else ""
+        return f" [credential-like content{where}: line{'s' if len(lines) > 1 else ''} {shown}]"
 
     # ------------------------------------------------------------------ tools
 
@@ -160,7 +199,7 @@ class RepoTools:
             p = self.root / f
             size = p.stat().st_size if p.is_file() else 0
             link = " -> symlink" if p.is_symlink() else ""
-            tag = " [sensitive name]" if is_sensitive_name(f) else ""
+            tag = (" [sensitive name]" if is_sensitive_name(f) else "") + self._content_tag(f)
             lines.append(f"{f} ({size} B){link}{tag}")
         return self._finish(f"{len(files)} tracked file(s):\n" + "\n".join(lines))
 
@@ -259,8 +298,9 @@ TOOL_SCHEMAS: list[dict[str, Any]] = [
         "description": (
             "List files tracked by git in the repository, with sizes. Use it first to learn the layout, "
             "and later to check whether specific files (lockfiles, workflows, tests, .env files) are tracked. "
-            "Files whose names suggest credentials or keys are tagged [sensitive name]; open them with "
-            "read_file before deciding anything about them. "
+            "Files whose names suggest credentials or keys are tagged [sensitive name], and files whose "
+            "contents look like a committed credential are tagged [credential-like content: lines ...] "
+            "(values never shown). Tags are hints: open the file with read_file and judge it yourself. "
             "Optional `subdir` limits to a directory; optional `pattern` is a glob "
             "like '*.yml' or '.github/workflows/*'."
         ),

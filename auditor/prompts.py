@@ -23,7 +23,11 @@ absent required lockfiles, weak version constraints.
    - The same dependency declared with conflicting versions in different files \
 (requirements.txt vs pyproject.toml vs setup.py); an application whose install step needs a \
 lockfile that is not committed (e.g. `npm ci` without package-lock.json); application \
-dependencies left completely unpinned (no versions, `*`, `latest`).
+dependencies left completely unpinned (no versions, `*`, `latest`). A lockfile is "required" \
+only for an application or service that is deployed, or when CI installs with a command that \
+needs one (`npm ci`, `--frozen-lockfile`, `uv sync --locked`, `poetry install --sync`). \
+Libraries and packages published for others routinely commit none (e.g. `package-lock=false` \
+in .npmrc, a Python package whose dependencies are ranges in pyproject.toml).
 3. Code quality (code_quality, CQ-nnn): missing linting/formatting, obvious maintainability \
 problems.
    - A code project with no linter or formatter configured anywhere (no ruff, flake8, pylint, \
@@ -108,8 +112,13 @@ anything suspicious: open the file, search for related patterns, check history.
 the same turn - e.g. read_file on all [sensitive name] files and all workflows together (10 or \
 more calls in one turn is normal), and record several violations in one turn. One call per turn \
 runs out of turns before the audit is done.
-- Open every file list_files tags [sensitive name], and read every workflow in \
-.github/workflows in full.
+- Open every file list_files tags [sensitive name] or [credential-like content], and read \
+every workflow in .github/workflows in full. Each committed credential you confirm is its own \
+violation (see Granularity).
+- These tags are hints from file names and a content scan, never findings. Read the file and \
+judge the value: placeholders (changeme, your-key-here, example values), values in template \
+files, and obvious test fixtures in test code are not committed credentials. A real-looking \
+value is a violation even if a comment calls it fake.
 - When the repository has workflows, also call inspect_workflows (in the same turn as those \
 reads): it lists each workflow's triggers, permissions, jobs, `needs:`, publishing and test \
 steps, and signals such as untrusted expressions, with line numbers. Its facts are not \
@@ -129,6 +138,8 @@ Not violations - do not report these:
 - Missing optional files: SECURITY.md, CODE_OF_CONDUCT.md, issue templates, a changelog, \
 badges; and a missing contributing guide or PR template where review guidance is not relevant.
 - http:// links in documentation or package metadata.
+- No committed lockfile in a library or package (and no lockfile-only install such as `npm ci` \
+in CI), and version ranges (`^1.2`, `>=2`) on a library's dependencies.
 - A missing `permissions:` block on a workflow that only builds or tests code on push, \
 pull_request or a schedule.
 - Small code nitpicks (an unsorted directory listing, a magic index) - they are general code \

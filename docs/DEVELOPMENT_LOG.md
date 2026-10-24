@@ -23,6 +23,9 @@ did not work. Each step lists the commits that implement it.
 | 2026-10-24 | 16 | Final requirements check; sampleproject false positives investigated and three prompt rules added |
 | 2026-10-24 | 17 | `gemini-3.8-flash` and `gemini-3.7-flash` removed from the default chain |
 | 2026-10-24 | 18 | `inspect_workflows` tool and final review; answer keys verified; A/B test against Step 16 |
+| 2026-10-24 | 19 | Content-based credential hints: leaky-repo 15 → 38 of 42 secret files |
+| 2026-10-24 | 20 | Two fresh repositories, key written first: insecure-devops 7/9 with no false positives; chalk 1 false positive |
+| 2026-10-24 | 21 | Fixes for the `env` signal and the lockfile rule; agent test: lockfile false positive gone, `env` dump found |
 
 ---
 
@@ -1192,3 +1195,183 @@ twice, with the same settings:
 - **Limits of this test:** one model family, 2 runs per arm, and, under deadline pressure, only
   leaky-repo was rerun after the batching fix. The other repositories' new-arm numbers above
   were measured before that fix.
+
+---
+
+## Step 19: File-by-file content hints for committed credentials
+
+**Why the leaky-repo score had a ceiling:** the model stops when it believes it has covered
+the repository, not when the turn budget runs out. It finished at turns 6–9 of 20 in most
+Step 18 runs, and at turn 7 of 1000 on sampleproject. What it treats as "covered" is the set of
+files it was pointed at.
+- **The pointer was file names only.** `list_files` tags credential-like *names*
+  (`[sensitive name]`), and the coverage check makes the model open those.
+- **15 of leaky-repo's 42 secret files have such names.** Across every evaluation round, the
+  agent found all 15 of those but only 2 of the other 27. The others are ordinary files whose
+  secrets are visible only in their contents: `wp-config.php`, `settings.py`, `.bashrc`,
+  `filezilla/*.xml`.
+
+**Prototype, measured before building** (local, no API requests): a line-by-line scan of
+every tracked text file. Its first version flagged 6 files on the healthy itsdangerous: code
+passing a `secret_key` variable around, documentation examples, and "author" matching "auth".
+Requiring quoted literals in code and skipping documentation removed those. The second version
+pointed at 34/42 secret files by content alone, and 38/42 together with the name tags.
+
+### Change
+
+- **`auditor/content_hints.py`** scans every tracked text file once per audit. It records the
+  **line numbers** (never the values) of:
+  - known token formats (the redaction patterns);
+  - a secret-like name assigned a literal value (`key = …`, `"key": …`, `key "…"`, PHP
+    `define()`, XML elements and attributes);
+  - credentials in a URL;
+  - password hashes.
+- **What it skips:**
+  - values that reference rather than contain a secret (`$VAR`, `${{ … }}`, `os.environ`, …);
+  - documentation files;
+  - in code, anything that is not a quoted literal (variables, type annotations);
+  - templates and `docs/`.
+- **`list_files`** shows `[credential-like content: lines …]`, or `[credential-like content in
+  a test file: …]` for test files.
+- **The coverage check** also requires these files to be opened before finishing, except test
+  files, whose values are usually fixtures.
+- **Prompt:** tags are hints, never findings. The model reads the file and judges the value:
+  placeholders, template values and obvious test fixtures are not committed credentials, and a
+  real-looking value counts even if a comment calls it fake.
+
+**Bugs found while building:**
+- Quoted literals that look like identifiers (`'hunter22pw'` in a PHP `define()`) were skipped.
+- Python type annotations (`self.secret_keys: list[bytes] = …`) were read as values. Found on
+  itsdangerous; regression test added.
+
+**Static result on the evaluation repositories:**
+
+| Repository | Files the agent must now open | Content tags |
+|---|---|---|
+| leaky-repo | 39, **all genuine secret files** (39/42; names alone: 15) | none false |
+| sampleproject (healthy) | workflows only | none |
+| itsdangerous (healthy) | workflows only | one, on a test fixture, labelled "in a test file" and not required |
+| Grafter, jpr5 | — | only lines in the answer keys (`DEMO_SECRET`, `OSSRH_PASSWORD`, `API_KEY`) |
+
+**Tests:** 18 new tests (`tests/test_content_hints.py`, plus updates to `tests/test_tools.py`).
+They cover:
+- each credential form above;
+- references, docs, "author" and type annotations not being tagged;
+- the test-file label, and templates and test files not being required;
+- values never appearing in the output.
+
+The suite has 162 tests, all passing.
+
+### Live check (default command, 40 turns, default chain; all served by `gemini-3.5-flash-lite`)
+
+Results are in [`evals/runs/2026-10-24-content-hints/`](../evals/runs/2026-10-24-content-hints/).
+
+| Audit | Result | Against the verified key |
+|---|---|---|
+| leaky-repo | **38 findings, all real: 38/42 secret files**, no false positives, in 35 s | Every earlier round: 13–16/42. It also found `salesforce.js`, which no tag pointed at |
+| sampleproject (healthy) | 1 finding | The real one (release published on push without tests); no false positives |
+| itsdangerous (healthy), run 1 | 0 | Correct |
+| itsdangerous (healthy), run 2 | 1: `pyproject.toml:86` coverage `source = ["jinja2", "tests"]` | Factually true (a copy-paste from Jinja: coverage measures the wrong package), but arguably outside the nine areas, so it probably counts as a false positive against a "no violations" key. The file was not tagged; unrelated to this change |
+
+**Conclusion:** the content hints remove the main leaky-repo ceiling, more than doubling
+recall (15 → 38 of 42). No credential false positive appeared on the healthy repositories.
+- **Limits:** one live run per repository, one model.
+- **Optimistic for leaky-repo:** the patterns were designed while looking at that repository.
+  The healthy repositories, and the fact that only answer-key lines were tagged on Grafter and
+  jpr5, are the evidence that the scan does not over-tag.
+
+---
+
+## Step 20: Two fresh repositories, with the answer key written first
+
+**Why:** every evaluation so far reused the same seven repositories, most of which shaped the
+prompt. To check that the agent generalises, two repositories never used before were chosen:
+- **`chalk/chalk`:** healthy, and JavaScript, unlike any repository so far.
+- **`ngocdh/insecure-devops`:** deliberately insecure CI/CD, Docker and Kubernetes.
+
+Every file of both was read, and the answer key was written to
+[`evals/ANSWER_KEYS.md`](../evals/ANSWER_KEYS.md) **before** the agent ran, so the scoring
+could not be fitted to its output.
+
+**Run:** the default command (`python agent.py --repo … --output …`), with no other settings.
+Both audits were served by `gemini-3.5-flash-lite` and exited 0, in 10 s and 12 s. Results are
+in [`evals/runs/2026-10-24-fresh-repos/`](../evals/runs/2026-10-24-fresh-repos/); a scan found
+no secrets and no local paths.
+
+### ngocdh/insecure-devops: 7 findings, all correct; 7 of the 9 key items
+
+| Key item | Found? |
+|---|---|
+| 1. Production deploy triggered by PRs to any branch | Yes, as BLD-001 "deploy workflow runs without build or validation" (the trigger is named in COL-001's evidence) |
+| 2. Self-hosted runner in a `pull_request` workflow | Yes, COL-001 (critical) |
+| 3. Secret echoed through `base64` | Yes, SEC-001 (critical) |
+| 4. `env` dumps the environment | **No.** `inspect_workflows`' "environment dump" signal only matched `env \|`, not a bare `env` line, so the tool did not point at it |
+| 5. No tests; CI runs none | Yes, TEST-001 |
+| 6. `flask` unpinned | Yes, DEP-001 |
+| 7. `.gitignore` contains only `.git` | Yes, HYG-001. **Recorded after the final review**, the first time the review step has produced a finding |
+| 8. Kubernetes deploys `:latest` with `imagePullPolicy: Always` | **No.** The model read `deploy/app.yml` but did not flag it |
+| 9. No linter | Yes, CQ-001 |
+
+No false positives. None of the borderline items (EOL base image, root container, no
+`.dockerignore`, no `permissions:`) were reported.
+
+### chalk/chalk: 1 finding, a false positive
+
+The finding was DEP-001 "missing lockfile". `.npmrc` sets `package-lock=false` deliberately,
+and chalk is a library whose dependencies are all dev dependencies. This is the third
+repository with the same false positive (sampleproject in Steps 15 and 18, jpr5 in Step 18).
+The rule nuance (libraries need no lockfile; applications, or CI using `npm ci`, do) was
+written up in Step 18 but has not been applied yet. The other traps were handled correctly:
+`.npmrc` was tagged and opened but not reported, and there was no permissions finding on the
+build/test workflow.
+
+### What this shows
+
+- **It generalises to unseen repositories:** 7/7 precision and 7/9 recall on the insecure one,
+  in a different stack (Docker, Kubernetes) from the tuning set.
+- **The remaining errors are specific and fixable:**
+  - the `env` signal gap is a tool bug;
+  - the lockfile false positive is a known, documented rule gap;
+  - the Kubernetes `:latest` miss is a model judgment on a file type no rule mentions.
+- **Limits:** one run per repository, one model (Flash-Lite).
+
+---
+
+## Step 21: Fixes from the fresh-repository test
+
+### Changes
+
+| # | Change | Step 20 evidence | Where |
+|---|---|---|---|
+| 1 | The "environment dump" signal recognises a bare `env`, `printenv`, `export -p` or `set` command, alone or piped. It still ignores `env:` keys, `NODE_ENV`, `environment:` and `$ENV_FILE`. | insecure-devops: a bare `env` line was not reported, and the agent missed it | `auditor/workflows.py` |
+| 2 | Lockfile rule: a lockfile counts as "required" only for a deployed application or service, or when CI installs with a command that needs one (`npm ci`, `--frozen-lockfile`, `uv sync --locked`, `poetry install --sync`). A library with no committed lockfile, and version ranges on a library's dependencies, are listed as not violations. | The same "missing lockfile" false positive on three repositories: chalk, sampleproject, jpr5 | `auditor/prompts.py` |
+
+**Tests:** 8 new tests:
+- four `env`-style commands that must be signalled;
+- four `env` keys and names that must not be.
+
+The suite has 170 tests, all passing.
+
+### Agent test (default command; all served by `gemini-3.5-flash-lite`)
+
+Results are in
+[`evals/runs/2026-10-24-fixes-check/`](../evals/runs/2026-10-24-fixes-check/); a scan found no
+secrets and no local paths.
+
+| Audit | Purpose | Result |
+|---|---|---|
+| chalk, run 1 | lockfile false positive gone? | **0 findings** (Step 20: 1 false positive) |
+| chalk, run 2 | same, second run | **0 findings** |
+| sampleproject | lockfile false positive gone? | **0 findings**: no false positive. But the real ungated-release issue (found in Steps 18 and 19) was missed this run |
+| ngocdh/insecure-devops | `env` dump found, nothing lost? | 5 findings, all correct, covering 6 of the 9 key items. **The `env` dump is now found**, inside the secret-echo finding ("Secret echoed/printed to log and environment dump"). This run missed the `.gitignore` and PR-triggered deploy items that Step 20 found |
+| gary-mello | guard: the rule must not hide real problems | 7 findings, all correct: `pull_request_target` checkout, `write-all`, all three expression injections **as separate per-file findings**, a deploy without tests, and the README's missing-permissions item |
+
+### Conclusions
+
+- **Both fixes work.**
+  - The lockfile false positive did not appear in any of the 3 healthy-repository runs.
+  - The `env` dump is now reported.
+- **No precision cost:** all 12 findings across the two insecure repositories were correct.
+- **Run-to-run variance on Flash-Lite remains the largest source of error.** The same
+  repository can gain or lose 1–2 findings between runs (sampleproject's release issue,
+  insecure-devops' `.gitignore`), with no code change in between.

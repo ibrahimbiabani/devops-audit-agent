@@ -320,7 +320,11 @@ def test_first_finish_asks_for_one_final_review(sample_repo):
 def test_review_skips_reminders_already_done(sample_repo):
     llm = FakeLLM(
         [
-            resp(tool_use("t1", "read_file", path=".github/workflows/ci.yml"), tool_use("t2", "inspect_workflows")),
+            resp(
+                tool_use("t1", "read_file", path=".github/workflows/ci.yml"),
+                tool_use("t1b", "read_file", path="app.py"),  # tagged by its content
+                tool_use("t2", "inspect_workflows"),
+            ),
             resp(tool_use("t3", "finish_audit", summary="x")),
             resp(tool_use("t4", "finish_audit", summary="y")),
         ]
