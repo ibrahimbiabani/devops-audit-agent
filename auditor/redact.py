@@ -35,6 +35,15 @@ _ASSIGNMENT = re.compile(
     (?P=quote)
     """
 )
+# Values after a secret-looking key that cannot be secrets: GitHub Actions permission levels
+# (`id-token: write`), booleans, and auth-scheme words (`Authorization: Bearer $TOKEN`).
+# Masking them made evidence unreadable (seen on 2026-10-24: "id-token: [REDACTED]").
+_NOT_SECRET = {"read", "write", "none", "true", "false", "null", "bearer", "basic", "required", "optional"}
+# A plain variable reference ($TOKEN, ${TOKEN}) names a secret without containing it.
+_VARIABLE = re.compile(r"^\$\{?[A-Za-z_][A-Za-z0-9_]*\}?$")
+# The credential after an auth scheme ("Bearer abcd...", "Basic dXNl..."), masked on its own
+# because the scheme word itself is kept.
+_AUTH_SCHEME = re.compile(r"(?i)\b(?P<scheme>bearer|basic)(?P<sep>\s+)(?P<value>[A-Za-z0-9._~+/=-]{8,})")
 
 
 def redact_tokens(text: str) -> str:
@@ -45,9 +54,11 @@ def redact_tokens(text: str) -> str:
 
 def redact(text: str) -> str:
     text = redact_tokens(text)
+    text = _AUTH_SCHEME.sub(lambda m: f"{m.group('scheme')}{m.group('sep')}[REDACTED]", text)
 
     def _mask(m: re.Match[str]) -> str:
-        if m.group("value").startswith("[REDACTED"):
+        value = m.group("value")
+        if value.startswith("[REDACTED") or value.lower() in _NOT_SECRET or _VARIABLE.match(value):
             return m.group(0)
         q = m.group("quote")
         return f"{m.group('key')}{m.group('sep')}{q}[REDACTED]{q}"

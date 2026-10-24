@@ -69,6 +69,26 @@ def test_redact_leaves_plain_text_alone():
     assert redact("Use environment variables for tokens") == "Use environment variables for tokens"
 
 
+@pytest.mark.parametrize(
+    "text",
+    [
+        "permissions:\n  id-token: write",  # regression (2026-10-24): became "id-token: [REDACTED]"
+        "contents: read, id-token: none",
+        'curl -H "Authorization: Bearer $TOKEN"',
+        "token: ${GH_TOKEN}",
+        "persist-credentials: false",
+    ],
+)
+def test_redact_keeps_values_that_cannot_be_secrets(text):
+    assert redact(text) == text
+
+
+def test_redact_still_masks_real_values_next_to_those_words():
+    out = redact('id-token: wr1te_hunter22 and Authorization: Bearer abcd1234efgh and password="writer99"')
+    assert "hunter22" not in out and "abcd1234efgh" not in out and "writer99" not in out
+    assert redact("Authorization: Basic dXNlcjpwYXNzd29yZA==") == "Authorization: Basic [REDACTED]"
+
+
 def test_report_sorted_by_severity_and_written(tmp_path):
     report = build_report("https://github.com/a/b", [make(severity="low"), make(rule_id="SEC-002")])
     assert [v["severity"] for v in report["violations"]] == ["critical", "low"]

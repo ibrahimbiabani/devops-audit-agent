@@ -152,6 +152,13 @@ The run is unattended and never prompts.
 `ci_cd`, `security`, `configuration`, `collaboration`, `build_release`. `severity` is one of
 `critical`, `high`, `medium`, `low`. `file`/`line` are `null` when not applicable.
 
+**Sample report.** [`sample_report.json`](sample_report.json) is unedited agent output from
+`python agent.py --repo https://github.com/jpr5/vulnerable-workflows-test --output sample_report.json`.
+It was produced on 2026-10-24 with the default settings, and the audit was served by
+`gemini-3.8-flash`, `gemini-3.6-flash` and `gemini-3-flash-preview`. This repository was not
+used to tune the prompt. Its tool-call trace is
+[`sample_report.trace.jsonl`](sample_report.trace.jsonl).
+
 **Tool-call trace.** Every run also writes a trace next to the report, e.g. `report.json` gets
 `report.trace.jsonl`. It has one JSON line per tool call: the turn, the tool, its arguments,
 whether it failed, the output size, a short preview and the time taken. The last line names the

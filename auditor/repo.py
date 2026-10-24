@@ -6,14 +6,18 @@ and no repository code is executed.
 
 from __future__ import annotations
 
+import logging
 import os
 import re
 import shutil
 import stat
 import subprocess
+import sys
 import tempfile
 import time
 from pathlib import Path
+
+log = logging.getLogger(__name__)
 
 GITHUB_URL = re.compile(r"^https://github\.com/(?P<owner>[A-Za-z0-9_.-]+)/(?P<name>[A-Za-z0-9_.-]+?)(?:\.git)?/?$")
 # git's messages for a network that is down or flaky (e.g. "Could not resolve host: github.com",
@@ -75,12 +79,23 @@ def clone(url: str, timeout: int = 300, sleep=time.sleep) -> Path:
 
 
 def cleanup(path: Path) -> None:
-    """Remove a temp clone. Handles read-only git objects on Windows."""
+    """Remove a temp clone. Handles read-only git objects on Windows.
 
-    def _onexc(func, p, _exc):
+    Never raises: the report is already written by now, so a clone that cannot be
+    deleted is logged and left in the temp directory instead of failing the audit.
+    """
+
+    def _make_writable_and_retry(func, p, _exc):
         os.chmod(p, stat.S_IWRITE)
         func(p)
 
     root = path if path.name.startswith("devops-audit-") else path.parent
-    if root.name.startswith("devops-audit-"):
-        shutil.rmtree(root, onexc=_onexc)
+    if not root.name.startswith("devops-audit-"):
+        return
+    try:
+        if sys.version_info >= (3, 12):
+            shutil.rmtree(root, onexc=_make_writable_and_retry)
+        else:  # onexc is new in 3.12; onerror takes the same callback here
+            shutil.rmtree(root, onerror=_make_writable_and_retry)
+    except OSError as e:
+        log.warning("Could not delete the temporary clone %s (%s)", root, e)

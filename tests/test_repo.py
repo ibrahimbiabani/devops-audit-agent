@@ -1,5 +1,6 @@
 """Clone retries, with git replaced by a scripted stand-in (no network)."""
 
+import stat
 import subprocess
 
 import pytest
@@ -44,3 +45,29 @@ def test_clone_gives_up_after_three_network_failures(monkeypatch):
     with pytest.raises(repo.RepoError, match="Connection reset"):
         repo.clone("https://github.com/a/b", sleep=lambda s: None)
     assert len(calls) == 3
+
+
+@pytest.mark.parametrize("version", [(3, 11), (3, 13)])
+def test_cleanup_removes_read_only_clone_on_every_supported_python(monkeypatch, tmp_path, version):
+    # Regression: cleanup used rmtree(onexc=...), which only exists on Python 3.12+, so every
+    # audit on 3.11 crashed after writing its report.
+    monkeypatch.setattr(repo.sys, "version_info", version)
+    root = tmp_path / "devops-audit-x"
+    (root / "repo" / ".git").mkdir(parents=True)
+    obj = root / "repo" / ".git" / "pack"
+    obj.write_text("x")
+    obj.chmod(stat.S_IREAD)  # git objects are read-only, which plain rmtree cannot delete on Windows
+    repo.cleanup(root / "repo")
+    assert not root.exists()
+
+
+def test_cleanup_never_raises(monkeypatch, tmp_path, caplog):
+    root = tmp_path / "devops-audit-y"
+    root.mkdir()
+
+    def broken_rmtree(*args, **kwargs):
+        raise PermissionError("in use")
+
+    monkeypatch.setattr(repo.shutil, "rmtree", broken_rmtree)
+    repo.cleanup(root)  # logged, not raised: the report is already written
+    assert "Could not delete the temporary clone" in caplog.text

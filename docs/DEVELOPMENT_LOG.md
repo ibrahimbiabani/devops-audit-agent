@@ -19,6 +19,7 @@ did not work. Each step lists the commits that implement it.
 | 2026-10-23 | 12 | Requirements review; one finding per credential, stricter duplicate checks, trace by default |
 | 2026-10-23/24 | 13 | Fifth evaluation, after the quota reset and the Step 12 fixes |
 | 2026-10-24 | 14 | Fixes from Step 13: rejected findings can't be lost, network retries, narrower permissions and testing rules |
+| 2026-10-24 | 15 | `sample_report.json`; sixth evaluation measuring Steps 12–14; redaction fix |
 
 ---
 
@@ -835,3 +836,131 @@ repositories. The hidden type-C repository is there specifically to test false p
   network failures
 
 The suite has 123 tests, all passing.
+
+### Bug found by CI: clone cleanup crashed on Python 3.11
+
+The Step 14 push failed CI on Python 3.11. The 3.13 job was cancelled automatically when
+3.11 failed.
+
+- **Symptom:** the three new clone tests failed with
+  `TypeError: rmtree() got an unexpected keyword argument 'onexc'`.
+- **Cause:** `cleanup()` in `auditor/repo.py` passed `onexc=` to `shutil.rmtree`, and that
+  argument only exists from Python 3.12. The bug dates from Step 1. It never showed because:
+  - no test had called `cleanup()` before;
+  - every live run used the development machine's Python 3.14.
+- **Impact:** `agent.py` calls `cleanup()` after writing the report. On Python 3.11, which the
+  README lists as supported, every audit would have written its report and then exited 1 with
+  a traceback.
+- **Fix:**
+  - `onexc=` on 3.12+, `onerror=` on 3.11; the callback is the same.
+  - `cleanup()` never raises. A clone that cannot be deleted is logged and left in the temp
+    directory, because the report is already written.
+- **Tests:** cleanup of a read-only clone under both code paths (3.11 and 3.12+), and a
+  failing delete being logged instead of raised. A ruff check targeting Python 3.11
+  (`--target-version py311`) was also run over all source files, including
+  `evals/run_eval.py`, and found nothing.
+
+The suite has 126 tests, all passing locally; CI re-checks on 3.11 and 3.13.
+
+---
+
+## Step 15: Sample report and sixth evaluation
+
+### `sample_report.json`
+
+- **Command:** run right after the quota reset (12:02 PKT, Oct 24), with the exact command
+  from the assignment and default settings:
+  `python agent.py --repo https://github.com/jpr5/vulnerable-workflows-test --output sample_report.json`.
+- **Repository:** `jpr5/vulnerable-workflows-test` was chosen because it is held out (not
+  used to tune the prompt), small, and has defects in several areas.
+- **Models:** the audit started on `gemini-3.8-flash`, which returned 503 twice.
+  `3.7-flash` timed out (504), `3.6-flash` was rate-limited, and `3.5-flash` reported its
+  daily quota spent. It finished on `gemini-3-flash-preview`. 32 requests in all; exit 0.
+- **Result:** 10 findings covering 5 of the 6 known defects (all but `curl … | bash`):
+  - the `pull_request_target` checkout of the PR head;
+  - untrusted input in `run:`, with `greet-pr.yml` and `manual-deploy.yml` in one finding;
+  - the hardcoded API key, shown only as `[REDACTED]`;
+  - missing `permissions:` blocks, limited by the Step 14 rule to the three risky workflows,
+    with the reason stated.
+
+  The other findings are defensible extras: CI does not run on pull requests, CI never builds,
+  a deploy has no test gate, the test script is a dummy, there is no `.gitignore`, and there is
+  no linter.
+- **Trace:** `sample_report.trace.jsonl` (24 lines) is committed alongside. Both files were
+  scanned and contain no secrets and no local paths. The report is unedited.
+
+### Sixth evaluation (Steps 12–14)
+
+**Setup:** the same runner and settings as Steps 8, 11 and 13, started right after the sample
+report. Results are in
+[`evals/runs/2026-10-24-steps-12-14/`](../evals/runs/2026-10-24-steps-12-14/). A scan found
+no secrets and no local paths.
+
+**Reliability:**
+- All 7 audits exited 0. The round used 96 requests: 86 OK, 6 × 429, 3 × 503, 1 × 504.
+- **The sample report had used most of the day's Flash quota first.** In the round, only
+  gary-mello ran on Flash (`3.6-flash`, then `3-flash-preview`).
+- itsdangerous tried `3.8-flash` (503) and `3.7-flash` (504) before falling back.
+- The other five audits ran on `3.5-flash-lite`.
+
+**The Step 14 refusal worked twice:**
+- **Grafter:** three findings were rejected (missing `severity`). The `finish_audit` in the
+  same turn was refused, and the model resubmitted all three. Step 13 lost all of Grafter to
+  exactly this.
+- **sampleproject:** the same happened with one finding.
+
+The Step 4 coverage check also fired on leaky-repo, which then opened the files it had skipped.
+
+| Repository | Step 11 | Step 13 | Step 15 | Model |
+|---|---|---|---|---|
+| gary-mello (held-out) | 6 / 7 | 6 / 7 | 5 / 7 + 6 extras | 3.6-flash → 3-flash-preview |
+| jpr5 (held-out) | 4 / 6 | 5 / 6 | 3 / 6, no false positives | 3.5-flash-lite |
+| itsdangerous (healthy) | 0 | 1 false positive | **0 (correct)** | 3.8 → 3.5-flash-lite |
+| paastha1 | 6 / 6 + 2 duplicates | 6 / 6 | 6 / 6, 13 findings | 3.5-flash-lite |
+| Grafter | 3 / 5 | 0 (lost) | 1 / 5 + 2 valid extras | 3.5-flash-lite |
+| leaky-repo | 9 / 35 | 16 / 35 | 15 / 35 + 1 valid extra | 3.5-flash-lite |
+| sampleproject (healthy) | 1 borderline | 2 false positives | 1 false positive | 3.5-flash-lite |
+
+Notes on the scores:
+- **gary-mello:** as predicted in Step 14, the planted `no-permissions-declared.yml` (a
+  push/PR build workflow) is no longer reported. Missing permissions *is* reported for the
+  workflows with untrusted triggers.
+- **jpr5:** a Flash-Lite run that stopped after 5 requests. On Flash (the sample report),
+  the same repository scored 5 / 6.
+- **paastha1:** of the 7 findings beyond the 6 patterns, 4 are additional hardcoded
+  credentials (each its own violation). The other 3 repeat an anti-pattern already reported in
+  another file (echo, `curl -v`, artifact upload). A grader may count those 3 as duplicates.
+  The audit reached the 20-turn limit.
+- **Grafter:** a short Flash-Lite run (8 requests). It found script injection, write
+  permissions on an `issue_comment` trigger, and a `curl -v` with an `Authorization` header in
+  `test.yaml` that earlier rounds missed. It missed `runs-on:` injection, the `contains()`
+  allowlist, the download-name collision and the echoed secret-shaped literal.
+- **sampleproject:** one false positive. `release.yml`'s `permissions: id-token: write` was
+  called insufficient, although it is the documented minimal setting for trusted publishing.
+
+### Analysis
+
+- **Healthy repositories improved** (Step 14 permissions and testing rules). itsdangerous was
+  clean again, and sampleproject went from 2 false positives to 1.
+- **The Step 12 credential rule holds** on leaky-repo (15–16 separate findings in both rounds
+  since) and on paastha1.
+- **Model capability now dominates recall on the subtle repositories.** On Flash-Lite, jpr5
+  and Grafter finished after 5–8 requests with fewer findings. On Flash, the same repositories
+  scored 5 / 6 (sample report) and 3 / 5 (Step 11, partly Flash). The free tier gives about
+  20 requests per Flash model a day, so a full round cannot run on Flash. An evaluator with
+  their own key and quota would get the stronger models.
+
+### Bug found: over-redaction made evidence unreadable
+
+- **Symptom:** sampleproject's evidence read `permissions block with only id-token: [REDACTED]`.
+- **Cause:** the generic `key: value` redaction masked any value after a key containing
+  "token", including the permission level `write`. It also swallowed the word `Bearer` in
+  `Authorization: Bearer $TOKEN`.
+- **Fix** (`auditor/redact.py`):
+  - Values that cannot be secrets are kept: permission levels (`read`, `write`, `none`),
+    booleans, and plain variable references such as `$TOKEN`.
+  - The credential after `Bearer`/`Basic` is masked on its own, so the scheme word is kept and
+    the secret still is not.
+- **Tests:** 6 new tests. One of them caught a gap in the first version of the fix: keeping
+  `Bearer` would have left a literal bearer token unmasked. The final version masks it.
+- The suite has 132 tests, all passing.
