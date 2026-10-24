@@ -1,0 +1,105 @@
+{
+  "repository": "https://github.com/jpr5/vulnerable-workflows-test",
+  "violations": [
+    {
+      "rule_id": "COL-002",
+      "category": "collaboration",
+      "severity": "critical",
+      "file": ".github/workflows/auto-label.yml",
+      "line": 12,
+      "description": "Unsafe checkout of untrusted pull request head ref under pull_request_target",
+      "evidence": ".github/workflows/auto-label.yml line 12 checks out ref: ${{ github.event.pull_request.head.ref }} in a pull_request_target workflow, executing/loading untrusted code with elevated repository privileges.",
+      "recommendation": "Avoid checking out untrusted PR head code in pull_request_target workflows. If checkout is necessary, isolate untrusted execution in an unprivileged workflow."
+    },
+    {
+      "rule_id": "SEC-002",
+      "category": "security",
+      "severity": "high",
+      "file": null,
+      "line": null,
+      "description": "Missing explicit permissions block on risky workflows",
+      "evidence": "Workflows .github/workflows/auto-label.yml (pull_request_target), .github/workflows/greet-pr.yml (pull_request with untrusted input), and .github/workflows/manual-deploy.yml (deploy workflow) lack top-level or job-level permissions: blocks, defaulting to broad repository permissions.",
+      "recommendation": "Add explicit minimal permissions blocks (e.g., permissions: contents: read) at the workflow or job level."
+    },
+    {
+      "rule_id": "COL-001",
+      "category": "collaboration",
+      "severity": "high",
+      "file": ".github/workflows/greet-pr.yml",
+      "line": 12,
+      "description": "Direct interpolation of untrusted input into inline run script",
+      "evidence": "In .github/workflows/greet-pr.yml line 12-13, ${{ github.event.pull_request.title }} and ${{ github.event.pull_request.user.login }} are interpolated directly into run: scripts. Also in .github/workflows/manual-deploy.yml line 19, ${{ inputs.version }} and ${{ inputs.environment }} are directly interpolated.",
+      "recommendation": "Pass untrusted values via environment variables (env:) rather than directly interpolating expressions into bash script blocks."
+    },
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/setup.yml",
+      "line": 15,
+      "description": "Hardcoded API key in workflow environment configuration",
+      "evidence": ".github/workflows/setup.yml line 15 hardcodes API_KEY: \"[REDACTED]\" in an env block.",
+      "recommendation": "Remove hardcoded credentials from workflow files and reference GitHub Actions Secrets (e.g., ${{ secrets.API_KEY }})."
+    },
+    {
+      "rule_id": "HYG-001",
+      "category": "repository_hygiene",
+      "severity": "medium",
+      "file": null,
+      "line": null,
+      "description": "Missing .gitignore file in Node.js repository",
+      "evidence": "The repository lacks a .gitignore file, risking unintended tracking of node_modules, build artifacts, environment files, and local logs.",
+      "recommendation": "Create a .gitignore file tailored for Node.js projects (including node_modules/, dist/, .env, *.log)."
+    },
+    {
+      "rule_id": "CI-001",
+      "category": "ci_cd",
+      "severity": "medium",
+      "file": ".github/workflows/ci.yml",
+      "line": 2,
+      "description": "CI workflow does not run on pull request events",
+      "evidence": ".github/workflows/ci.yml triggers on 'push' only (line 2), leaving pull requests unvalidated by CI before merging.",
+      "recommendation": "Update CI workflow triggers to include pull_request (e.g., on: [push, pull_request])."
+    },
+    {
+      "rule_id": "BLD-001",
+      "category": "build_release",
+      "severity": "medium",
+      "file": ".github/workflows/ci.yml",
+      "line": 12,
+      "description": "CI workflow does not build the project",
+      "evidence": "package.json defines a build script (\"build\": \"echo ok\"), but .github/workflows/ci.yml line 12 only runs npm test and never executes npm run build.",
+      "recommendation": "Add a build step (npm run build) to CI to verify that code builds successfully."
+    },
+    {
+      "rule_id": "BLD-002",
+      "category": "build_release",
+      "severity": "medium",
+      "file": ".github/workflows/manual-deploy.yml",
+      "line": 13,
+      "description": "Deployment job runs without test or build validation",
+      "evidence": ".github/workflows/manual-deploy.yml line 13 deploy job executes deployment steps directly without running tests or depending on a passing test job.",
+      "recommendation": "Require test and build validation before executing deployment jobs (e.g., adding a needs: test requirement)."
+    },
+    {
+      "rule_id": "TEST-001",
+      "category": "testing",
+      "severity": "medium",
+      "file": "package.json",
+      "line": null,
+      "description": "Project lacks automated test suite",
+      "evidence": "package.json defines a dummy test script (\"test\": \"echo ok\") and no actual test files exist in the repository.",
+      "recommendation": "Implement actual unit or integration tests and configure package.json to execute the test framework."
+    },
+    {
+      "rule_id": "CQ-001",
+      "category": "code_quality",
+      "severity": "low",
+      "file": "package.json",
+      "line": 1,
+      "description": "No linter or code formatter configured",
+      "evidence": "The repository has no linting or formatting tool (such as ESLint or Prettier) configured in package.json, configuration files, or CI workflows.",
+      "recommendation": "Configure a linter (e.g., ESLint) and code formatter (e.g., Prettier), and run lint checks as part of the CI pipeline."
+    }
+  ]
+}
