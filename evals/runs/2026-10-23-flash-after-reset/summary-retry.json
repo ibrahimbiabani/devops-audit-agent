@@ -1,0 +1,64 @@
+{
+  "results": [
+    {
+      "url": "https://github.com/Grafter-labs/grafter-lab-injection",
+      "type": "B",
+      "set": "tuned",
+      "name": "Grafter-labs__grafter-lab-injection",
+      "exit": 0,
+      "seconds": 887,
+      "http": {
+        "200": 13,
+        "504": 2
+      },
+      "fallbacks": 2,
+      "exhausted": false,
+      "violations": 0,
+      "models": [
+        "gemini-3.8-flash",
+        "gemini-3.5-flash-lite"
+      ]
+    },
+    {
+      "url": "https://github.com/Plazmaz/leaky-repo",
+      "type": "A",
+      "set": "tuned",
+      "name": "Plazmaz__leaky-repo",
+      "exit": 0,
+      "seconds": 40,
+      "http": {
+        "200": 19
+      },
+      "fallbacks": 0,
+      "exhausted": false,
+      "violations": 16,
+      "models": [
+        "gemini-3.5-flash-lite"
+      ]
+    },
+    {
+      "url": "https://github.com/pypa/sampleproject",
+      "type": "C",
+      "set": "tuned",
+      "name": "pypa__sampleproject",
+      "exit": 0,
+      "seconds": 53,
+      "http": {
+        "200": 6,
+        "429": 1
+      },
+      "fallbacks": 0,
+      "exhausted": false,
+      "violations": 2,
+      "models": [
+        "gemini-3.5-flash-lite"
+      ]
+    }
+  ],
+  "http_totals": {
+    "200": 38,
+    "429": 1,
+    "504": 2
+  },
+  "requests": 41
+}

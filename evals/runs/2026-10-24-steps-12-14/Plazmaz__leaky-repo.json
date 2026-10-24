@@ -1,0 +1,165 @@
+{
+  "repository": "https://github.com/Plazmaz/leaky-repo",
+  "violations": [
+    {
+      "rule_id": "SEC-003",
+      "category": "security",
+      "severity": "critical",
+      "file": ".docker/.dockercfg",
+      "line": 4,
+      "description": "Committed Docker configuration with auth token (.docker/.dockercfg)",
+      "evidence": "Committed .dockercfg file containing auth token at .docker/.dockercfg line 4",
+      "recommendation": "Remove .dockercfg, rotate Docker credentials, and exclude Docker config files in .gitignore."
+    },
+    {
+      "rule_id": "SEC-004",
+      "category": "security",
+      "severity": "critical",
+      "file": ".docker/config.json",
+      "line": 5,
+      "description": "Committed Docker configuration with auth token (.docker/config.json)",
+      "evidence": "Committed Docker config.json containing auth token at .docker/config.json line 5",
+      "recommendation": "Remove config.json, rotate Docker credentials, and exclude .docker/ in .gitignore."
+    },
+    {
+      "rule_id": "SEC-002",
+      "category": "security",
+      "severity": "critical",
+      "file": ".git-credentials",
+      "line": 1,
+      "description": "Committed Git credentials file (.git-credentials)",
+      "evidence": "Committed .git-credentials file containing URL-encoded username and password at .git-credentials line 1",
+      "recommendation": "Remove .git-credentials from repository and add it to .gitignore."
+    },
+    {
+      "rule_id": "SEC-005",
+      "category": "security",
+      "severity": "critical",
+      "file": ".netrc",
+      "line": 1,
+      "description": "Committed .netrc credential file (.netrc)",
+      "evidence": "Committed .netrc file containing mail server login and password at .netrc line 1",
+      "recommendation": "Remove .netrc from the repository and add it to .gitignore."
+    },
+    {
+      "rule_id": "SEC-006",
+      "category": "security",
+      "severity": "critical",
+      "file": ".npmrc",
+      "line": 7,
+      "description": "Committed npm configuration with authentication token (.npmrc)",
+      "evidence": "Committed .npmrc containing _auth and _authToken at .npmrc line 7",
+      "recommendation": "Remove .npmrc from the repository, rotate the npm tokens, and add .npmrc to .gitignore."
+    },
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "critical",
+      "file": ".ssh/id_rsa",
+      "line": 1,
+      "description": "Committed private SSH key (.ssh/id_rsa)",
+      "evidence": "Committed private RSA key found at .ssh/id_rsa",
+      "recommendation": "Remove the private key from the repository, revoke/rotate the key, and add .ssh/ to .gitignore."
+    },
+    {
+      "rule_id": "SEC-007",
+      "category": "security",
+      "severity": "critical",
+      "file": "cloud/.s3cfg",
+      "line": 1,
+      "description": "Committed AWS S3 configuration with secret key (cloud/.s3cfg)",
+      "evidence": "Committed cloud/.s3cfg containing secret_key at cloud/.s3cfg line 1",
+      "recommendation": "Remove cloud/.s3cfg, rotate AWS credentials, and add .s3cfg to .gitignore."
+    },
+    {
+      "rule_id": "SEC-008",
+      "category": "security",
+      "severity": "critical",
+      "file": "db/.pgpass",
+      "line": 2,
+      "description": "Committed PostgreSQL password file (db/.pgpass)",
+      "evidence": "Committed db/.pgpass containing database credentials at db/.pgpass line 2",
+      "recommendation": "Remove db/.pgpass from the repository, rotate database credentials, and add .pgpass to .gitignore."
+    },
+    {
+      "rule_id": "SEC-009",
+      "category": "security",
+      "severity": "critical",
+      "file": "etc/shadow",
+      "line": 20,
+      "description": "Committed system shadow file (etc/shadow)",
+      "evidence": "Committed etc/shadow file containing password hashes at etc/shadow line 20",
+      "recommendation": "Remove etc/shadow from the repository and ensure system sensitive files are not tracked."
+    },
+    {
+      "rule_id": "SEC-010",
+      "category": "security",
+      "severity": "critical",
+      "file": "misc-keys/cert-key.pem",
+      "line": 1,
+      "description": "Committed SSL private key (misc-keys/cert-key.pem)",
+      "evidence": "Committed SSL private key found at misc-keys/cert-key.pem line 1",
+      "recommendation": "Remove the private key from the repository, revoke/rotate the certificate and key, and add private keys to .gitignore."
+    },
+    {
+      "rule_id": "SEC-011",
+      "category": "security",
+      "severity": "critical",
+      "file": "misc-keys/putty-example.ppk",
+      "line": 1,
+      "description": "Committed PuTTY private key (misc-keys/putty-example.ppk)",
+      "evidence": "Committed PuTTY private key file found at misc-keys/putty-example.ppk line 1",
+      "recommendation": "Remove the private key from the repository, revoke/rotate the key, and add private keys to .gitignore."
+    },
+    {
+      "rule_id": "SEC-012",
+      "category": "security",
+      "severity": "critical",
+      "file": "web/ruby/config/master.key",
+      "line": 1,
+      "description": "Committed Ruby on Rails master key (web/ruby/config/master.key)",
+      "evidence": "Committed master.key file containing encryption key at web/ruby/config/master.key line 1",
+      "recommendation": "Remove master.key from the repository, rotate the Rails master key, and add config/master.key to .gitignore."
+    },
+    {
+      "rule_id": "SEC-013",
+      "category": "security",
+      "severity": "critical",
+      "file": "web/ruby/secrets.yml",
+      "line": 22,
+      "description": "Committed Ruby secrets configuration with production secret key base (web/ruby/secrets.yml)",
+      "evidence": "Committed secrets.yml containing production secret_key_base at web/ruby/secrets.yml line 22",
+      "recommendation": "Remove production secrets from version control and load them via environment variables."
+    },
+    {
+      "rule_id": "SEC-014",
+      "category": "security",
+      "severity": "critical",
+      "file": "web/var/www/.env",
+      "line": 5,
+      "description": "Committed environment file containing sensitive credentials (web/var/www/.env)",
+      "evidence": "Committed .env file containing database and application secrets at web/var/www/.env line 5",
+      "recommendation": "Remove .env from version control, rotate exposed credentials, and ensure .env is in .gitignore."
+    },
+    {
+      "rule_id": "SEC-015",
+      "category": "security",
+      "severity": "critical",
+      "file": "web/var/www/public_html/.htpasswd",
+      "line": 1,
+      "description": "Committed htpasswd file with password hash (web/var/www/public_html/.htpasswd)",
+      "evidence": "Committed .htpasswd file containing user password hash at web/var/www/public_html/.htpasswd line 1",
+      "recommendation": "Remove .htpasswd from version control and add it to .gitignore."
+    },
+    {
+      "rule_id": "HYG-001",
+      "category": "repository_hygiene",
+      "severity": "high",
+      "file": null,
+      "line": null,
+      "description": "Missing root .gitignore file",
+      "evidence": "No root .gitignore file exists in the repository (only an invalidly named .leaky-meta/,gitignore exists).",
+      "recommendation": "Create a comprehensive root .gitignore file covering common language runtimes, editor configs, and credential files."
+    }
+  ]
+}

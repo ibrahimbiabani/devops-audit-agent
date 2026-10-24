@@ -1,0 +1,15 @@
+{
+  "repository": "https://github.com/pallets/itsdangerous",
+  "violations": [
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "medium",
+      "file": ".github/workflows/tests.yaml",
+      "line": 1,
+      "description": "Missing permissions block in GitHub Actions workflows",
+      "evidence": "Workflows tests.yaml and pre-commit.yaml do not define a top-level or job-level permissions block.",
+      "recommendation": "Add a least-privilege permissions block (e.g. contents: read) to all workflows and jobs."
+    }
+  ]
+}

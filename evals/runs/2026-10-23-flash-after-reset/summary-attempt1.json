@@ -1,0 +1,122 @@
+{
+  "results": [
+    {
+      "url": "https://github.com/gary-mello/github-vuln-actions",
+      "type": "B",
+      "set": "heldout",
+      "name": "gary-mello__github-vuln-actions",
+      "exit": 0,
+      "seconds": 476,
+      "http": {
+        "200": 20,
+        "429": 5,
+        "503": 3,
+        "504": 2
+      },
+      "fallbacks": 5,
+      "exhausted": false,
+      "violations": 10,
+      "models": [
+        "gemini-3.6-flash",
+        "gemini-3-flash-preview"
+      ]
+    },
+    {
+      "url": "https://github.com/jpr5/vulnerable-workflows-test",
+      "type": "B",
+      "set": "heldout",
+      "name": "jpr5__vulnerable-workflows-test",
+      "exit": 0,
+      "seconds": 54,
+      "http": {
+        "200": 10
+      },
+      "fallbacks": 0,
+      "exhausted": false,
+      "violations": 9,
+      "models": [
+        "gemini-3-flash-preview"
+      ]
+    },
+    {
+      "url": "https://github.com/pallets/itsdangerous",
+      "type": "C",
+      "set": "heldout",
+      "name": "pallets__itsdangerous",
+      "exit": 0,
+      "seconds": 29,
+      "http": {
+        "200": 10
+      },
+      "fallbacks": 0,
+      "exhausted": false,
+      "violations": 1,
+      "models": [
+        "gemini-3.5-flash-lite"
+      ]
+    },
+    {
+      "url": "https://github.com/paastha1/cicd-test-repo",
+      "type": "B",
+      "set": "tuned",
+      "name": "paastha1__cicd-test-repo",
+      "exit": 0,
+      "seconds": 323,
+      "http": {
+        "200": 20
+      },
+      "fallbacks": 0,
+      "exhausted": false,
+      "violations": 10,
+      "models": [
+        "gemini-3.5-flash-lite"
+      ]
+    },
+    {
+      "url": "https://github.com/Grafter-labs/grafter-lab-injection",
+      "type": "B",
+      "set": "tuned",
+      "name": "Grafter-labs__grafter-lab-injection",
+      "exit": 1,
+      "seconds": 264,
+      "http": {
+        "503": 1,
+        "504": 1
+      },
+      "fallbacks": 1,
+      "exhausted": false,
+      "error": "error: Could not reach the Gemini API: [WinError 10054] An existing connection was forcibly closed by the remote host"
+    },
+    {
+      "url": "https://github.com/Plazmaz/leaky-repo",
+      "type": "A",
+      "set": "tuned",
+      "name": "Plazmaz__leaky-repo",
+      "exit": 1,
+      "seconds": 697,
+      "http": {},
+      "fallbacks": 0,
+      "exhausted": false,
+      "error": "error: Could not reach the Gemini API: [WinError 10054] An existing connection was forcibly closed by the remote host"
+    },
+    {
+      "url": "https://github.com/pypa/sampleproject",
+      "type": "C",
+      "set": "tuned",
+      "name": "pypa__sampleproject",
+      "exit": 1,
+      "seconds": 3,
+      "http": {},
+      "fallbacks": 0,
+      "exhausted": false,
+      "error": "error: Could not clone https://github.com/pypa/sampleproject: fatal: unable to access 'https://github.com/pypa/sampleproject/': Could not resolve host: github.com"
+    }
+  ],
+  "http_totals": {
+    "200": 60,
+    "429": 5,
+    "503": 4,
+    "504": 3
+  },
+  "requests": 72
+}

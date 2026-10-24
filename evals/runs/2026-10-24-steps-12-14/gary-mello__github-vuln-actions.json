@@ -1,0 +1,105 @@
+{
+  "repository": "https://github.com/gary-mello/github-vuln-actions",
+  "violations": [
+    {
+      "rule_id": "COL-002",
+      "category": "collaboration",
+      "severity": "critical",
+      "file": ".github/workflows/prt-dangerous-checkout.yml",
+      "line": 19,
+      "description": "Unsafe checkout of pull request code in pull_request_target workflow",
+      "evidence": "The workflow .github/workflows/prt-dangerous-checkout.yml (line 19) checks out the attacker-controlled head ref in a `pull_request_target` context, which has access to repository secrets.",
+      "recommendation": "Avoid checking out the head ref of a PR in `pull_request_target` workflows; if necessary, do so without exposing secrets or running untrusted code."
+    },
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/write-all-permissions.yml",
+      "line": 12,
+      "description": "Overly broad workflow permissions (write-all)",
+      "evidence": "The workflow .github/workflows/write-all-permissions.yml (line 12) uses `permissions: write-all`, which is risky, especially when combined with a `pull_request_target` trigger.",
+      "recommendation": "Explicitly define minimum required permissions for the workflow or individual jobs."
+    },
+    {
+      "rule_id": "COL-001",
+      "category": "collaboration",
+      "severity": "high",
+      "file": ".github/workflows/issue-labeler.yml",
+      "line": 18,
+      "description": "Shell injection via untrusted GitHub Action expressions",
+      "evidence": "Untrusted event data is interpolated directly into shell scripts in .github/workflows/issue-labeler.yml (line 18: github.event.issue.title), .github/workflows/pr-comment-handler.yml (line 16), and .github/workflows/pr-title-injection.yml (lines 17-19).",
+      "recommendation": "Pass untrusted values to shell scripts using environment variables instead of direct interpolation."
+    },
+    {
+      "rule_id": "DEP-001",
+      "category": "dependency_management",
+      "severity": "medium",
+      "file": null,
+      "line": null,
+      "description": "Missing required lockfile (package-lock.json)",
+      "evidence": "The project uses npm in its workflows (e.g., .github/workflows/no-permissions-declared.yml) but does not commit a package-lock.json file.",
+      "recommendation": "Generate and commit a package-lock.json file to ensure consistent builds."
+    },
+    {
+      "rule_id": "SEC-002",
+      "category": "security",
+      "severity": "medium",
+      "file": null,
+      "line": null,
+      "description": "Missing permissions block in workflows triggered by untrusted events",
+      "evidence": "Workflows triggered by issues, issue_comment, or pull_request_target lack an explicit `permissions:` block, defaulting to broad access. Affected: .github/workflows/issue-labeler.yml, .github/workflows/pr-comment-handler.yml, .github/workflows/prt-dangerous-checkout.yml.",
+      "recommendation": "Add a top-level `permissions: {}` block to all workflows and grant only the specific scopes needed for each job."
+    },
+    {
+      "rule_id": "BLD-001",
+      "category": "build_release",
+      "severity": "medium",
+      "file": ".github/workflows/no-permissions-declared.yml",
+      "line": 25,
+      "description": "CI build steps will fail due to missing manifest files",
+      "evidence": "The workflows .github/workflows/no-permissions-declared.yml (line 25) and .github/workflows/prt-dangerous-checkout.yml (line 25) call `npm ci` and `npm test`, but the project lacks a package.json file.",
+      "recommendation": "Add a package.json and package-lock.json to the repository to allow CI to install dependencies and run tests."
+    },
+    {
+      "rule_id": "TEST-001",
+      "category": "testing",
+      "severity": "medium",
+      "file": ".github/workflows/no-permissions-declared.yml",
+      "line": 26,
+      "description": "CI runs tests that do not exist",
+      "evidence": "The workflow .github/workflows/no-permissions-declared.yml (line 26) runs `npm test`, but there are no tests or package.json defined in the repository.",
+      "recommendation": "Add tests and a package.json manifest, or remove the test execution from CI."
+    },
+    {
+      "rule_id": "COL-003",
+      "category": "collaboration",
+      "severity": "medium",
+      "file": ".github/workflows/write-all-permissions.yml",
+      "line": 21,
+      "description": "Automated merging of pull requests without review",
+      "evidence": "The workflow .github/workflows/write-all-permissions.yml (line 21) uses `gh pr merge --auto` to merge pull requests without a manual approval gate.",
+      "recommendation": "Implement a manual review process or require status checks and approvals before merging."
+    },
+    {
+      "rule_id": "HYG-001",
+      "category": "repository_hygiene",
+      "severity": "low",
+      "file": null,
+      "line": null,
+      "description": "Missing .gitignore file",
+      "evidence": "The repository does not contain a .gitignore file to prevent tracking of temporary or generated files.",
+      "recommendation": "Add a .gitignore file appropriate for a Node.js project."
+    },
+    {
+      "rule_id": "CQ-001",
+      "category": "code_quality",
+      "severity": "low",
+      "file": null,
+      "line": null,
+      "description": "Missing linter and formatter configuration",
+      "evidence": "The repository has no configuration for linting or formatting tools (e.g., ESLint, Prettier), which are standard for Node.js projects.",
+      "recommendation": "Configure a linter (like ESLint) and a formatter (like Prettier) to ensure code consistency and catch potential issues."
+    }
+  ]
+}

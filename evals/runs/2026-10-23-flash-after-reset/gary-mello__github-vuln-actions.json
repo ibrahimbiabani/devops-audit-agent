@@ -1,0 +1,105 @@
+{
+  "repository": "https://github.com/gary-mello/github-vuln-actions",
+  "violations": [
+    {
+      "rule_id": "COL-002",
+      "category": "collaboration",
+      "severity": "critical",
+      "file": ".github/workflows/prt-dangerous-checkout.yml",
+      "line": 19,
+      "description": "Dangerous checkout in pull_request_target workflow",
+      "evidence": ".github/workflows/prt-dangerous-checkout.yml line 19 checks out untrusted code using github.event.pull_request.head.ref while running in a pull_request_target context with write permissions and access to secrets.",
+      "recommendation": "Use pull_request trigger instead, or avoid checking out untrusted head refs in pull_request_target workflows."
+    },
+    {
+      "rule_id": "COL-003",
+      "category": "collaboration",
+      "severity": "critical",
+      "file": ".github/workflows/write-all-permissions.yml",
+      "line": 21,
+      "description": "Automated PR merging without human review",
+      "evidence": ".github/workflows/write-all-permissions.yml line 21 uses 'gh pr merge --auto' to automatically merge pull requests upon opening without human approval or review.",
+      "recommendation": "Remove automated merge steps or require human review and passing status checks before merging."
+    },
+    {
+      "rule_id": "COL-001",
+      "category": "collaboration",
+      "severity": "high",
+      "file": ".github/workflows/issue-labeler.yml",
+      "line": 18,
+      "description": "Expression injection of untrusted input in run scripts",
+      "evidence": "Untrusted github.event contexts are interpolated directly into shell run: commands in .github/workflows/issue-labeler.yml line 18 (${{ github.event.issue.title }}), pr-comment-handler.yml line 16 (${{ github.event.comment.body }}), and pr-title-injection.yml lines 17-19.",
+      "recommendation": "Assign untrusted expressions to environment variables and reference them using shell variable syntax (e.g., \"$TITLE\") to prevent command injection."
+    },
+    {
+      "rule_id": "BLD-001",
+      "category": "build_release",
+      "severity": "high",
+      "file": ".github/workflows/self-hosted-runner.yml",
+      "line": 24,
+      "description": "Deployment triggered on push without test validation gates",
+      "evidence": ".github/workflows/self-hosted-runner.yml line 24 (docker push) and .github/workflows/unpinned-actions.yml line 31 (deploy-action) perform deployments on push to main without running automated tests first.",
+      "recommendation": "Require test jobs to pass before deployment by adding test steps to the job or using job dependencies (needs:)."
+    },
+    {
+      "rule_id": "SEC-002",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/write-all-permissions.yml",
+      "line": 12,
+      "description": "Over-privileged write-all permissions",
+      "evidence": ".github/workflows/write-all-permissions.yml line 12 declares 'permissions: write-all', granting excessive write access to repository resources.",
+      "recommendation": "Restrict permissions to only those scopes required by the job (e.g. pull-requests: write, contents: read)."
+    },
+    {
+      "rule_id": "HYG-001",
+      "category": "repository_hygiene",
+      "severity": "medium",
+      "file": null,
+      "line": null,
+      "description": "Missing .gitignore file",
+      "evidence": "The repository does not contain a .gitignore file, leaving untracked files, OS artifacts, or local build outputs unmanaged.",
+      "recommendation": "Add a comprehensive .gitignore file suited for Node.js, Python, and local editor environments."
+    },
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "medium",
+      "file": ".github/workflows/no-permissions-declared.yml",
+      "line": 5,
+      "description": "Missing permissions block in GitHub Actions workflows",
+      "evidence": "Multiple workflows (.github/workflows/no-permissions-declared.yml, issue-labeler.yml, pr-comment-handler.yml, pr-title-injection.yml, prt-dangerous-checkout.yml, self-hosted-runner.yml, unpinned-actions.yml) lack explicit permissions declarations, defaulting to elevated write permissions on default repository settings.",
+      "recommendation": "Add explicit least-privilege permissions blocks (e.g. permissions: contents: read) at the workflow or job level across all GitHub Actions workflows."
+    },
+    {
+      "rule_id": "DEP-001",
+      "category": "dependency_management",
+      "severity": "medium",
+      "file": ".github/workflows/no-permissions-declared.yml",
+      "line": 25,
+      "description": "Execution of npm ci without committed package-lock.json",
+      "evidence": ".github/workflows/no-permissions-declared.yml line 25 runs 'npm ci', but no package-lock.json file exists in the repository.",
+      "recommendation": "Commit a package-lock.json manifest or use npm install when package-lock.json is not present."
+    },
+    {
+      "rule_id": "TEST-001",
+      "category": "testing",
+      "severity": "medium",
+      "file": ".github/workflows/no-permissions-declared.yml",
+      "line": 26,
+      "description": "CI test step cannot succeed as written",
+      "evidence": ".github/workflows/no-permissions-declared.yml line 26 runs 'npm test', but no package.json or test files exist in the repository, causing the job to fail on execution. (Also in .github/workflows/prt-dangerous-checkout.yml line 25).",
+      "recommendation": "Ensure a package.json file with a valid test script exists or remove invalid test steps from CI workflows."
+    },
+    {
+      "rule_id": "COL-004",
+      "category": "collaboration",
+      "severity": "low",
+      "file": "README.md",
+      "line": 1,
+      "description": "Lack of review guidance and code ownership",
+      "evidence": "The repository automates PR handling and merging but contains no CODEOWNERS file, CONTRIBUTING guide, or PR templates to guide contributors and reviewers.",
+      "recommendation": "Add a CODEOWNERS file and a pull request template to define review processes."
+    }
+  ]
+}

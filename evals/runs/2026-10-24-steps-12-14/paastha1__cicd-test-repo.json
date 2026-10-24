@@ -1,0 +1,135 @@
+{
+  "repository": "https://github.com/paastha1/cicd-test-repo",
+  "violations": [
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/deploy.yml",
+      "line": 12,
+      "description": "Hardcoded AWS secret access key in workflow environment block",
+      "evidence": "AWS_SECRET_ACCESS_KEY: [REDACTED] in env block",
+      "recommendation": "Remove hardcoded credentials and use GitHub Actions secrets instead."
+    },
+    {
+      "rule_id": "SEC-002",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/deploy.yml",
+      "line": 13,
+      "description": "Hardcoded database password in workflow environment block",
+      "evidence": "DATABASE_PASSWORD: [REDACTED] in env block",
+      "recommendation": "Remove hardcoded credentials and use GitHub Actions secrets instead."
+    },
+    {
+      "rule_id": "SEC-006",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/release.yml",
+      "line": 11,
+      "description": "Hardcoded PyPI API token in workflow environment block",
+      "evidence": "PYPI_API_TOKEN: [REDACTED] in env block",
+      "recommendation": "Remove hardcoded credentials and use GitHub Actions secrets instead."
+    },
+    {
+      "rule_id": "SEC-007",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/release.yml",
+      "line": 12,
+      "description": "Hardcoded Docker Hub token in workflow environment block",
+      "evidence": "DOCKER_HUB_TOKEN: [REDACTED] in env block",
+      "recommendation": "Remove hardcoded credentials and use GitHub Actions secrets instead."
+    },
+    {
+      "rule_id": "SEC-010",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/release.yml",
+      "line": 37,
+      "description": "Uploading sensitive files and private keys as workflow artifacts",
+      "evidence": "path including ~/.ssh/id_rsa, private-key.pem, .env.local",
+      "recommendation": "Remove sensitive files, environment files, and private keys from upload-artifact paths."
+    },
+    {
+      "rule_id": "SEC-011",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/ci.yml",
+      "line": 25,
+      "description": "Echoing GitHub token and printing environment variables containing secrets to workflow logs",
+      "evidence": "echo \"GitHub Token: ${{ secrets.GITHUB_TOKEN }}\" and printenv | grep -i token",
+      "recommendation": "Remove steps that echo or print secrets and environment variables."
+    },
+    {
+      "rule_id": "SEC-013",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/ci.yml",
+      "line": 38,
+      "description": "Uploading environment files and credentials JSON as workflow artifacts",
+      "evidence": "path including .env, .env.production, credentials.json",
+      "recommendation": "Do not upload sensitive configuration files or credentials as workflow artifacts."
+    },
+    {
+      "rule_id": "SEC-003",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/deploy.yml",
+      "line": 14,
+      "description": "Hardcoded Slack webhook URL in workflow environment block",
+      "evidence": "SLACK_WEBHOOK: https://hooks.example.com/... in env block",
+      "recommendation": "Remove hardcoded credentials and use GitHub Actions secrets instead."
+    },
+    {
+      "rule_id": "SEC-004",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/deploy.yml",
+      "line": 21,
+      "description": "Using bash debug mode (set -x) which prints expanded secret variables to logs",
+      "evidence": "set -x followed by echo \"Deploying with AWS key: $AWS_ACCESS_KEY_ID\"",
+      "recommendation": "Remove set -x from steps that handle sensitive variables or secrets."
+    },
+    {
+      "rule_id": "SEC-008",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/release.yml",
+      "line": 25,
+      "description": "Echoing secrets/tokens to build output logs",
+      "evidence": "echo \"Publishing with token: [REDACTED]\" and echo \"Docker token is: $DOCKER_HUB_TOKEN\"",
+      "recommendation": "Do not echo or print secret environment variables in workflow steps."
+    },
+    {
+      "rule_id": "SEC-012",
+      "category": "security",
+      "severity": "medium",
+      "file": ".github/workflows/ci.yml",
+      "line": 31,
+      "description": "Passing secrets as command-line arguments to npm publish",
+      "evidence": "npm publish --token=${{ secrets.NPM_TOKEN }}",
+      "recommendation": "Use standard environment variables or configuration files for authentication tokens instead of CLI flags where visible in process lists."
+    },
+    {
+      "rule_id": "SEC-005",
+      "category": "security",
+      "severity": "medium",
+      "file": ".github/workflows/deploy.yml",
+      "line": 27,
+      "description": "Verbose curl logging with authorization headers exposed in workflow output",
+      "evidence": "curl -v -X POST -H \"Authorization: [REDACTED] ${{ secrets.SLACK_TOKEN }}\"",
+      "recommendation": "Remove --verbose / -v flags from curl commands handling authorization headers."
+    },
+    {
+      "rule_id": "SEC-009",
+      "category": "security",
+      "severity": "medium",
+      "file": ".github/workflows/release.yml",
+      "line": 27,
+      "description": "Verbose curl with authorization header exposing GitHub token in logs",
+      "evidence": "curl --verbose -H \"Authorization: [REDACTED] $GH_TOKEN\" https://api.github.com/user",
+      "recommendation": "Remove --verbose from curl commands using auth tokens."
+    }
+  ]
+}

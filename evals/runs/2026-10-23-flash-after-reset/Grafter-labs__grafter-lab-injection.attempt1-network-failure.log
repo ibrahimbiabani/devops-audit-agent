@@ -1,0 +1,13 @@
+2026-10-23 21:28:31,521 INFO HTTP Request: GET https://generativelanguage.googleapis.com/v1beta/models "HTTP/1.1 200 OK"
+2026-10-23 21:28:32,070 INFO HTTP Request: GET https://generativelanguage.googleapis.com/v1beta/models?pageToken=Cgptb2RlbHMvYXFh "HTTP/1.1 200 OK"
+2026-10-23 21:28:32,081 INFO Using GeminiLLM, models in order: gemini-3.1-pro-preview, gemini-2.5-pro, gemini-3.8-flash, gemini-3.7-flash, gemini-3.6-flash, gemini-3.5-flash, gemini-3-flash-preview, gemini-2.5-flash, gemini-3.5-flash-lite, gemini-3.1-flash-lite, gemini-2.5-flash-lite, gemma-4-31b-it, gemma-4-26b-a4b-it
+2026-10-23 21:28:32,081 INFO Cloning https://github.com/Grafter-labs/grafter-lab-injection
+2026-10-23 21:28:34,701 INFO Skipping Gemini model gemini-3.1-pro-preview: not available on the free tier (recorded earlier; retry in ~168h)
+2026-10-23 21:28:34,701 INFO Skipping Gemini model gemini-2.5-pro: model not found or no longer available (recorded earlier; retry in ~143h)
+2026-10-23 21:28:34,701 INFO Using Gemini model gemini-3.8-flash
+2026-10-23 21:28:54,923 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent "HTTP/1.1 503 Service Unavailable"
+2026-10-23 21:28:54,925 INFO Gemini gemini-3.8-flash returned 503 UNAVAILABLE; retrying in 2s
+2026-10-23 21:30:56,142 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent "HTTP/1.1 504 Gateway Timeout"
+2026-10-23 21:30:56,144 WARNING Gemini model gemini-3.8-flash unavailable (504 DEADLINE_EXCEEDED (server timed out)); switching to the next model
+2026-10-23 21:30:56,144 INFO Using Gemini model gemini-3.7-flash
+error: Could not reach the Gemini API: [WinError 10054] An existing connection was forcibly closed by the remote host

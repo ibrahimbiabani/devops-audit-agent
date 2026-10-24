@@ -1,0 +1,49 @@
+2026-10-23 21:20:14,953 INFO HTTP Request: GET https://generativelanguage.googleapis.com/v1beta/models "HTTP/1.1 200 OK"
+2026-10-23 21:20:15,500 INFO HTTP Request: GET https://generativelanguage.googleapis.com/v1beta/models?pageToken=Cgptb2RlbHMvYXFh "HTTP/1.1 200 OK"
+2026-10-23 21:20:15,508 INFO Using GeminiLLM, models in order: gemini-3.1-pro-preview, gemini-2.5-pro, gemini-3.8-flash, gemini-3.7-flash, gemini-3.6-flash, gemini-3.5-flash, gemini-3-flash-preview, gemini-2.5-flash, gemini-3.5-flash-lite, gemini-3.1-flash-lite, gemini-2.5-flash-lite, gemma-4-31b-it, gemma-4-26b-a4b-it
+2026-10-23 21:20:15,509 INFO Cloning https://github.com/jpr5/vulnerable-workflows-test
+2026-10-23 21:20:17,931 INFO Skipping Gemini model gemini-3.1-pro-preview: not available on the free tier (recorded earlier; retry in ~168h)
+2026-10-23 21:20:17,931 INFO Skipping Gemini model gemini-2.5-pro: model not found or no longer available (recorded earlier; retry in ~143h)
+2026-10-23 21:20:17,931 INFO Skipping Gemini model gemini-3.8-flash: 504 DEADLINE_EXCEEDED (server timed out) (recorded earlier; retry in ~4min)
+2026-10-23 21:20:17,931 INFO Skipping Gemini model gemini-3.7-flash: 504 DEADLINE_EXCEEDED (server timed out) (recorded earlier; retry in ~6min)
+2026-10-23 21:20:17,931 INFO Skipping Gemini model gemini-3.6-flash: daily free-tier quota used up (20 requests a day), resets in ~15h (recorded earlier; retry in ~15h)
+2026-10-23 21:20:17,931 INFO Skipping Gemini model gemini-3.5-flash: daily free-tier quota used up (20 requests a day), resets in ~15h (recorded earlier; retry in ~15h)
+2026-10-23 21:20:17,931 INFO Using Gemini model gemini-3-flash-preview
+2026-10-23 21:20:19,144 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent "HTTP/1.1 200 OK"
+2026-10-23 21:20:19,154 INFO Gemini model gemini-3-flash-preview is serving as gemini-3-flash-preview
+2026-10-23 21:20:19,171 INFO [turn 1] list_files({})
+2026-10-23 21:20:21,175 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent "HTTP/1.1 200 OK"
+2026-10-23 21:20:21,183 INFO [turn 2] read_file({"path": ".github/workflows/auto-label.yml"})
+2026-10-23 21:20:21,190 INFO [turn 2] read_file({"path": ".github/workflows/ci.yml"})
+2026-10-23 21:20:21,196 INFO [turn 2] read_file({"path": ".github/workflows/greet-pr.yml"})
+2026-10-23 21:20:21,201 INFO [turn 2] read_file({"path": ".github/workflows/manual-deploy.yml"})
+2026-10-23 21:20:21,207 INFO [turn 2] read_file({"path": ".github/workflows/setup.yml"})
+2026-10-23 21:20:21,212 INFO [turn 2] read_file({"path": "package.json"})
+2026-10-23 21:20:25,320 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent "HTTP/1.1 200 OK"
+2026-10-23 21:20:25,340 INFO [turn 3] list_files({"pattern": ".*"})
+2026-10-23 21:20:25,347 INFO [turn 3] read_file({"path": "README.md"})
+2026-10-23 21:20:25,365 INFO [turn 3] git_log({})
+2026-10-23 21:20:37,151 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent "HTTP/1.1 200 OK"
+2026-10-23 21:20:37,176 INFO [turn 4] search_code({"pattern": "(key|password|token|secret|auth|api)"})
+2026-10-23 21:20:39,137 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent "HTTP/1.1 200 OK"
+2026-10-23 21:20:39,155 INFO [turn 5] search_code({"ignore_case": true, "pattern": "(key|password|token|secret|auth|api)"})
+2026-10-23 21:20:40,881 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent "HTTP/1.1 200 OK"
+2026-10-23 21:20:40,885 INFO [turn 6] read_file({"path": ".github/workflows/deploy.yml"}) -> error
+2026-10-23 21:20:50,751 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent "HTTP/1.1 200 OK"
+2026-10-23 21:20:50,760 INFO [turn 7] record_violation({"line": 15, "file": ".github/workflows/setup.yml", "evidence": "In .github/workflows/setup.yml:15: API_KEY: \"[REDACTED]\"", "description": "Hardcoded API key in workflow environment variable", "rule)
+2026-10-23 21:20:50,761 INFO [turn 7] record_violation({"line": 1, "file": ".github/workflows/auto-label.yml", "recommendation": "Add a top-level permissions block to each workflow with minimum required permissions (e.g., contents: read) to follow the pri)
+2026-10-23 21:20:50,761 INFO [turn 7] record_violation({"description": "Untrusted pull request title and user login interpolated into shell script", "recommendation": "Assign untrusted input to environment variables and reference the environment variables)
+2026-10-23 21:20:50,762 INFO [turn 7] record_violation({"line": 19, "file": ".github/workflows/manual-deploy.yml", "recommendation": "Assign untrusted input to environment variables and reference the environment variables in the shell script to prevent co)
+2026-10-23 21:20:50,763 INFO [turn 7] record_violation({"evidence": "In .github/workflows/auto-label.yml:12: ref: ${{ github.event.pull_request.head.ref }} used with pull_request_target trigger.", "recommendation": "Avoid checking out untrusted code from )
+2026-10-23 21:20:50,763 INFO [turn 7] record_violation({"line": null, "file": "null", "category": "repository_hygiene", "recommendation": "Add a .gitignore file to prevent accidental commitment of temporary or sensitive files.", "rule_id": "HYG-001", "sev)
+2026-10-23 21:20:50,764 INFO [turn 7] record_violation({"file": "package.json", "line": 1, "evidence": "No linter or formatter (e.g., ESLint, Prettier) is configured in package.json or as a configuration file.", "description": "Missing linter and formatte)
+2026-10-23 21:20:50,764 INFO [turn 7] record_violation({"rule_id": "TEST-001", "severity": "medium", "category": "testing", "description": "Missing actual tests in the project", "line": 1, "file": "package.json", "evidence": "The project has no test files) -> error
+2026-10-23 21:20:50,765 INFO [turn 7] record_violation({"severity": "medium", "category": "build_release", "recommendation": "Add a build step to the CI workflow to ensure that the project can be built successfully before merging changes.", "rule_id": "BL)
+2026-10-23 21:20:57,412 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent "HTTP/1.1 200 OK"
+2026-10-23 21:20:57,421 INFO [turn 8] record_violation({"category": "testing", "file": "package.json", "line": 1, "evidence": "The project has no test files, and the 'test' script in package.json is a dummy 'echo ok'.", "severity": "medium", "rule_id": "T) -> error
+2026-10-23 21:21:00,285 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent "HTTP/1.1 200 OK"
+2026-10-23 21:21:00,289 INFO [turn 9] record_violation({"severity": "medium", "line": null, "description": "Missing actual tests in the project", "category": "testing", "file": "null", "recommendation": "Implement actual tests and ensure they are executed)
+2026-10-23 21:21:07,170 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent "HTTP/1.1 200 OK"
+2026-10-23 21:21:07,191 INFO [turn 10] finish_audit({"summary": "The repository contains several critical and high-severity DevOps and security violations, primarily within its GitHub Actions workflows. Key issues include hardcoded credentials in setup)
+Wrote 9 violation(s) to evals\runs\2026-10-23-flash-after-reset\jpr5__vulnerable-workflows-test.json (model: gemini-3-flash-preview)
+Tool-call trace: evals\runs\2026-10-23-flash-after-reset\jpr5__vulnerable-workflows-test.trace.jsonl

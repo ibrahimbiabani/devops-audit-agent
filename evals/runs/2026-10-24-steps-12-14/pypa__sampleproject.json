@@ -1,0 +1,15 @@
+{
+  "repository": "https://github.com/pypa/sampleproject",
+  "violations": [
+    {
+      "rule_id": "CI-001",
+      "category": "ci_cd",
+      "severity": "medium",
+      "file": ".github/workflows/release.yml",
+      "line": 14,
+      "description": "Release workflow lacks minimum-privilege permissions block",
+      "evidence": ".github/workflows/release.yml has permissions block with only id-token: [REDACTED], but lacks top-level contents: read permissions or job-level explicit permissions for other tasks (though uses checkout@v3).",
+      "recommendation": "Add explicit top-level or job-level permissions specifying contents: read and id-token: [REDACTED] to adhere to principle of least privilege."
+    }
+  ]
+}

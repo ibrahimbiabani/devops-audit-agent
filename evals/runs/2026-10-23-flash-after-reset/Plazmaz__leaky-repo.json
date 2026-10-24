@@ -1,0 +1,165 @@
+{
+  "repository": "https://github.com/Plazmaz/leaky-repo",
+  "violations": [
+    {
+      "rule_id": "SEC-003",
+      "category": "security",
+      "severity": "critical",
+      "file": ".docker/.dockercfg",
+      "line": 4,
+      "description": "Committed Docker configuration with auth token (.docker/.dockercfg)",
+      "evidence": "Docker auth credentials stored in .docker/.dockercfg",
+      "recommendation": "Remove .docker/.dockercfg and .docker/config.json from the repository and do not commit authentication configuration."
+    },
+    {
+      "rule_id": "SEC-015",
+      "category": "security",
+      "severity": "critical",
+      "file": ".docker/config.json",
+      "line": 5,
+      "description": "Committed Docker config JSON with auth token (.docker/config.json)",
+      "evidence": "Docker auth token present in .docker/config.json",
+      "recommendation": "Remove .docker/config.json from version control."
+    },
+    {
+      "rule_id": "SEC-002",
+      "category": "security",
+      "severity": "critical",
+      "file": ".git-credentials",
+      "line": 1,
+      "description": "Committed Git credentials file (.git-credentials)",
+      "evidence": "Git credentials file containing username and password in .git-credentials",
+      "recommendation": "Remove .git-credentials and git-credentials files from version control."
+    },
+    {
+      "rule_id": "SEC-004",
+      "category": "security",
+      "severity": "critical",
+      "file": ".netrc",
+      "line": 1,
+      "description": "Committed netrc file with email and password (.netrc)",
+      "evidence": "Netrc file containing email and password for mail servers in .netrc",
+      "recommendation": "Remove .netrc from version control."
+    },
+    {
+      "rule_id": "SEC-005",
+      "category": "security",
+      "severity": "critical",
+      "file": ".npmrc",
+      "line": 7,
+      "description": "Committed npmrc file with npm auth tokens (.npmrc)",
+      "evidence": "_auth and _authToken tokens present in .npmrc",
+      "recommendation": "Remove credentials from .npmrc and use environment variables or local user config outside the repo."
+    },
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "critical",
+      "file": ".ssh/id_rsa",
+      "line": 1,
+      "description": "Committed private SSH key (.ssh/id_rsa)",
+      "evidence": "Private SSH key stored in repository at .ssh/id_rsa",
+      "recommendation": "Revoke and remove the private key from the repository history, and add .ssh/ to .gitignore."
+    },
+    {
+      "rule_id": "SEC-011",
+      "category": "security",
+      "severity": "critical",
+      "file": "cloud/.credentials",
+      "line": 4,
+      "description": "Committed AWS credentials file (cloud/.credentials)",
+      "evidence": "AWS access key ID and secret access key stored in cloud/.credentials",
+      "recommendation": "Remove cloud/.credentials and use IAM roles or secure environment variables."
+    },
+    {
+      "rule_id": "SEC-006",
+      "category": "security",
+      "severity": "critical",
+      "file": "cloud/.s3cfg",
+      "line": 1,
+      "description": "Committed AWS S3 configuration with secret key (cloud/.s3cfg)",
+      "evidence": "secret_key present in cloud/.s3cfg",
+      "recommendation": "Remove .s3cfg or move secrets out of version control into environment variables or secret managers."
+    },
+    {
+      "rule_id": "SEC-007",
+      "category": "security",
+      "severity": "critical",
+      "file": "db/.pgpass",
+      "line": 2,
+      "description": "Committed PostgreSQL password file (db/.pgpass)",
+      "evidence": "Database password stored in db/.pgpass",
+      "recommendation": "Remove db/.pgpass from the repository."
+    },
+    {
+      "rule_id": "SEC-008",
+      "category": "security",
+      "severity": "critical",
+      "file": "etc/shadow",
+      "line": 20,
+      "description": "Committed shadow password file (etc/shadow)",
+      "evidence": "System shadow file containing password hashes stored in etc/shadow",
+      "recommendation": "Remove etc/shadow immediately from version control."
+    },
+    {
+      "rule_id": "SEC-009",
+      "category": "security",
+      "severity": "critical",
+      "file": "misc-keys/cert-key.pem",
+      "line": 1,
+      "description": "Committed SSL/TLS private key (misc-keys/cert-key.pem)",
+      "evidence": "Private certificate key stored in misc-keys/cert-key.pem",
+      "recommendation": "Revoke and remove the private certificate key from the repository."
+    },
+    {
+      "rule_id": "SEC-014",
+      "category": "security",
+      "severity": "critical",
+      "file": "misc-keys/putty-example.ppk",
+      "line": 1,
+      "description": "Committed PuTTY private key (misc-keys/putty-example.ppk)",
+      "evidence": "PuTTY private key file stored in misc-keys/putty-example.ppk",
+      "recommendation": "Remove private key files from the repository."
+    },
+    {
+      "rule_id": "SEC-010",
+      "category": "security",
+      "severity": "critical",
+      "file": "web/ruby/config/master.key",
+      "line": 1,
+      "description": "Committed Ruby master key (web/ruby/config/master.key)",
+      "evidence": "Ruby credentials master key stored in web/ruby/config/master.key",
+      "recommendation": "Remove master.key from the repository and use secure environment/secret injection."
+    },
+    {
+      "rule_id": "SEC-016",
+      "category": "security",
+      "severity": "critical",
+      "file": "web/ruby/secrets.yml",
+      "line": 14,
+      "description": "Committed Ruby secrets configuration with secret keys (web/ruby/secrets.yml)",
+      "evidence": "secret_key_base values stored in development, test, and production environments in web/ruby/secrets.yml",
+      "recommendation": "Remove secrets.yml from version control and use environment variables."
+    },
+    {
+      "rule_id": "SEC-012",
+      "category": "security",
+      "severity": "critical",
+      "file": "web/var/www/.env",
+      "line": 5,
+      "description": "Committed environment file (.env) with database and app secrets (web/var/www/.env)",
+      "evidence": "APP_KEY, DB_PASSWORD, and REDIS_PASSWORD stored in web/var/www/.env",
+      "recommendation": "Remove .env from version control and use .env.example templates."
+    },
+    {
+      "rule_id": "SEC-013",
+      "category": "security",
+      "severity": "critical",
+      "file": "web/var/www/public_html/.htpasswd",
+      "line": 1,
+      "description": "Committed htpasswd file (web/var/www/public_html/.htpasswd)",
+      "evidence": "Password hash stored in web/var/www/public_html/.htpasswd",
+      "recommendation": "Remove .htpasswd from version control."
+    }
+  ]
+}

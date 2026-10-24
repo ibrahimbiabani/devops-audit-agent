@@ -1,0 +1,95 @@
+{
+  "repository": "https://github.com/jpr5/vulnerable-workflows-test",
+  "violations": [
+    {
+      "rule_id": "COL-003",
+      "category": "collaboration",
+      "severity": "high",
+      "file": ".github/workflows/auto-label.yml",
+      "line": 12,
+      "description": "Checkout of untrusted code in a privileged pull_request_target workflow",
+      "evidence": "In .github/workflows/auto-label.yml:12: ref: ${{ github.event.pull_request.head.ref }} used with pull_request_target trigger.",
+      "recommendation": "Avoid checking out untrusted code from a pull request in workflows triggered by pull_request_target, or ensure no scripts from the checked-out code are executed."
+    },
+    {
+      "rule_id": "COL-001",
+      "category": "collaboration",
+      "severity": "high",
+      "file": ".github/workflows/greet-pr.yml",
+      "line": 12,
+      "description": "Untrusted pull request title and user login interpolated into shell script",
+      "evidence": "In .github/workflows/greet-pr.yml:12-13: echo \"Thanks for the PR: ${{ github.event.pull_request.title }}\" and echo \"From: ${{ github.event.pull_request.user.login }}\"",
+      "recommendation": "Assign untrusted input to environment variables and reference the environment variables in the shell script to prevent command injection."
+    },
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/setup.yml",
+      "line": 15,
+      "description": "Hardcoded API key in workflow environment variable",
+      "evidence": "In .github/workflows/setup.yml:15: API_KEY: \"[REDACTED]\"",
+      "recommendation": "Use GitHub Secrets to store sensitive information and reference them using ${{ secrets.API_KEY }}."
+    },
+    {
+      "rule_id": "TEST-001",
+      "category": "testing",
+      "severity": "medium",
+      "file": null,
+      "line": null,
+      "description": "Missing actual tests in the project",
+      "evidence": "The project has no test files, and the 'test' script in package.json is a dummy 'echo ok'.",
+      "recommendation": "Implement actual tests and ensure they are executed in the CI pipeline."
+    },
+    {
+      "rule_id": "SEC-002",
+      "category": "security",
+      "severity": "medium",
+      "file": ".github/workflows/auto-label.yml",
+      "line": 1,
+      "description": "Missing permissions block in GitHub Actions workflows",
+      "evidence": "No permissions: block found in .github/workflows/auto-label.yml, .github/workflows/ci.yml, .github/workflows/greet-pr.yml, .github/workflows/manual-deploy.yml, or .github/workflows/setup.yml.",
+      "recommendation": "Add a top-level permissions block to each workflow with minimum required permissions (e.g., contents: read) to follow the principle of least privilege."
+    },
+    {
+      "rule_id": "BLD-001",
+      "category": "build_release",
+      "severity": "medium",
+      "file": ".github/workflows/ci.yml",
+      "line": 12,
+      "description": "CI never builds the project despite a build script being present",
+      "evidence": "The CI workflow (.github/workflows/ci.yml) does not run the 'build' script defined in package.json.",
+      "recommendation": "Add a build step to the CI workflow to ensure that the project can be built successfully before merging changes."
+    },
+    {
+      "rule_id": "COL-002",
+      "category": "collaboration",
+      "severity": "medium",
+      "file": ".github/workflows/manual-deploy.yml",
+      "line": 19,
+      "description": "Untrusted workflow_dispatch inputs interpolated into shell script",
+      "evidence": "In .github/workflows/manual-deploy.yml:19: echo \"Deploying ${{ inputs.version }} to ${{ inputs.environment }}\"",
+      "recommendation": "Assign untrusted input to environment variables and reference the environment variables in the shell script to prevent command injection."
+    },
+    {
+      "rule_id": "HYG-001",
+      "category": "repository_hygiene",
+      "severity": "low",
+      "file": null,
+      "line": null,
+      "description": "Missing .gitignore file",
+      "evidence": "No .gitignore file found at the root of the repository.",
+      "recommendation": "Add a .gitignore file to prevent accidental commitment of temporary or sensitive files."
+    },
+    {
+      "rule_id": "CQ-001",
+      "category": "code_quality",
+      "severity": "low",
+      "file": "package.json",
+      "line": 1,
+      "description": "Missing linter and formatter configuration",
+      "evidence": "No linter or formatter (e.g., ESLint, Prettier) is configured in package.json or as a configuration file.",
+      "recommendation": "Configure a linter and formatter (like ESLint and Prettier) to ensure code quality and consistency."
+    }
+  ]
+}

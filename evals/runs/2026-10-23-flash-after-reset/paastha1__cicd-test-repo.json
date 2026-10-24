@@ -1,0 +1,105 @@
+{
+  "repository": "https://github.com/paastha1/cicd-test-repo",
+  "violations": [
+    {
+      "rule_id": "SEC-002",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/deploy.yml",
+      "line": 12,
+      "description": "Hardcoded AWS secret access key in workflow environment block",
+      "evidence": "AWS_SECRET_ACCESS_KEY hardcoded string in workflow env block",
+      "recommendation": "Remove hardcoded credentials from workflow files and use GitHub Actions encrypted secrets instead."
+    },
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/deploy.yml",
+      "line": 13,
+      "description": "Hardcoded database password in workflow environment block",
+      "evidence": "DATABASE_PASSWORD: [REDACTED] hardcoded in workflow env block",
+      "recommendation": "Remove hardcoded credentials from workflow files and use GitHub Actions encrypted secrets instead."
+    },
+    {
+      "rule_id": "SEC-003",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/release.yml",
+      "line": 11,
+      "description": "Hardcoded PyPI API token in workflow environment block",
+      "evidence": "PYPI_API_TOKEN hardcoded string in workflow env block",
+      "recommendation": "Remove hardcoded credentials from workflow files and use GitHub Actions encrypted secrets instead."
+    },
+    {
+      "rule_id": "SEC-004",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/release.yml",
+      "line": 12,
+      "description": "Hardcoded Docker Hub token in workflow environment block",
+      "evidence": "DOCKER_HUB_TOKEN hardcoded string in workflow env block",
+      "recommendation": "Remove hardcoded credentials from workflow files and use GitHub Actions encrypted secrets instead."
+    },
+    {
+      "rule_id": "SEC-010",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/release.yml",
+      "line": 37,
+      "description": "Uploading sensitive SSH keys and private key files as workflow artifacts",
+      "evidence": "Uploading ~/.ssh/id_rsa, private-key.pem, and .env.local via upload-artifact",
+      "recommendation": "Do not upload private keys, SSH keys, or local environment files as CI artifacts."
+    },
+    {
+      "rule_id": "SEC-005",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/ci.yml",
+      "line": 25,
+      "description": "Echoing or printing secrets to CI build logs",
+      "evidence": "echo \"GitHub Token: ${{ secrets.GITHUB_TOKEN }}\" and printenv | grep -i token in workflow steps",
+      "recommendation": "Do not print sensitive tokens, keys, or environment variables to CI logs."
+    },
+    {
+      "rule_id": "SEC-006",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/ci.yml",
+      "line": 31,
+      "description": "Passing secrets as command-line arguments",
+      "evidence": "npm publish --token=${{ secrets.NPM_TOKEN }} passes token via CLI argument",
+      "recommendation": "Pass authentication tokens via environment variables or configuration files rather than command-line arguments."
+    },
+    {
+      "rule_id": "SEC-007",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/ci.yml",
+      "line": 39,
+      "description": "Uploading sensitive configuration and credential files as workflow artifacts",
+      "evidence": "Uploading .env, .env.production, and credentials.json via upload-artifact",
+      "recommendation": "Do not upload sensitive files, environment files, or credentials as CI artifacts."
+    },
+    {
+      "rule_id": "SEC-008",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/deploy.yml",
+      "line": 21,
+      "description": "Using bash debug mode (set -x) with sensitive environment variables",
+      "evidence": "set -x enabled in a step that references AWS credentials",
+      "recommendation": "Avoid enabling set -x or bash tracing in steps that handle sensitive variables or credentials."
+    },
+    {
+      "rule_id": "SEC-009",
+      "category": "security",
+      "severity": "high",
+      "file": ".github/workflows/deploy.yml",
+      "line": 27,
+      "description": "Verbose HTTP requests logging authorization headers containing secrets",
+      "evidence": "curl -v with Authorization: [REDACTED] header in workflow step",
+      "recommendation": "Do not use verbose curl or HTTP request logging when sending authorization headers or secrets."
+    }
+  ]
+}

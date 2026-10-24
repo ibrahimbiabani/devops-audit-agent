@@ -1,0 +1,35 @@
+{
+  "repository": "https://github.com/jpr5/vulnerable-workflows-test",
+  "violations": [
+    {
+      "rule_id": "COL-001",
+      "category": "collaboration",
+      "severity": "critical",
+      "file": ".github/workflows/auto-label.yml",
+      "line": 12,
+      "description": "Unsafe check out and execution of pull request code under pull_request_target trigger",
+      "evidence": "pull_request_target with actions/checkout checking out ref: ${{ github.event.pull_request.head.ref }} in .github/workflows/auto-label.yml",
+      "recommendation": "Do not use pull_request_target to check out and run untrusted PR code; use pull_request instead."
+    },
+    {
+      "rule_id": "SEC-001",
+      "category": "security",
+      "severity": "critical",
+      "file": ".github/workflows/setup.yml",
+      "line": 15,
+      "description": "Hardcoded API key in workflow environment block",
+      "evidence": "API_KEY: \"[REDACTED]\" in .github/workflows/setup.yml",
+      "recommendation": "Remove hardcoded secrets from workflow files and use GitHub Secrets instead."
+    },
+    {
+      "rule_id": "COL-002",
+      "category": "collaboration",
+      "severity": "high",
+      "file": ".github/workflows/greet-pr.yml",
+      "line": 12,
+      "description": "Interpolation of untrusted pull request event data in shell script",
+      "evidence": "echo \"Thanks for the PR: ${{ github.event.pull_request.title }}\" and user login in .github/workflows/greet-pr.yml",
+      "recommendation": "Pass untrusted event data through intermediate environment variables instead of direct interpolation in run scripts."
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+2026-10-23 22:35:46,689 WARNING Could not list Gemini models (ConnectError); using the built-in model chain
+2026-10-23 22:35:46,690 INFO Using GeminiLLM, models in order: gemini-3.8-flash, gemini-3.7-flash, gemini-3.6-flash, gemini-3.5-flash, gemini-3-flash-preview, gemini-3.5-flash-lite, gemini-3.1-flash-lite, gemma-4-31b-it, gemma-4-26b-a4b-it
+2026-10-23 22:35:46,690 INFO Cloning https://github.com/pypa/sampleproject
+error: Could not clone https://github.com/pypa/sampleproject: fatal: unable to access 'https://github.com/pypa/sampleproject/': Could not resolve host: github.com

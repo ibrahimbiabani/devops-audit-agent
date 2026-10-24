@@ -1,0 +1,25 @@
+{
+  "repository": "https://github.com/pypa/sampleproject",
+  "violations": [
+    {
+      "rule_id": "CI-001",
+      "category": "ci_cd",
+      "severity": "medium",
+      "file": ".github/workflows/test.yml",
+      "line": null,
+      "description": "Test workflow missing explicit permissions block",
+      "evidence": ".github/workflows/test.yml has no top-level permissions or job-level permissions block defined.",
+      "recommendation": "Add an explicit permissions block (e.g. contents: read) to .github/workflows/test.yml following GitHub Actions security best practices."
+    },
+    {
+      "rule_id": "TEST-001",
+      "category": "testing",
+      "severity": "medium",
+      "file": "noxfile.py",
+      "line": 49,
+      "description": "Fragile dist file sorting/indexing in nox tests session",
+      "evidence": "noxfile.py uses os.listdir(\"dist/\") and takes generated_files[1] without sorting or checking file extension, assuming sdist vs wheel order.",
+      "recommendation": "Filter and explicitly select the sdist file (ending in .tar.gz) from dist/ rather than relying on unstable list order or arbitrary indexing."
+    }
+  ]
+}
